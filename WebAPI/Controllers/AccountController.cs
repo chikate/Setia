@@ -8,11 +8,6 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private string Cipher(string rawString)
         {
             return rawString;
@@ -31,7 +26,8 @@ namespace WebAPI.Controllers
             RegistrationFailed,
         }
 
-        [HttpPost(Name = "Register")]
+        [Route("Register")]
+        [HttpPost]
         public RegisterPostResponse Register(string email, string username, string password)
         {
             string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
@@ -59,25 +55,25 @@ namespace WebAPI.Controllers
             }
         }
 
-        //public enum LoginPostResponse
-        //{
-        //    LoginSuccessful,
-        //    InvalidCredentials,
-        //    LoginFailed,
-        //}
+        public enum LoginPostResponse
+        {
+            LoginSuccessful,
+            InvalidCredentials,
+            LoginFailed,
+        }
 
-        //[Route("Login")]
-        //[HttpPost(Name = "Login")]
-        //public LoginPostResponse Login(string username, string password)
-        //{
-        //    if (username.Length > 3 && password.Length > 3)
-        //    {
-        //        return LoginPostResponse.LoginSuccessful;
-        //    }
-        //    else
-        //    {
-        //        return LoginPostResponse.InvalidCredentials;
-        //    }
-        //}
+        [Route("Login")]
+        [HttpPost]
+        public LoginPostResponse Login(string username, string password)
+        {
+            if (username.Length > 3 && password.Length > 3)
+            {
+                return LoginPostResponse.LoginSuccessful;
+            }
+            else
+            {
+                return LoginPostResponse.InvalidCredentials;
+            }
+        }
     }
 }
