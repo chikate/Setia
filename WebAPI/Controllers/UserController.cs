@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using WebAPI.Data;
 using WebAPI.Models;
-using static WebAPI.Controllers.UserController;
 
 namespace WebAPI.Controllers
 {
@@ -10,15 +9,62 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private string Cipher(string decipheredString)
+
+        #region Cripting
+        private readonly int key = 467392581;
+        private string Cipher(string rawString)
         {
-            return decipheredString;
+            if (rawString != null)
+            {
+                char[] cipheredString = new char[rawString.Length];
+                for (int i = 0; i < rawString.Length; i++)
+                {
+                    char ch = rawString[i];
+
+                    if (char.IsLetter(ch))
+                    {
+                        char shiftedChar = (char)(ch + key);
+
+                        if ((char.IsLower(ch) && shiftedChar > 'z') ||
+                            (char.IsUpper(ch) && shiftedChar > 'Z'))
+                        {
+                            shiftedChar = (char)(ch - (26 - key));
+                        }
+
+                        cipheredString[i] = shiftedChar;
+                        return new string(cipheredString);
+                    }
+                }
+            }
+            return String.Empty.ToString();
         }
         private string Decipher(string cipheredString)
         {
+            if (cipheredString != null)
+            {
+                char[] decipheredString = new char[cipheredString.Length];
+                for (int i = 0; i < cipheredString.Length; i++)
+                {
+                    char ch = cipheredString[i];
 
-            return cipheredString;
+                    if (char.IsLetter(ch))
+                    {
+                        char shiftedChar = (char)(ch - key);
+
+                        if ((char.IsLower(ch) && shiftedChar > 'z') ||
+                            (char.IsUpper(ch) && shiftedChar > 'Z'))
+                        {
+                            shiftedChar = (char)(ch - (26 + key));
+                        }
+
+                        decipheredString[i] = shiftedChar;
+                        return new string(decipheredString);
+                    }
+                }
+            }
+            return "";
         }
+        #endregion
 
         #region Register
         public enum RegisterStatus
@@ -36,30 +82,32 @@ namespace WebAPI.Controllers
         public RegisterStatus Register(string email, string username, string password)
         {
             string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-            if (Regex.IsMatch(Decipher(email), EmailPattern))
+            if (Regex.IsMatch(email, EmailPattern))
             {
                 if (username.Length > 3)
                 {
                     if (password.Length > 3)
                     {
                         using SetiaContext context = new SetiaContext();
-                        //var user = context.Users.Where(a => a.Username == Decipher(username)).SingleOrDefault();
-                        //if(user != null)
-                        //{
-                            //context.Users.Add(new AccountModel()
-                            //{
-                            //    Username = Decipher(username),
-                            //    Password = Decipher(password),
-                            //    Email = Decipher(email),
-                            //    CreationDate = DateTime.Now,
-                            //});
-                            //context.SaveChanges();
+                        var user = context.Users.Where(a => a.Username == Decipher(username)).SingleOrDefault();
+                        if (user == null)
+                        {
+                            context.Users.Add(new UserModel()
+                            {
+                                Username = username,
+                                Password = password,
+                                Email = email,
+                                Name = "",
+                                Coins = 0,
+                                CreationDate = DateTime.Now,
+                            });
+                            context.SaveChanges();
                             return RegisterStatus.AccountCreated;
-                        //}
-                        //else
-                        //{
-                        //    return RegisterStatus.UsernameAlreadyTaken;
-                        //}
+                        }
+                        else
+                        {
+                            return RegisterStatus.UsernameAlreadyTaken;
+                        }
                     }
                     else
                     {
@@ -108,8 +156,8 @@ namespace WebAPI.Controllers
             {
                 if (password.Length > 3)
                 {
-                    using SetiaContext context = new SetiaContext();
-                    //var user = context.Users.Where(a => a.Username == Decipher(username)).Single();//should check if is the only one found?
+                    SetiaContext context = new SetiaContext();
+                    var user = context.Users.Where(a => a.Username == Decipher(username)).Single();//should check if is the only one found?
                     loginData.status = LoginStatus.LoginSuccessful;
                     loginData.data = new UserData();
                     loginData.data.name = "user.Name";
