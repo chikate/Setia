@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using WebAPI.Data;
 using WebAPI.Models;
@@ -6,65 +8,9 @@ using WebAPI.Models;
 namespace WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-
-        #region Cripting
-        private readonly int key = 467392581;
-        private string Cipher(string rawString)
-        {
-            if (rawString != null)
-            {
-                char[] cipheredString = new char[rawString.Length];
-                for (int i = 0; i < rawString.Length; i++)
-                {
-                    char ch = rawString[i];
-
-                    if (char.IsLetter(ch))
-                    {
-                        char shiftedChar = (char)(ch + key);
-
-                        if ((char.IsLower(ch) && shiftedChar > 'z') ||
-                            (char.IsUpper(ch) && shiftedChar > 'Z'))
-                        {
-                            shiftedChar = (char)(ch - (26 - key));
-                        }
-
-                        cipheredString[i] = shiftedChar;
-                        return new string(cipheredString);
-                    }
-                }
-            }
-            return String.Empty.ToString();
-        }
-        private string Decipher(string cipheredString)
-        {
-            if (cipheredString != null)
-            {
-                char[] decipheredString = new char[cipheredString.Length];
-                for (int i = 0; i < cipheredString.Length; i++)
-                {
-                    char ch = cipheredString[i];
-
-                    if (char.IsLetter(ch))
-                    {
-                        char shiftedChar = (char)(ch - key);
-
-                        if ((char.IsLower(ch) && shiftedChar > 'z') ||
-                            (char.IsUpper(ch) && shiftedChar > 'Z'))
-                        {
-                            shiftedChar = (char)(ch - (26 + key));
-                        }
-
-                        decipheredString[i] = shiftedChar;
-                        return new string(decipheredString);
-                    }
-                }
-            }
-            return "";
-        }
-        #endregion
 
         #region Register
         public enum RegisterStatus
@@ -84,21 +30,21 @@ namespace WebAPI.Controllers
             string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
             if (Regex.IsMatch(email, EmailPattern))
             {
-                if (username.Length > 3)
+                if (username.Length > 1)
                 {
-                    if (password.Length > 3)
+                    if (password.Length > 1)
                     {
                         using SetiaContext context = new SetiaContext();
-                        var user = context.Users.Where(a => a.Username == Decipher(username)).SingleOrDefault();
+                        var user = context.Users.Where(a => a.Username == username).SingleOrDefault();
                         if (user == null)
                         {
                             context.Users.Add(new UserModel()
                             {
+                                Email = email,
                                 Username = username,
                                 Password = password,
-                                Email = email,
                                 Name = "",
-                                Coins = 0,
+                                Coins = "0",
                                 CreationDate = DateTime.Now,
                             });
                             context.SaveChanges();
@@ -135,44 +81,127 @@ namespace WebAPI.Controllers
             LoginFailed,
         }
 
-        public struct UserData
-        {
-            public string name;
-            public int coins;
-        }
-
-        public struct LoginData
-        {
-            public LoginStatus status;
-            public UserData data;
-        }
-
         [Route("Login")]
         [HttpPost]
-        public LoginData Login(string username, string password)
+        public string Login(string username, string password)
         {
-            LoginData loginData = new LoginData();
-            if (username.Length > 3)
+            if (username.Length > 1)
             {
-                if (password.Length > 3)
+                if (password.Length > 1)
                 {
-                    SetiaContext context = new SetiaContext();
-                    var user = context.Users.Where(a => a.Username == Decipher(username)).Single();//should check if is the only one found?
-                    loginData.status = LoginStatus.LoginSuccessful;
-                    loginData.data = new UserData();
-                    loginData.data.name = "user.Name";
-                    loginData.data.coins = 0;
+                    try
+                    {
+                        SetiaContext context = new SetiaContext();
+                        var user = context.Users.Where(a => a.Username == username).Single(); //should check if is the only one found?
+                        return JsonSerializer.Serialize(user);
+                    }
+                    catch
+                    {
+                        return LoginStatus.LoginFailed.ToString();
+                    }
+
                 }
                 else
                 {
-                    loginData.status = LoginStatus.InvalidPassword;
+                    return LoginStatus.InvalidPassword.ToString();
                 }
             }
             else
             {
-                loginData.status = LoginStatus.InvalidUsername;
+                return LoginStatus.InvalidUsername.ToString();
             }
-            return loginData;
+        }
+        #endregion
+
+        #region GetUserData
+        [Route("GetUserData")]
+        [HttpGet]
+        public string GetUserData(string username, string password)
+        {
+            try
+            {
+                using SetiaContext context = new SetiaContext();
+                var user = context.Users.Where(a => a.Username == username & a.Password == password).Single(); //should check if is the only one found?
+                return JsonSerializer.Serialize(user);
+            }
+            catch
+            {
+                return String.Empty;
+            }
+        }
+        #endregion
+
+        #region Change and forgot password
+        public enum SendForgetPassLinkStatus
+        {
+            NewPasswordMailSend,
+            UserNotFound,
+            FailedToSendLink,
+        }
+
+        [Route("SendForgotPassLink")]
+        [HttpPost]
+        public string SendForgotPassLink(string email, string username)
+        {
+            try
+            {
+                using SetiaContext context = new SetiaContext();
+                var user = context.Users.Where(a => a.Email == email & a.Username == username).SingleOrDefault();
+                if (user != null)
+                {
+                    //generate api change link
+                    //send mail with new password
+                    return "https://localhost:44381";
+                }
+                else
+                {
+                    return SendForgetPassLinkStatus.UserNotFound.ToString();
+                }
+            }
+            catch
+            {
+                return SendForgetPassLinkStatus.FailedToSendLink.ToString();
+            }
+        }
+
+        public enum ChangePasswordStatus
+        {
+            PasswordChanged,
+            UserNotFound,
+            NewPasswordInvalid,
+            PasswordFailedChangeing,
+        }
+
+        [Route("ChangePassword")]
+        [HttpPut]
+        public ChangePasswordStatus ChangePassword(string email, string username, string currentPassword, string newPassword)
+        {
+            try
+            {
+                if (newPassword.Length > 5)
+                {
+                    using SetiaContext context = new SetiaContext();
+                    var user = context.Users.Where(a => a.Email == email & a.Username == username & a.Password == currentPassword).SingleOrDefault();
+                    if (user != null)
+                    {
+                        user.Password = newPassword;
+                        context.SaveChanges();
+                        return ChangePasswordStatus.PasswordChanged;
+                    }
+                    else
+                    {
+                        return ChangePasswordStatus.UserNotFound;
+                    }
+                }
+                else
+                {
+                    return ChangePasswordStatus.NewPasswordInvalid;
+                }
+            }
+            catch
+            {
+                return ChangePasswordStatus.PasswordFailedChangeing;
+            }
         }
         #endregion
 
