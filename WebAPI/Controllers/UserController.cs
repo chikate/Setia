@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -12,195 +13,181 @@ namespace WebAPI.Controllers
     public class UserController : ControllerBase
     {
 
-        #region Register
-        public enum RegisterStatus
+        #region Encription
+        public class Caesar
         {
-            AccountCreated,
-            InvalidPassword,
-            InvalidUsername,
-            UsernameAlreadyTaken,
-            InvalidEmail,
-            RegistrationFailed,
-        }
+            private static readonly int ShiftKey = 2758;
 
-        [Route("Register")]
-        [HttpPost]
-        public RegisterStatus Register(string email, string username, string password)
-        {
-            string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-            if (Regex.IsMatch(email, EmailPattern))
+            public static string Cipher(string message)
             {
-                if (username.Length > 1)
+                StringBuilder encryptedMessage = new StringBuilder();
+
+                foreach (char character in message)
                 {
-                    if (password.Length > 1)
+                    char encryptedChar = character;
+
+                    if (char.IsLetter(character))
                     {
-                        using SetiaContext context = new SetiaContext();
-                        var user = context.Users.Where(a => a.Username == username).SingleOrDefault();
-                        if (user == null)
-                        {
-                            context.Users.Add(new UserModel()
-                            {
-                                Email = email,
-                                Username = username,
-                                Password = password,
-                                Name = "",
-                                Coins = "0",
-                                CreationDate = DateTime.Now,
-                            });
-                            context.SaveChanges();
-                            return RegisterStatus.AccountCreated;
-                        }
-                        else
-                        {
-                            return RegisterStatus.UsernameAlreadyTaken;
-                        }
+                        char baseLetter = char.IsUpper(character) ? 'A' : 'a';
+                        encryptedChar = (char)(((character + ShiftKey - baseLetter) % 26) + baseLetter);
                     }
-                    else
+
+                    encryptedMessage.Append(encryptedChar);
+                }
+
+                return encryptedMessage.ToString();
+            }
+
+            public static string Decipher(string encryptedMessage)
+            {
+                StringBuilder decryptedMessage = new StringBuilder();
+
+                foreach (char character in encryptedMessage)
+                {
+                    char decryptedChar = character;
+
+                    if (char.IsLetter(character))
                     {
-                        return RegisterStatus.InvalidPassword;
+                        char baseLetter = char.IsUpper(character) ? 'A' : 'a';
+                        decryptedChar = (char)(((character - ShiftKey - baseLetter + 26) % 26) + baseLetter);
                     }
+
+                    decryptedMessage.Append(decryptedChar);
+                }
+
+                return decryptedMessage.ToString();
+            }
+        }
+        #endregion
+
+        #region Register
+        [HttpPost("Register")]
+        public async Task<ActionResult<string>> Register(string email, string username, string password)
+        {
+            try
+            {
+                using SetiaContext context = new SetiaContext();
+                var user = await context.Users.Where(a => a.Username == username).SingleOrDefaultAsync();
+                if (user == null)
+                {
+                    context.Users.Add(new UserModel()
+                    {
+                        Email = email,
+                        Username = username,
+                        Password = password,
+                        Name = "",
+                        Coins = "0",
+                        CreationDate = DateTime.Now,
+                    });
+                    context.SaveChanges();
+                    return Ok("Account Created");
                 }
                 else
                 {
-                    return RegisterStatus.InvalidUsername;
+                    return Unauthorized("Username Already Exists");
                 }
             }
-            else
+            catch
             {
-                return RegisterStatus.InvalidEmail;
+                return BadRequest("Registration Failed");
             }
         }
         #endregion
 
         #region Login
-        public enum LoginStatus
+        [HttpPost("Login")]
+        public async Task<ActionResult<string>> Login(string username, string password)
         {
-            LoginSuccessful,
-            InvalidPassword,
-            InvalidUsername,
-            LoginFailed,
-        }
-
-        [Route("Login")]
-        [HttpPost]
-        public string Login(string username, string password)
-        {
-            if (username.Length > 1)
+            try
             {
-                if (password.Length > 1)
+                using SetiaContext context = new SetiaContext();
+                var user = await context.Users.Where(a => a.Username == username & a.Password == password).FirstOrDefaultAsync();
+                if (user != null)
                 {
-                    try
-                    {
-                        SetiaContext context = new SetiaContext();
-                        var user = context.Users.Where(a => a.Username == username).Single(); //should check if is the only one found?
-                        return JsonSerializer.Serialize(user);
-                    }
-                    catch
-                    {
-                        return LoginStatus.LoginFailed.ToString();
-                    }
-
+                    return Ok(JsonSerializer.Serialize(user));
                 }
                 else
                 {
-                    return LoginStatus.InvalidPassword.ToString();
+                    return NotFound("Invalid Credentials / User Not Found");
                 }
             }
-            else
+            catch
             {
-                return LoginStatus.InvalidUsername.ToString();
+                return BadRequest("Login Failed");
             }
         }
         #endregion
 
         #region GetUserData
-        [Route("GetUserData")]
-        [HttpGet]
-        public string GetUserData(string username, string password)
+        [HttpGet("GetUserData")]
+        public async Task<ActionResult<string>> GetUserData(string username, string password)
         {
             try
             {
                 using SetiaContext context = new SetiaContext();
-                var user = context.Users.Where(a => a.Username == username & a.Password == password).Single(); //should check if is the only one found?
-                return JsonSerializer.Serialize(user);
+                var user = await context.Users.Where(a => a.Username == username & a.Password == password).SingleAsync(); //should check if is the only one found?
+                if(user != null)
+                {
+                    return Ok(JsonSerializer.Serialize(user));
+                }
+                else 
+                {
+                    return NotFound("User Not Found");
+                }
             }
             catch
             {
-                return String.Empty;
+                return Unauthorized();
             }
         }
         #endregion
 
-        #region Change and forgot password
-        public enum SendForgetPassLinkStatus
-        {
-            NewPasswordMailSend,
-            UserNotFound,
-            FailedToSendLink,
-        }
-
-        [Route("SendForgotPassLink")]
-        [HttpPost]
-        public string SendForgotPassLink(string email, string username)
+        #region Password Management
+        [HttpPut("ChangePassword")]
+        public async Task<ActionResult<string>> ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
             try
             {
                 using SetiaContext context = new SetiaContext();
-                var user = context.Users.Where(a => a.Email == email & a.Username == username).SingleOrDefault();
+                var user = await context.Users.Where(a => a.Email == email & a.Username == username & a.Password == currentPassword).SingleOrDefaultAsync();
+                if (user != null)
+                {
+                    user.Password = newPassword;
+                    context.SaveChanges();
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("SendForgotPassLink")]
+        public async Task<ActionResult<string>> SendForgotPassLink(string email, string username)
+        {
+            try
+            {
+                using SetiaContext context = new SetiaContext();
+                var user = await context.Users.Where(a => a.Email == email & a.Username == username).SingleOrDefaultAsync();
                 if (user != null)
                 {
                     //generate api change link
                     //send mail with new password
-                    return "https://localhost:44381";
+                    return Ok("https://localhost:44381");
                 }
                 else
                 {
-                    return SendForgetPassLinkStatus.UserNotFound.ToString();
+                    return NotFound("User Not Found");
                 }
             }
             catch
             {
-                return SendForgetPassLinkStatus.FailedToSendLink.ToString();
-            }
-        }
-
-        public enum ChangePasswordStatus
-        {
-            PasswordChanged,
-            UserNotFound,
-            NewPasswordInvalid,
-            PasswordFailedChangeing,
-        }
-
-        [Route("ChangePassword")]
-        [HttpPut]
-        public ChangePasswordStatus ChangePassword(string email, string username, string currentPassword, string newPassword)
-        {
-            try
-            {
-                if (newPassword.Length > 5)
-                {
-                    using SetiaContext context = new SetiaContext();
-                    var user = context.Users.Where(a => a.Email == email & a.Username == username & a.Password == currentPassword).SingleOrDefault();
-                    if (user != null)
-                    {
-                        user.Password = newPassword;
-                        context.SaveChanges();
-                        return ChangePasswordStatus.PasswordChanged;
-                    }
-                    else
-                    {
-                        return ChangePasswordStatus.UserNotFound;
-                    }
-                }
-                else
-                {
-                    return ChangePasswordStatus.NewPasswordInvalid;
-                }
-            }
-            catch
-            {
-                return ChangePasswordStatus.PasswordFailedChangeing;
+                return BadRequest("Failed To Send Link");
             }
         }
         #endregion
