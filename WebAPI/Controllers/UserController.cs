@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using WebAPI.Data;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     public class UserController : ControllerBase
     {
 
@@ -62,7 +61,7 @@ namespace WebAPI.Controllers
 
         #region Register
         [HttpPost("Register")]
-        public async Task<ActionResult<string>> Register(string email, string username, string password)
+        public async Task<IActionResult> Register(string email, string username, string password)
         {
             try
             {
@@ -80,6 +79,7 @@ namespace WebAPI.Controllers
                         CreationDate = DateTime.Now,
                     });
                     context.SaveChanges();
+                    //send email verification
                     return Ok("Account Created");
                 }
                 else
@@ -96,7 +96,7 @@ namespace WebAPI.Controllers
 
         #region Login
         [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace WebAPI.Controllers
 
         #region GetUserData
         [HttpGet("GetUserData")]
-        public async Task<ActionResult<string>> GetUserData(string username, string password)
+        public async Task<IActionResult> GetUserData(string username, string password)
         {
             try
             {
@@ -143,8 +143,8 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Password Management
-        [HttpPut("ChangePassword")]
-        public async Task<ActionResult<string>> ChangePassword(string email, string username, string currentPassword, string newPassword)
+        [HttpPatch("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
             try
             {
@@ -167,8 +167,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("SendForgotPassLink")]
-        public async Task<ActionResult<string>> SendForgotPassLink(string email, string username)
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email, string username)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace WebAPI.Controllers
                 if (user != null)
                 {
                     //generate api change link
-                    //send mail with new password
+                    //send mail with new password link
                     return Ok("https://localhost:44381");
                 }
                 else
@@ -187,7 +187,35 @@ namespace WebAPI.Controllers
             }
             catch
             {
-                return BadRequest("Failed To Send Link");
+                return BadRequest("Failed To Send the Link");
+            }
+        }
+
+        public class UsernameHeader
+        {
+            public string? Username { get; set; }
+        }
+
+        [HttpPost("ForgotUsername")]
+        public async Task<IActionResult> ForgotUsername(string email)
+        {
+            try
+            {
+                using SetiaContext context = new SetiaContext();
+                List<UsernameHeader> usernames = await context.Users.Where(a => a.Email == email).Select( u => new UsernameHeader { Username = u.Username }).ToListAsync();
+                if (usernames != null)
+                {
+                    // send email with users
+                    return Ok(usernames);
+                }
+                else
+                {
+                    return NotFound("User Not Found");
+                }
+            }
+            catch
+            {
+                return BadRequest("Failed To Send the Link");
             }
         }
         #endregion
