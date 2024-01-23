@@ -9,10 +9,10 @@ using WebAPI.Models;
 namespace WebAPI.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]/[action]")]
     public class UserController : ControllerBase
     {
-
+        
         #region Encription
         public class Caesar
         {
@@ -61,39 +61,47 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Register
-        [HttpPost("Register")]
+        [HttpPost]
         public async Task<IActionResult> Register(string email, string username, string password)
         {
             try
             {
+                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                {
+                    return Unauthorized("Email Invalid");
+                }
+
+                if (username == null || username.Length < 3)
+                {
+                    return Unauthorized("Username too short");
+                }
+
                 using SetiaContext context = new SetiaContext();
                 var user = await context.Users.Where(a => a.Username == username).SingleOrDefaultAsync();
-                if (user == null)
-                {
-                    if(Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
-                    {
-                        context.Users.Add(new UserModel()
-                        {
-                            Email = email,
-                            Username = username,
-                            Password = password,
-                            Name = "",
-                            Coins = "0",
-                            CreationDate = DateTime.UtcNow,
-                        });
-                        context.SaveChanges();
-                    } 
-                    else
-                    {
-                        return Unauthorized("Email Invalid");
-                    }
-                    //send email verification
-                    return Ok("Account Created");
-                }
-                else
+                if (user != null)
                 {
                     return Unauthorized("Username Already Exists");
                 }
+
+                if (password == null || password.Length < 6)
+                {
+                    return Unauthorized("Password too short");
+                }
+
+                context.Users.Add(new UserModel()
+                {
+                    Email = email,
+                    Username = username,
+                    Password = password,
+                    Name = "",
+                    Coins = "0",
+                    CreationDate = DateTime.UtcNow,
+                });
+                context.SaveChanges();
+
+                //send email verification
+                return Ok("Account Created");
+             
             }
             catch
             {
@@ -103,11 +111,21 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Login
-        [HttpPost("Login")]
+        [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
             try
             {
+                if (username == null || username.Length < 3)
+                {
+                    return Unauthorized("Username too short");
+                }
+
+                if (password == null || password.Length < 6)
+                {
+                    return Unauthorized("Password too short");
+                }
+
                 using SetiaContext context = new SetiaContext();
                 var user = await context.Users.Where(a => a.Username == username & a.Password == password).FirstOrDefaultAsync();
                 if (user != null)
@@ -127,7 +145,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region GetUserData
-        [HttpGet("GetUserData")]
+        [HttpGet]
         public async Task<IActionResult> GetUserData(string username, string password)
         {
             try
@@ -151,7 +169,7 @@ namespace WebAPI.Controllers
         #endregion
 
         #region Password Management
-        [HttpPatch("ChangePassword")]
+        [HttpPatch]
         public async Task<IActionResult> ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
             try
@@ -175,7 +193,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("ForgotPassword")]
+        [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email, string username)
         {
             try
@@ -204,7 +222,7 @@ namespace WebAPI.Controllers
             public string? Username { get; set; }
         }
 
-        [HttpPost("ForgotUsername")]
+        [HttpPost]
         public async Task<IActionResult> ForgotUsername(string email)
         {
             try
