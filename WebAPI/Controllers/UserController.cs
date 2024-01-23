@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using WebAPI.Data;
 using WebAPI.Models;
 
@@ -69,16 +70,23 @@ namespace WebAPI.Controllers
                 var user = await context.Users.Where(a => a.Username == username).SingleOrDefaultAsync();
                 if (user == null)
                 {
-                    context.Users.Add(new UserModel()
+                    if(Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
                     {
-                        Email = email,
-                        Username = username,
-                        Password = password,
-                        Name = "",
-                        Coins = "0",
-                        CreationDate = DateTime.Now,
-                    });
-                    context.SaveChanges();
+                        context.Users.Add(new UserModel()
+                        {
+                            Email = email,
+                            Username = username,
+                            Password = password,
+                            Name = "",
+                            Coins = "0",
+                            CreationDate = DateTime.UtcNow,
+                        });
+                        context.SaveChanges();
+                    } 
+                    else
+                    {
+                        return Unauthorized("Email Invalid");
+                    }
                     //send email verification
                     return Ok("Account Created");
                 }
