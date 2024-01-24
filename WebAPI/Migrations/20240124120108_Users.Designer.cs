@@ -12,7 +12,7 @@ using WebAPI.Data;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(SetiaContext))]
-    [Migration("20230927190238_Users")]
+    [Migration("20240124120108_Users")]
     partial class Users
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace WebAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -33,9 +33,8 @@ namespace WebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Coins")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("AuthorityCode")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -43,6 +42,15 @@ namespace WebAPI.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Id_CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Id_LastUpdateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -52,13 +60,35 @@ namespace WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("StatusCode")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id_CreatedBy");
+
+                    b.HasIndex("Id_LastUpdateBy");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.UserModel", b =>
+                {
+                    b.HasOne("WebAPI.Models.UserModel", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("Id_CreatedBy");
+
+                    b.HasOne("WebAPI.Models.UserModel", "LastUpdateBy")
+                        .WithMany()
+                        .HasForeignKey("Id_LastUpdateBy");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("LastUpdateBy");
                 });
 #pragma warning restore 612, 618
         }

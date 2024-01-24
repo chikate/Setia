@@ -12,7 +12,6 @@ namespace WebAPI.Controllers
     [Route("/api/[controller]/[action]")]
     public class UserController : ControllerBase
     {
-        
         #region Encription
         public class Caesar
         {
@@ -68,24 +67,26 @@ namespace WebAPI.Controllers
             {
                 if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
                 {
-                    return Unauthorized("Email Invalid");
+                    return Unauthorized("Invalid email");
                 }
 
                 if (username == null || username.Length < 3)
                 {
-                    return Unauthorized("Username too short");
+                    return Unauthorized("Invalid username (too short)");
                 }
 
                 using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(a => a.Username == username).SingleOrDefaultAsync();
+                var user = await context.Users
+                    .Where(u => u.Username == username)
+                    .SingleOrDefaultAsync();
                 if (user != null)
                 {
-                    return Unauthorized("Username Already Exists");
+                    return Unauthorized("Username already exists");
                 }
 
                 if (password == null || password.Length < 6)
                 {
-                    return Unauthorized("Password too short");
+                    return Unauthorized("Invalid password (too short)");
                 }
 
                 context.Users.Add(new UserModel()
@@ -93,19 +94,17 @@ namespace WebAPI.Controllers
                     Email = email,
                     Username = username,
                     Password = password,
-                    Name = "",
-                    Coins = "0",
                     CreationDate = DateTime.UtcNow,
                 });
                 context.SaveChanges();
 
                 //send email verification
-                return Ok("Account Created");
+                return Ok("Account created");
              
             }
             catch
             {
-                return BadRequest("Registration Failed");
+                return BadRequest("Registration failed");
             }
         }
         #endregion
@@ -118,28 +117,30 @@ namespace WebAPI.Controllers
             {
                 if (username == null || username.Length < 3)
                 {
-                    return Unauthorized("Username too short");
+                    return Unauthorized("Invalid username (too short)");
                 }
 
                 if (password == null || password.Length < 6)
                 {
-                    return Unauthorized("Password too short");
+                    return Unauthorized("Invalid password (too short)");
                 }
 
                 using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(a => a.Username == username & a.Password == password).FirstOrDefaultAsync();
+                var user = await context.Users
+                    .Where(u => u.Username == username & u.Password == password)
+                    .FirstOrDefaultAsync();
                 if (user != null)
                 {
                     return Ok(JsonSerializer.Serialize(user));
                 }
                 else
                 {
-                    return NotFound("Invalid Credentials / User Not Found");
+                    return NotFound("Invalid credentials / User not found");
                 }
             }
             catch
             {
-                return BadRequest("Login Failed");
+                return BadRequest("Login failed");
             }
         }
         #endregion
@@ -151,14 +152,14 @@ namespace WebAPI.Controllers
             try
             {
                 using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(a => a.Username == username & a.Password == password).SingleAsync(); //should check if is the only one found?
+                var user = await context.Users.Where(u => u.Username == username & u.Password == password).SingleAsync(); //should check if is the only one found?
                 if(user != null)
                 {
                     return Ok(JsonSerializer.Serialize(user));
                 }
                 else 
                 {
-                    return NotFound("User Not Found");
+                    return NotFound("User not found");
                 }
             }
             catch
@@ -174,32 +175,66 @@ namespace WebAPI.Controllers
         {
             try
             {
+                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                {
+                    return Unauthorized("Invalid email");
+                }
+
+                if (username == null || username.Length < 3)
+                {
+                    return Unauthorized("Invalid username (too short)");
+                }
+
+                if (currentPassword == null || currentPassword.Length < 6)
+                {
+                    return Unauthorized("Invalid password (too short)");
+                }
+
+                if (newPassword == null || newPassword.Length < 6)
+                {
+                    return Unauthorized("Invalid new password (too short)");
+                }
+
                 using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(a => a.Email == email & a.Username == username & a.Password == currentPassword).SingleOrDefaultAsync();
+                var user = await context.Users
+                    .Where(u => u.Email == email & u.Username == username & u.Password == currentPassword)
+                    .SingleOrDefaultAsync();
                 if (user != null)
                 {
                     user.Password = newPassword;
                     context.SaveChanges();
-                    return Ok();
+                    return Ok("Password changed");
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("User not found");
                 }
             }
             catch
             {
-                return BadRequest();
+                return BadRequest("Failed to change the password");
             }
         }
-
+     
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email, string username)
         {
             try
             {
+                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                {
+                    return Unauthorized("Invalid email");
+                }
+
+                if (username == null || username.Length < 3)
+                {
+                    return Unauthorized("Invalid username (too short)");
+                }
+
                 using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(a => a.Email == email & a.Username == username).SingleOrDefaultAsync();
+                var user = await context.Users
+                    .Where(u => u.Email == email & u.Username == username)
+                    .SingleOrDefaultAsync();
                 if (user != null)
                 {
                     //generate api change link
@@ -208,18 +243,13 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    return NotFound("User Not Found");
+                    return NotFound("User not found");
                 }
             }
             catch
             {
-                return BadRequest("Failed To Send the Link");
+                return BadRequest("Failed to send the link");
             }
-        }
-
-        public class UsernameHeader
-        {
-            public string? Username { get; set; }
         }
 
         [HttpPost]
@@ -227,8 +257,16 @@ namespace WebAPI.Controllers
         {
             try
             {
+                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                {
+                    return Unauthorized("Invalid email");
+                }
+
                 using SetiaContext context = new SetiaContext();
-                List<UsernameHeader> usernames = await context.Users.Where(a => a.Email == email).Select( u => new UsernameHeader { Username = u.Username }).ToListAsync();
+                List<string> usernames = await context.Users
+                    .Where(u => u.Email == email)
+                    .Select(u => u.Username)
+                    .ToListAsync();
                 if (usernames != null)
                 {
                     // send email with users
@@ -236,15 +274,14 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    return NotFound("User Not Found");
+                    return NotFound("User not found");
                 }
             }
             catch
             {
-                return BadRequest("Failed To Send the Link");
+                return BadRequest("Failed to send the link");
             }
         }
         #endregion
-
     }
 }
