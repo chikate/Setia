@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebAPI.Data;
+using Setia.Data;
 
 #nullable disable
 
-namespace WebAPI.Migrations
+namespace Setia.Migrations
 {
     [DbContext(typeof(SetiaContext))]
     [Migration("20240124120108_Users")]
@@ -25,7 +25,7 @@ namespace WebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("WebAPI.Models.UserModel", b =>
+            modelBuilder.Entity("Setia.Models.UserModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,13 +76,13 @@ namespace WebAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.UserModel", b =>
+            modelBuilder.Entity("Setia.Models.UserModel", b =>
                 {
-                    b.HasOne("WebAPI.Models.UserModel", "CreatedBy")
+                    b.HasOne("Setia.Models.UserModel", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("Id_CreatedBy");
 
-                    b.HasOne("WebAPI.Models.UserModel", "LastUpdateBy")
+                    b.HasOne("Setia.Models.UserModel", "LastUpdateBy")
                         .WithMany()
                         .HasForeignKey("Id_LastUpdateBy");
 

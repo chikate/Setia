@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using WebAPI.Models;
+using Setia.Models;
 
-namespace WebAPI.Structs
+namespace Setia.Structs
 {
     public class AuditStruct
     {
-        public DateTime CreationDate { get; set; }
+        public DateTime CreationDate { get; set; } = DateTime.Now;
 
         [ForeignKey("CreatedBy")]
         public int? Id_CreatedBy { get; set; }

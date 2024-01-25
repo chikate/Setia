@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using WebAPI.Data;
-using WebAPI.Models;
+using Setia.Data;
+using Setia.Models;
 
-namespace WebAPI.Controllers
+namespace Setia.Controllers
 {
     [ApiController]
     [Route("/api/[controller]/[action]")]

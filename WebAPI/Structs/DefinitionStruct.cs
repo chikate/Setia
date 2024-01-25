@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Structs
+﻿namespace Setia.Structs
 {
     public class DefinitionStruct : AuditStruct
     {

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace WebAPI.Migrations
+namespace Setia.Migrations
 {
     /// <inheritdoc />
     public partial class Users : Migration

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebAPI.Models;
+using Setia.Models;
 
-namespace WebAPI.Data;
+namespace Setia.Data;
 
 public partial class SetiaContext : DbContext
 {
@@ -18,6 +18,7 @@ public partial class SetiaContext : DbContext
         => optionsBuilder.UseSqlServer("Server=DRAGOS;Database=Setia;Trusted_Connection=True;TrustServerCertificate=True;");
 
     public DbSet<UserModel> Users { get; set; }
+    public DbSet<PontajModel> Pontaj { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

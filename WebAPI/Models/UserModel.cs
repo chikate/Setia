@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Structs;
+using Setia.Structs;
 
-namespace WebAPI.Models
+namespace Setia.Models
 {
     public class UserModel : DefinitionStruct
     {
