@@ -12,22 +12,10 @@
         class="h-screen w-screen flex flex-column align-items-center justify-content-center"
         style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))"
       >
-        <a class="text-8xl font-bold">Hello there</a>
-        <a class="text-3xl font-bold">We are happy that you are visiting us!</a>
+        <a class="text-8xl font-bold">404</a>
+        <a class="text-7xl font-bold">PAGE NOT FOUND</a>
+        <a class="text-3xl font-medium">You've reached unwanted teritories!</a>
       </div>
-    </div>
-    <div class="flex flex-column py-8">
-      <PlayersLeaderboard class="mx-8 px-8" />
-      <PontajTable class="m-8 p-8" />
-      <!-- <UsersTable class="m-8 p-8" /> -->
-      <StoryChapter />
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import PlayersLeaderboard from '@/components/PlayersLeaderboard.vue'
-import PontajTable from '@/CRUDs/PontajTable.vue'
-// import UsersTable from '@/CRUDs/UsersTable.vue'
-import StoryChapter from '@/components/StoryChapter.vue'
-</script>

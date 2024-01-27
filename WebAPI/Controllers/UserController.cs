@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Setia.Data;
+using Setia.Models;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Setia.Data;
-using Setia.Models;
 
 namespace Setia.Controllers
 {

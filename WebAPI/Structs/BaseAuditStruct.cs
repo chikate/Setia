@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Setia.Models;
+﻿using Setia.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Structs
 {
-    public class AuditStruct
+    public class BaseAuditStruct
     {
         public DateTime CreationDate { get; set; } = DateTime.Now;
 

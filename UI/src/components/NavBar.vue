@@ -23,13 +23,13 @@
     <div class="flex flex-row gap-3 pointer-events-auto">
       <i
         v-tooltip.left="{
-          value: settingsStore.useDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+          value: useSettingsStore().useDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
           showDelay: 700,
           hideDelay: 100
         }"
         class="pi cursor-pointer"
-        :class="settingsStore.useDarkMode ? 'pi-moon' : 'pi-sun'"
-        @click="settingsStore.useDarkMode = !settingsStore.useDarkMode"
+        :class="useSettingsStore().useDarkMode ? 'pi-moon' : 'pi-sun'"
+        @click="useSettingsStore().useDarkMode = !useSettingsStore().useDarkMode"
       />
 
       <i
@@ -73,13 +73,17 @@
             <LoginComponent
               @onClose="accountOverlay.toggle($event)"
               @onLoginClick="
-                authenticationStore.tryLogin($event.inputUsername, $event.inputPassword)
+                useAuthenticationStore().tryLogin($event.inputUsername, $event.inputPassword)
               "
             />
           </OverlayPanel>
         </i>
         <a>
-          {{ authenticationStore.user == null ? 'Account' : authenticationStore.user }}
+          {{
+            useAuthenticationStore().user == null
+              ? 'Account'
+              : useAuthenticationStore().user?.email ?? 'User'
+          }}
         </a>
       </div>
     </div>
@@ -101,11 +105,6 @@ import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 import { useSettingsStore } from '@/stores/SettingsStore'
 
 // Variabels
-const authenticationStore = useAuthenticationStore()
-const settingsStore = useSettingsStore()
-
-const toast = useToast()
-
 const accountOverlay = ref()
 const languageOverlay = ref()
 
@@ -116,7 +115,7 @@ const languages = ref([
     label: 'English',
     command: () => {
       languageOverlay.value.hide()
-      toast.add({
+      useToast().add({
         severity: 'success',
         summary: 'Changed language to English',
         detail: '',
@@ -128,7 +127,7 @@ const languages = ref([
     label: 'Română - Romanian',
     command: () => {
       languageOverlay.value.hide()
-      toast.add({
+      useToast().add({
         severity: 'success',
         summary: 'Schimbat limba în Română',
         detail: '',

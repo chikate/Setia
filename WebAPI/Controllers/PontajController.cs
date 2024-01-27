@@ -15,7 +15,7 @@ namespace Setia.Controllers
             try
             {
                 using SetiaContext context = new SetiaContext();
-                var pontaj = await context.Pontaj.ToListAsync();
+                var pontaj = await context.Pontaj.Include(i => i.User).ToListAsync();
                 if(pontaj != null)
                 {
                     return Ok(pontaj);

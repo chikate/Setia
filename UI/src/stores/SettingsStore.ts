@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
-
-interface SettingsStore {
-  useDarkMode: boolean
-}
+import type { SettingsStore } from '@/interfaces'
+import { makeRequest, checkRequest } from '@/helpers'
 
 export const useSettingsStore = defineStore('SettingsStore', {
   state: (): SettingsStore => {
