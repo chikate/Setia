@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
@@ -10,8 +11,24 @@ namespace Setia.Controllers
 {
     [ApiController]
     [Route("/api/[controller]/[action]")]
-    public class UserController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
+        private readonly SetiaContext _context;
+        private readonly ILogger<AuthenticationController> _logger;
+        private readonly IMapper _mapper;
+
+        public AuthenticationController
+        (
+            SetiaContext context,
+            ILogger<AuthenticationController> logger,
+            IMapper mapper
+        )
+        {
+            _context = context;
+            _logger = logger;
+            _mapper = mapper;
+        }
+
         #region Encription
         public class Caesar
         {
@@ -75,8 +92,7 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid username (too short)");
                 }
 
-                using SetiaContext context = new SetiaContext();
-                var user = await context.Users
+                var user = await _context.Users
                     .Where(u => u.Username == username)
                     .SingleOrDefaultAsync();
                 if (user != null)
@@ -89,22 +105,22 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid password (too short)");
                 }
 
-                context.Users.Add(new UserModel()
+                _context.Users.Add(new UserModel()
                 {
                     Email = email,
                     Username = username,
                     Password = password,
                     CreationDate = DateTime.UtcNow,
                 });
-                context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 //send email verification
                 return Ok("Account created");
-             
+
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Registration failed");
+                return Unauthorized(ex);
             }
         }
         #endregion
@@ -125,8 +141,7 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid password (too short)");
                 }
 
-                using SetiaContext context = new SetiaContext();
-                var user = await context.Users
+                var user = await _context.Users
                     .Where(u => u.Username == username & u.Password == password)
                     .FirstOrDefaultAsync();
                 if (user != null)
@@ -138,9 +153,9 @@ namespace Setia.Controllers
                     return NotFound("Invalid credentials / User not found");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Login failed");
+                return Unauthorized(ex);
             }
         }
         #endregion
@@ -151,20 +166,19 @@ namespace Setia.Controllers
         {
             try
             {
-                using SetiaContext context = new SetiaContext();
-                var user = await context.Users.Where(u => u.Username == username & u.Password == password).SingleAsync(); //should check if is the only one found?
-                if(user != null)
+                var user = await _context.Users.Where(u => u.Username == username & u.Password == password).SingleAsync(); //should check if is the only one found?
+                if (user != null)
                 {
                     return Ok(JsonSerializer.Serialize(user));
                 }
-                else 
+                else
                 {
                     return NotFound("User not found");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return Unauthorized();
+                return Unauthorized(ex);
             }
         }
         #endregion
@@ -195,14 +209,13 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid new password (too short)");
                 }
 
-                using SetiaContext context = new SetiaContext();
-                var user = await context.Users
+                var user = await _context.Users
                     .Where(u => u.Email == email & u.Username == username & u.Password == currentPassword)
                     .SingleOrDefaultAsync();
                 if (user != null)
                 {
                     user.Password = newPassword;
-                    context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return Ok("Password changed");
                 }
                 else
@@ -210,12 +223,12 @@ namespace Setia.Controllers
                     return NotFound("User not found");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Failed to change the password");
+                return Unauthorized(ex);
             }
         }
-     
+
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email, string username)
         {
@@ -231,8 +244,7 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid username (too short)");
                 }
 
-                using SetiaContext context = new SetiaContext();
-                var user = await context.Users
+                var user = await _context.Users
                     .Where(u => u.Email == email & u.Username == username)
                     .SingleOrDefaultAsync();
                 if (user != null)
@@ -246,9 +258,9 @@ namespace Setia.Controllers
                     return NotFound("User not found");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Failed to send the link");
+                return Unauthorized(ex);
             }
         }
 
@@ -262,8 +274,7 @@ namespace Setia.Controllers
                     return Unauthorized("Invalid email");
                 }
 
-                using SetiaContext context = new SetiaContext();
-                List<string> usernames = await context.Users
+                List<string> usernames = await _context.Users
                     .Where(u => u.Email == email)
                     .Select(u => u.Username)
                     .ToListAsync();
@@ -277,9 +288,9 @@ namespace Setia.Controllers
                     return NotFound("User not found");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest("Failed to send the link");
+                return Unauthorized(ex);
             }
         }
         #endregion

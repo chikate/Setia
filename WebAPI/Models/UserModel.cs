@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AutoMapper;
 using Setia.Structs;
+using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
+    [AutoMap(typeof(UserModel), ReverseMap = true)]
     public class UserModel : DefinitionStruct
     {
         [Key]

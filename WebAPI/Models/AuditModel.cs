@@ -1,8 +1,10 @@
-﻿using Setia.Structs;
+﻿using AutoMapper;
+using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
+    [AutoMap(typeof(AuditModel),ReverseMap = true)]
     public class AuditModel : BaseAuditStruct
     {
         [Key]

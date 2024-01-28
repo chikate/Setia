@@ -1,9 +1,12 @@
-import { API_BASE_URL } from '@/constants'
+import { API_URL } from '@/constants'
 
-export async function makeRequest(path: string, method: string, body?: any) {
-  return await fetch(API_BASE_URL + path, {
-    method: method,
-    body: body
+export async function makeRequest(path: string, method: string, body?: any): Promise<Response> {
+  return await fetch(API_URL + path, {
+    method: method.toUpperCase(),
+    headers: {
+      'Content-Type': `application/${body ? 'json' : 'x-www-form-urlencoded'}`
+    },
+    body: body ? JSON.stringify(body) : undefined
   })
 }
 

@@ -8,16 +8,16 @@ namespace Setia.Controllers
 {
     [ApiController]
     [Route("/api/[controller]/[action]")]
-    public class PontajController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly SetiaContext _context;
-        private readonly ILogger<PontajController> _logger;
+        private readonly ILogger<UsersController> _logger;
         private readonly IMapper _mapper;
 
-        public PontajController
+        public UsersController
         (
             SetiaContext context,
-            ILogger<PontajController> logger,
+            ILogger<UsersController> logger,
             IMapper mapper
         )
         {
@@ -27,14 +27,13 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> Add([FromBody] PontajModel model)
+        public async Task<ActionResult<bool>> Add([FromBody] UserModel model)
         {
             try
             {
                 model.Id = 0;
-                model.Id_User = 6; // temporary
                 model.CreationDate = DateTime.Now;
-                await _context.Pontaj.AddAsync(_mapper.Map<PontajModel>(model));
+                await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
                 // add to audit
                 return Ok("Added");
@@ -46,13 +45,12 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PontajModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UserModel>>> GetAll()
         {
             try
             {
-                return Ok(await _context.Pontaj
-                    .Where(p => p.Deleted == false) // temporary
-                    .Include(i => i.User)
+                return Ok(await _context.Users
+                    .Where(u => u.Deleted == false) // temporary
                     .ToListAsync());
             }
             catch (Exception ex)
@@ -62,7 +60,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PontajModel>>> GetAllWithFilter([FromQuery] PontajModel filter)
+        public async Task<ActionResult<IEnumerable<UserModel>>> GetAllWithFilter([FromQuery] UserModel filter)
         {
             try
             {
@@ -71,7 +69,7 @@ namespace Setia.Controllers
                     return BadRequest("Bad filter");
                 }
 
-                var query = _context.Pontaj.AsQueryable();
+                var query = _context.Users.AsQueryable();
                 var result = await AddFilter(query, filter);
                 return Ok(result);
             }
@@ -82,12 +80,12 @@ namespace Setia.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] PontajModel model)
+        public async Task<ActionResult<bool>> Update([FromBody] UserModel model)
         {
             try
             {
                 model.LastUpdateDate = DateTime.Now;
-                _context.Pontaj.Update(_mapper.Map<PontajModel>(model));
+                _context.Users.Update(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
                 // add to audit
                 return Ok("Updated");
@@ -103,10 +101,10 @@ namespace Setia.Controllers
         {
             try
             {
-                var pontajToDelete = await _context.Pontaj.FindAsync(id);
-                if (pontajToDelete != null)
+                var userToDelete = await _context.Users.FindAsync(id);
+                if (userToDelete != null)
                 {
-                    _context.Pontaj.Remove(pontajToDelete);
+                    _context.Users.Remove(userToDelete);
                     await _context.SaveChangesAsync();
                     // add to audit
                     return Ok("Deleted");
@@ -122,14 +120,14 @@ namespace Setia.Controllers
             }
         }
 
-        private static async Task<IQueryable<PontajModel>> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
+        private static async Task<IQueryable<UserModel>> AddFilter(IQueryable<UserModel> query, UserModel filter)
         {
             if (filter == null || query == null)
             {
                 return query;
             }
 
-            foreach (var property in typeof(PontajModel).GetProperties())
+            foreach (var property in typeof(UserModel).GetProperties())
             {
                 var value = property.GetValue(filter);
 

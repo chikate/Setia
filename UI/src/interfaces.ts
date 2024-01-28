@@ -33,7 +33,11 @@ export interface UsersStore {
 export interface User extends Definition {
   id?: number
   email?: string
+  username?: string
+  password?: string
   name?: string
+  statusCode?: number
+  authorityCode?: number
 }
 
 // Authentication

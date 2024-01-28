@@ -14,9 +14,6 @@ public partial class SetiaContext : DbContext
     {
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=DRAGOS;Database=Setia;Trusted_Connection=True;TrustServerCertificate=True;");
-
     public DbSet<UserModel> Users { get; set; }
     public DbSet<PontajModel> Pontaj { get; set; }
 

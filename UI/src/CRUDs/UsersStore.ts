@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
-import type { PontajStore, Pontaj } from '@/interfaces'
+import type { UsersStore, User } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
-import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 
-export const usePontajStore = defineStore('PontajStore', {
-  state: (): PontajStore => {
+export const useUsersStore = defineStore('UsersStore', {
+  state: (): UsersStore => {
     return {
       allLoadedItems: [],
       selectedItem: {
         // Editables
-        beginTime: new Date().toISOString()
+        email: '',
+        name: ''
       }
     }
   },
@@ -17,22 +17,23 @@ export const usePontajStore = defineStore('PontajStore', {
     async resetSelection() {
       this.selectedItem = {
         id: 0,
-        id_User: useAuthenticationStore().user?.id,
+        username: this.selectedItem.email,
+        password: 'Password',
         active: true,
         deleted: false,
-        beginTime: new Date().toISOString(),
         creationDate: new Date().toISOString()
       }
     },
-    async getAll(): Promise<Pontaj[]> {
-      return await makeRequest('Pontaj/GetAll', 'get').then(async (response: Response) => {
+    async getAll(): Promise<User[]> {
+      return await makeRequest('Users/GetAll', 'get').then(async (response: Response) => {
         return await checkRequest(response).then((data) => {
-          return (this.allLoadedItems = data as Pontaj[])
+          return (this.allLoadedItems = data as User[])
         })
       })
     },
     async add() {
-      return await makeRequest('Pontaj/Add', 'post', this.selectedItem).then(
+      console.log(JSON.stringify(this.selectedItem))
+      return await makeRequest('Users/Add', 'post', this.selectedItem).then(
         async (response: Response) => {
           return await checkRequest(response).then(() => {
             this.getAll()
@@ -41,7 +42,7 @@ export const usePontajStore = defineStore('PontajStore', {
       )
     },
     async update() {
-      return await makeRequest('Pontaj/Update', 'put', this.selectedItem).then(
+      return await makeRequest('Users/Update', 'put', this.selectedItem).then(
         async (response: Response) => {
           return await checkRequest(response).then(() => {
             this.getAll()
@@ -51,7 +52,7 @@ export const usePontajStore = defineStore('PontajStore', {
     },
     async delete() {
       this.selectedItem.deleted = true
-      return await makeRequest('Pontaj/Update', 'put', this.selectedItem).then(
+      return await makeRequest('Users/Update', 'put', this.selectedItem).then(
         async (response: Response) => {
           return await checkRequest(response).then(() => {
             this.getAll()
