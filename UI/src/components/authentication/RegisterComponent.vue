@@ -77,17 +77,9 @@
 </template>
 
 <script setup lang="ts">
-import InlineMessage from 'primevue/inlinemessage'
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Divider from 'primevue/divider'
-import Button from 'primevue/button'
-import { ref } from 'vue'
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
-
-const toast = useToast()
-const authenticationStore = useAuthenticationStore()
 
 const inputEmail = ref<string>()
 const inputUsername = ref<string>()
@@ -96,7 +88,7 @@ const inputRepeatPassword = ref<string>()
 
 function registerClickedHandler() {
   if (!inputEmail.value) {
-    return toast.add({
+    return useToast().add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Email',
@@ -104,7 +96,7 @@ function registerClickedHandler() {
     })
   }
   if (String(inputUsername.value).length < 3) {
-    return toast.add({
+    return useToast().add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Username',
@@ -112,7 +104,7 @@ function registerClickedHandler() {
     })
   }
   if (String(inputPassword.value).length < 7) {
-    return toast.add({
+    return useToast().add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Password',
@@ -120,26 +112,17 @@ function registerClickedHandler() {
     })
   }
   if (inputPassword.value !== inputRepeatPassword.value) {
-    return toast.add({
+    return useToast().add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Passwords does not match',
       life: 3000
     })
   }
-  return authenticationStore.tryRegister(
+  return useAuthenticationStore().tryRegister(
     inputEmail.value as string,
     inputUsername.value as string,
     inputPassword.value as string
   )
 }
 </script>
-
-<style scoped>
-::v-deep(input) {
-  min-width: 20rem;
-}
-::v-deep(.p-inline-message-icon) {
-  visibility: collapse;
-}
-</style>

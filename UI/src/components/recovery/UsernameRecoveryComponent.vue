@@ -14,8 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
 import { ref } from 'vue'
 
 const inputEmail = ref<string>()

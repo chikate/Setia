@@ -14,15 +14,8 @@
     <div class="flex flex-column py-8">
       <PlayersLeaderboard class="my-8 py-8 align-self-center" />
       <PontajTable class="my-8 py-8 align-self-center" />
-      <UsersTable class="m-8 p-8 align-self-center" />
+      <!-- <UsersTable class="m-8 p-8 align-self-center" /> -->
       <StoryChapter />
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import PlayersLeaderboard from '@/components/PlayersLeaderboard.vue'
-import PontajTable from '@/CRUDs/PontajTable.vue'
-import UsersTable from '@/CRUDs/UsersTable.vue'
-import StoryChapter from '@/components/StoryChapter.vue'
-</script>

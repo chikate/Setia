@@ -91,20 +91,11 @@
 </template>
 
 <script setup lang="ts">
-// Components
-import LoginComponent from './authentication/LoginComponent.vue'
-import OverlayPanel from 'primevue/overlaypanel'
-import Menu from 'primevue/menu'
-import { useToast } from 'primevue/usetoast'
-
-// Vue
-import { ref } from 'vue'
-
-// Stores
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 import { useSettingsStore } from '@/stores/SettingsStore'
+import { useToast } from 'primevue/usetoast'
+import { ref } from 'vue'
 
-// Variabels
 const accountOverlay = ref()
 const languageOverlay = ref()
 

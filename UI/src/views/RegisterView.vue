@@ -12,7 +12,3 @@
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import RegisterComponent from '@/components/authentication/RegisterComponent.vue'
-</script>

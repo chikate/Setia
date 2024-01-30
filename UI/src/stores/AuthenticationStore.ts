@@ -5,7 +5,25 @@ import { useToast } from 'primevue/usetoast'
 
 export const useAuthenticationStore = defineStore('AuthenticationStore', {
   state: (): AuthenticationStore => {
-    return {}
+    return {
+      user: {
+        id: 6,
+        email: '',
+        username: '',
+        password: '',
+        name: '',
+        statusCode: 0,
+        authorityCode: 0,
+        active: false,
+        deleted: false,
+        creationDate: new Date().toISOString(),
+        id_CreatedBy: 0,
+        createdBy: {} as User,
+        lastUpdate: new Date().toISOString(),
+        id_LastUpdateBy: 0,
+        lastUpdateBy: {} as User
+      }
+    }
   },
   actions: {
     async tryLogin(username: string, password: string) {

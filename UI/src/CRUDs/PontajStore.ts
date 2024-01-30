@@ -1,63 +1,50 @@
 import { defineStore } from 'pinia'
 import type { PontajStore, Pontaj } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
-import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 
-export const usePontajStore = defineStore('PontajStore', {
+const defaultEditables: Pontaj = {
+  beginTime: new Date().toISOString(),
+  endTime: new Date().toISOString(),
+  description: '',
+  active: true
+}
+
+export const usePontajStore = defineStore('Pontaj', {
   state: (): PontajStore => {
     return {
       allLoadedItems: [],
-      selectedItem: {
-        // Editables
-        beginTime: new Date().toISOString()
-      }
+      selectedItem: defaultEditables
     }
   },
   actions: {
-    async resetSelection() {
-      this.selectedItem = {
-        id: 0,
-        id_User: useAuthenticationStore().user?.id,
-        active: true,
-        deleted: false,
-        beginTime: new Date().toISOString(),
-        creationDate: new Date().toISOString()
-      }
-    },
     async getAll(): Promise<Pontaj[]> {
-      return await makeRequest('Pontaj/GetAll', 'get').then(async (response: Response) => {
+      return await makeRequest(`${this.$id}/GetAll`, 'get').then(async (response: Response) => {
         return await checkRequest(response).then((data) => {
           return (this.allLoadedItems = data as Pontaj[])
         })
       })
     },
     async add() {
-      return await makeRequest('Pontaj/Add', 'post', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      return await makeRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
+        this.getAll()
+      })
     },
     async update() {
-      return await makeRequest('Pontaj/Update', 'put', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+        this.getAll()
+      })
     },
     async delete() {
-      this.selectedItem.deleted = true
-      return await makeRequest('Pontaj/Update', 'put', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      this.selectedItem ? (this.selectedItem.deleted = true) : null
+      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+        this.getAll()
+      })
+    },
+    getDefaults() {
+      return defaultEditables
+    },
+    async setSelectionToDefaults() {
+      this.selectedItem = this.getDefaults()
     }
   }
 })

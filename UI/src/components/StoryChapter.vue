@@ -92,9 +92,3 @@
     </TabView>
   </div>
 </template>
-
-<script setup lang="ts">
-import TabView from 'primevue/tabview'
-import TabPanel from 'primevue/tabpanel'
-import Panel from 'primevue/panel'
-</script>

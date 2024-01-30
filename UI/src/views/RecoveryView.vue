@@ -6,8 +6,3 @@
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import PasswordRecoveryComponent from '@/components/recovery/PasswordRecoveryComponent.vue'
-import UsernameRecoveryComponent from '@/components/recovery/UsernameRecoveryComponent.vue'
-</script>

@@ -1,37 +1,14 @@
 <template>
   <div>
-    <CRUDT :store="usePontajStore()">
-      <Column field="id_User" header="User">
-        <template #body="slotProps">
-          <div>
-            {{ slotProps.data.user.email }}
-          </div>
-        </template>
-      </Column>
-      <Column field="beginTime" header="Start Time">
-        <template #body="slotProps">
-          {{ new Date(slotProps.data.beginTime).toLocaleString() }}
-        </template>
-      </Column>
-      <Column field="endTime" header="Stop Time">
-        <template #body="slotProps">
-          {{ new Date(slotProps.data.endTime).toLocaleString() }}
-        </template>
-      </Column>
-      <template #dialog>
-        <span class="p-float-label">
-          <Calendar
-            showTime
-            hourFormat="24"
-            v-model:model-value="usePontajStore().selectedItem.beginTime"
-          />
-          <label>Date</label>
-        </span>
-        <span class="flex flex-row align-items-center gap-2">
-          <Checkbox v-model="usePontajStore().selectedItem.active" binary />
-          <label>Active</label>
-        </span>
-      </template>
+    <CRUDT
+      :store="usePontajStore()"
+      :exposedData="[
+        { field: 'user.email', header: 'Email' },
+        { field: 'beginTime', header: 'Begin Time' },
+        { field: 'endTime', header: 'End Time' },
+        { field: 'description' }
+      ]"
+    >
     </CRUDT>
     <Calendar
       class="align-self-center flex flex-wrap"
@@ -52,13 +29,6 @@
 
 <script setup lang="ts">
 import { usePontajStore } from '@/CRUDs/PontajStore'
-import CRUDT from './CRUDT.vue'
-
-import Column from 'primevue/column'
-
-import Calendar from 'primevue/calendar'
-import Checkbox from 'primevue/checkbox'
-
 import { ref } from 'vue'
 const freeDays = ref([
   new Date('1/1/' + new Date().getFullYear()),

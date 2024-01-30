@@ -17,6 +17,8 @@
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
     "primevue": "^3.47.2",
+    "unplugin-auto-import": "^0.17.5",
+    "unplugin-vue-components": "^0.26.0",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },

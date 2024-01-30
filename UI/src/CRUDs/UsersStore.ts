@@ -2,63 +2,50 @@ import { defineStore } from 'pinia'
 import type { UsersStore, User } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
 
-export const useUsersStore = defineStore('UsersStore', {
+const defaultEditables: User = {
+  email: '',
+  username: '',
+  name: '',
+  statusCode: 0,
+  authorityCode: 0
+}
+
+export const useUsersStore = defineStore('Users', {
   state: (): UsersStore => {
     return {
       allLoadedItems: [],
-      selectedItem: {
-        // Editables
-        email: '',
-        name: ''
-      }
+      selectedItem: defaultEditables
     }
   },
   actions: {
-    async resetSelection() {
-      this.selectedItem = {
-        id: 0,
-        username: this.selectedItem.email,
-        password: 'Password',
-        active: true,
-        deleted: false,
-        creationDate: new Date().toISOString()
-      }
-    },
     async getAll(): Promise<User[]> {
-      return await makeRequest('Users/GetAll', 'get').then(async (response: Response) => {
+      return await makeRequest(`${this.$id}/GetAll`, 'get').then(async (response: Response) => {
         return await checkRequest(response).then((data) => {
           return (this.allLoadedItems = data as User[])
         })
       })
     },
     async add() {
-      console.log(JSON.stringify(this.selectedItem))
-      return await makeRequest('Users/Add', 'post', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      return await makeRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
+        this.getAll()
+      })
     },
     async update() {
-      return await makeRequest('Users/Update', 'put', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+        this.getAll()
+      })
     },
     async delete() {
-      this.selectedItem.deleted = true
-      return await makeRequest('Users/Update', 'put', this.selectedItem).then(
-        async (response: Response) => {
-          return await checkRequest(response).then(() => {
-            this.getAll()
-          })
-        }
-      )
+      this.selectedItem ? (this.selectedItem.deleted = true) : null
+      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+        this.getAll()
+      })
+    },
+    getDefaults() {
+      return defaultEditables
+    },
+    async setSelectionToDefaults() {
+      this.selectedItem = this.getDefaults()
     }
   }
 })

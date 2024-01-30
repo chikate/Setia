@@ -16,9 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import NavBar from './components/NavBar.vue'
-import FooterBar from './components/FooterBar.vue'
-import PageNotFound from './views/PageNotFound.vue'
 import Toast from 'primevue/toast'
 </script>
 

@@ -6,7 +6,3 @@
     <i class="pi pi-twitter" @click="true" />
   </footer>
 </template>
-
-<script setup lang="ts"></script>
-
-<style scoped></style>

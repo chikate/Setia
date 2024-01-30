@@ -40,18 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import { ref } from 'vue'
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { ref } from 'vue'
 
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 const staySignedIn = ref<boolean>(false)
 </script>
-
-<style>
-
-</style>

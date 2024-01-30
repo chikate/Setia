@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
-using Setia.Migrations;
 using Setia.Models;
 
 var builder = WebApplication.CreateBuilder(args);
