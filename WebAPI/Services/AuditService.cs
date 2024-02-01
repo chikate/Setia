@@ -3,131 +3,125 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
+using Setia.Services.Interfaces;
 
-namespace Setia.Controllers
+namespace Setia.Services
 {
-    [ApiController]
-    [Route("/api/[controller]/[action]")]
-    public class UsersController : ControllerBase
+    public class AuditService : IAudit
     {
         private readonly SetiaContext _context;
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<AuditService> _logger;
         private readonly IMapper _mapper;
+        private readonly IAuth _auth;
 
-        public UsersController
+        public AuditService
         (
             SetiaContext context,
-            ILogger<UsersController> logger,
-            IMapper mapper
+            ILogger<AuditService> logger,
+            IMapper mapper,
+            IAuth auth
         )
         {
             _context = context;
             _logger = logger;
             _mapper = mapper;
+            _auth = auth;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<bool>> Add([FromBody] UserModel model)
+        public async Task<string> Add(AuditModel model)
         {
             try
             {
                 model.Id = 0;
-                model.CreationDate = DateTime.Now;
-                await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
+                model.LastUpdateDate = DateTime.Now;
+                model.Id_LastUpdateBy = await _auth.GetCurrentUser();
+                await _context.Audit.AddAsync(_mapper.Map<AuditModel>(model));
                 await _context.SaveChangesAsync();
-                // add to audit
-                return Ok("Added");
+
+                return "Added";
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex);
+                return ex.Message;
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetAll()
+        public async Task<IEnumerable<AuditModel>> GetAll()
         {
             try
             {
-                return Ok(await _context.Users
-                    .Where(u => u.Deleted == false) // temporary
-                    .ToListAsync());
+                return await _context.Audit.ToListAsync();
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex);
+                return [];
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetAllWithFilter([FromQuery] UserModel filter)
+        public async Task<IEnumerable<AuditModel>> GetAllWithFilter(AuditModel filter)
         {
             try
             {
                 if (filter == null)
                 {
-                    return BadRequest("Bad filter");
+                    return [];
                 }
 
-                var query = _context.Users.AsQueryable();
+                var query = _context.Audit.AsQueryable();
                 var result = await AddFilter(query, filter);
-                return Ok(result);
+                return result.ToList();
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex);
+                return [];
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] UserModel model)
+        public async Task<ActionResult<bool>> Update(AuditModel model)
         {
             try
             {
                 model.LastUpdateDate = DateTime.Now;
-                _context.Users.Update(_mapper.Map<UserModel>(model));
+                _context.Audit.Update(_mapper.Map<AuditModel>(model));
                 await _context.SaveChangesAsync();
-                // add to audit
-                return Ok("Updated");
+                return true;
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex);
+                return false;
             }
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<bool>> Delete([FromBody] int id)
+        public async Task<ActionResult<bool>> Delete(int id)
         {
             try
             {
-                var userToDelete = await _context.Users.FindAsync(id);
-                if (userToDelete != null)
+                var auditToDelete = await _context.Audit.FindAsync(id);
+                if (auditToDelete != null)
                 {
-                    _context.Users.Remove(userToDelete);
+                    _context.Audit.Remove(auditToDelete);
                     await _context.SaveChangesAsync();
-                    // add to audit
-                    return Ok("Deleted");
+                    return true;
                 }
                 else
                 {
-                    return NotFound("Not found");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
-                return Unauthorized(ex);
+                return false;
             }
         }
 
-        private static async Task<IQueryable<UserModel>> AddFilter(IQueryable<UserModel> query, UserModel filter)
+        private static async Task<IQueryable<AuditModel>> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
         {
             if (filter == null || query == null)
             {
                 return query;
             }
 
-            foreach (var property in typeof(UserModel).GetProperties())
+            foreach (var property in typeof(AuditModel).GetProperties())
             {
                 var value = property.GetValue(filter);
 

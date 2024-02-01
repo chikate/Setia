@@ -1,10 +1,15 @@
 import { defineStore } from 'pinia'
-import type { SettingsStore } from '@/interfaces'
 
-export const useSettingsStore = defineStore('SettingsStore', {
-  state: (): SettingsStore => {
+export const useSettingsStore = defineStore('Settings', {
+  state: (): { useDarkMode: boolean } => {
     return {
       useDarkMode: true
+    }
+  },
+  actions: {
+    async toggleDarkMode() {
+      this.useDarkMode = !this.useDarkMode
+      // document.querySelector('app')?.classList.toggle('dark-theme', this.useDarkMode)
     }
   }
 })

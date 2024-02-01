@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Setia.Data;
 
@@ -11,9 +12,11 @@ using Setia.Data;
 namespace Setia.Migrations
 {
     [DbContext(typeof(SetiaContext))]
-    partial class SetiaContextModelSnapshot : ModelSnapshot
+    [Migration("20240201182624_AuditWoBase")]
+    partial class AuditWoBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,35 +33,13 @@ namespace Setia.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Details")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Entity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Id_CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Id_Entity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Id_LastUpdateBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastUpdateDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Id_CreatedBy");
-
-                    b.HasIndex("Id_LastUpdateBy");
 
                     b.ToTable("Audit");
                 });
@@ -167,21 +148,6 @@ namespace Setia.Migrations
                     b.HasIndex("Id_LastUpdateBy");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Setia.Models.AuditModel", b =>
-                {
-                    b.HasOne("Setia.Models.UserModel", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("Id_CreatedBy");
-
-                    b.HasOne("Setia.Models.UserModel", "LastUpdateBy")
-                        .WithMany()
-                        .HasForeignKey("Id_LastUpdateBy");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("LastUpdateBy");
                 });
 
             modelBuilder.Entity("Setia.Models.PontajModel", b =>

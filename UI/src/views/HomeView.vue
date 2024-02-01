@@ -13,9 +13,66 @@
     </div>
     <div class="flex flex-column py-8">
       <PlayersLeaderboard class="my-8 py-8 align-self-center" />
-      <PontajTable class="my-8 py-8 align-self-center" />
-      <!-- <UsersTable class="m-8 p-8 align-self-center" /> -->
+      <CRUDT :store="usePontajStore()" />
+      <Calendar
+        class="align-self-center flex flex-wrap"
+        inline
+        selectionMode="multiple"
+        v-model="freeDays"
+        :numberOfMonths="6"
+      />
+      <Calendar
+        class="align-self-center flex flex-wrap"
+        inline
+        selectionMode="multiple"
+        v-model="freeDays"
+        :numberOfMonths="6"
+      />
+      <CRUDT :store="useUserStore()">
+        <template #expansion>
+          <TreeSelect
+            v-model="selectedValue"
+            :options="nodes"
+            selectionMode="checkbox"
+            placeholder="Rights"
+            class="w-20rem"
+          />
+        </template>
+      </CRUDT>
       <StoryChapter />
     </div>
   </main>
 </template>
+
+<script setup lang="ts">
+import { usePontajStore } from '@/stores/PontajStore'
+import { useUserStore } from '@/stores/UserStore'
+import { ref } from 'vue'
+
+const nodes = ref([])
+const selectedValue = ref([])
+
+const freeDays = ref([
+  new Date('1/1/' + new Date().getFullYear()),
+  new Date('1/2/' + new Date().getFullYear()),
+  new Date('1/6/' + new Date().getFullYear()),
+  new Date('1/7/' + new Date().getFullYear()),
+  new Date('1/24/' + new Date().getFullYear()),
+
+  new Date('5/1/' + new Date().getFullYear()),
+  new Date('5/5/' + new Date().getFullYear()),
+
+  new Date('6/5/' + new Date().getFullYear()),
+  new Date('6/23/' + new Date().getFullYear()),
+
+  new Date('8/15/' + new Date().getFullYear()),
+
+  new Date('9/30/' + new Date().getFullYear()),
+
+  new Date('12/1/' + new Date().getFullYear()),
+  new Date('12/25/' + new Date().getFullYear()),
+  new Date('12/26/' + new Date().getFullYear()),
+  new Date('12/31/' + new Date().getFullYear())
+])
+</script>
+@/stores/PontajStore

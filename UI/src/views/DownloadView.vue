@@ -15,7 +15,5 @@
         <a class="text-8xl font-bold">Download coming soon!</a>
       </div>
     </div>
-    <PlayersLeaderboard class="m-8" />
-    <StoryChapter />
   </main>
 </template>

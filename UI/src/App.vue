@@ -1,5 +1,6 @@
 <template>
-  <Toast class="fixed mt-7" />
+  <!-- class="fixed mt-7" -->
+  <Toast position="bottom-left" group="bl" />
   <div class="flex flex-column">
     <NavBar />
     <main>

@@ -1,27 +1,19 @@
 import { defineStore } from 'pinia'
-import type { AuthenticationStore, User } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
 import { useToast } from 'primevue/usetoast'
+import type { User } from '@/stores/UserStore'
 
 export const useAuthenticationStore = defineStore('AuthenticationStore', {
-  state: (): AuthenticationStore => {
+  state: (): { user: User } => {
     return {
       user: {
         id: 6,
         email: '',
         username: '',
-        password: '',
         name: '',
-        statusCode: 0,
-        authorityCode: 0,
-        active: false,
-        deleted: false,
-        creationDate: new Date().toISOString(),
-        id_CreatedBy: 0,
-        createdBy: {} as User,
-        lastUpdate: new Date().toISOString(),
-        id_LastUpdateBy: 0,
-        lastUpdateBy: {} as User
+        statusCode: null,
+        authorityCode: null,
+        active: true
       }
     }
   },

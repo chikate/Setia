@@ -1,48 +1,15 @@
-export interface Audit {
+import type { User } from "./stores/UserStore"
+
+export interface BaseAudit {
   creationDate?: string
-  createdBy?: User
-  lastUpdate?: string
-  lastUpdateBy?: User
+  id_CreatedBy?: number | null
+  createdBy?: User | null
+  lastUpdateDate?: string | null
+  id_LastUpdateBy?: number | null
+  lastUpdateBy?: User | null
 }
 
-export interface Definition extends Audit {
-  active?: boolean
+export interface Definition extends BaseAudit {
+  active: boolean
   deleted?: boolean
-}
-
-// Stores
-export interface PontajStore {
-  allLoadedItems: Pontaj[]
-  selectedItem: Pontaj
-}
-export interface UsersStore {
-  allLoadedItems: User[]
-  selectedItem: User
-}
-
-export interface Pontaj extends Definition {
-  id?: number
-  user?: User
-  beginTime: string
-  endTime: string
-  description: string
-}
-export interface User extends Definition {
-  id?: number
-  email: string
-  username: string
-  password?: string
-  name: string
-  statusCode: number
-  authorityCode: number
-}
-
-// Authentication
-export interface AuthenticationStore {
-  user: User
-}
-
-// Settings
-export interface SettingsStore {
-  useDarkMode: boolean
 }

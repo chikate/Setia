@@ -1,16 +1,29 @@
 import { defineStore } from 'pinia'
-import type { PontajStore, Pontaj } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
+import type { Definition } from '@/interfaces'
+import type { User } from './UserStore'
+
+export interface Pontaj extends Definition {
+  id?: number
+  id_User?: number
+  user?: User | null
+  beginTime: string
+  endTime?: string | null
+  description: string | null
+}
 
 const defaultEditables: Pontaj = {
   beginTime: new Date().toISOString(),
   endTime: new Date().toISOString(),
-  description: '',
+  description: null,
   active: true
 }
 
 export const usePontajStore = defineStore('Pontaj', {
-  state: (): PontajStore => {
+  state: (): {
+    allLoadedItems: Pontaj[]
+    selectedItem: Pontaj
+  } => {
     return {
       allLoadedItems: [],
       selectedItem: defaultEditables

@@ -29,7 +29,7 @@
         }"
         class="pi cursor-pointer"
         :class="useSettingsStore().useDarkMode ? 'pi-moon' : 'pi-sun'"
-        @click="useSettingsStore().useDarkMode = !useSettingsStore().useDarkMode"
+        @click="useSettingsStore().toggleDarkMode()"
       />
 
       <i

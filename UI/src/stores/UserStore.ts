@@ -1,17 +1,31 @@
 import { defineStore } from 'pinia'
-import type { UsersStore, User } from '@/interfaces'
 import { makeRequest, checkRequest } from '@/helpers'
+import type { Definition } from '@/interfaces'
+
+export interface User extends Definition {
+  id?: number
+  email: string
+  username: string
+  password?: string
+  name: string
+  statusCode: number | null
+  authorityCode: number | null
+}
 
 const defaultEditables: User = {
   email: '',
   username: '',
   name: '',
   statusCode: 0,
-  authorityCode: 0
+  authorityCode: 0,
+  active: true
 }
 
-export const useUsersStore = defineStore('Users', {
-  state: (): UsersStore => {
+export const useUserStore = defineStore('User', {
+  state: (): {
+    allLoadedItems: User[]
+    selectedItem: User
+  } => {
     return {
       allLoadedItems: [],
       selectedItem: defaultEditables
