@@ -9,7 +9,7 @@ namespace Setia.Models
     public class PontajModel : DefinitionStruct
     {
         [Key]
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
 
         [ForeignKey("User")]
         public int Id_User { get; set; }

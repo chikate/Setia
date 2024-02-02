@@ -1,6 +1,7 @@
 using AutoMapper;
 using Setia.Data;
 using Setia.Services.Interfaces;
+using System.Security.Claims;
 
 namespace Setia.Services
 {
@@ -22,9 +23,16 @@ namespace Setia.Services
             _mapper = mapper;
         }
 
-        public async Task<int> GetCurrentUser()
+        public int GetCurrentUser()
         {
-            return 6;
+            //ClaimsPrincipal currentUser = HttpContext.User.FindFirstValue("id");
+
+            //if (currentUser.Identity.IsAuthenticated)
+            //{
+            //    string userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //    string username = currentUser.Identity.Name;
+            //}
+            return 7;
         }
     }
 }

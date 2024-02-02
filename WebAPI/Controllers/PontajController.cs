@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
+using System.Text.Json;
 
 namespace Setia.Controllers
 {
@@ -15,19 +16,22 @@ namespace Setia.Controllers
         private readonly ILogger<PontajController> _logger;
         private readonly IMapper _mapper;
         private readonly IAudit _audit;
+        private readonly IAuth _auth;
 
         public PontajController
         (
             SetiaContext context,
             ILogger<PontajController> logger,
             IMapper mapper,
-            IAudit audit
+            IAudit audit,
+            IAuth auth
         )
         {
             _context = context;
             _logger = logger;
             _mapper = mapper;
             _audit = audit;
+            _auth = auth;
         }
 
         [HttpGet]
@@ -42,81 +46,85 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PontajModel>>> GetAllWithFilter([FromQuery] PontajModel filter)
+        public ActionResult<IEnumerable<PontajModel>> GetAllWithFilter([FromQuery] PontajModel filter)
         {
             try
             {
-                if (filter == null)
-                {
-                    return BadRequest("Bad filter");
-                }
-                return Ok(await AddFilter(_context.Pontaj.AsQueryable(), filter));
+                return Ok(AddFilter(_context.Pontaj.AsQueryable(), filter));
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> Add([FromBody] PontajModel model)
+        public async Task<ActionResult> Add([FromBody] PontajModel model)
         {
             try
             {
                 model.Id = 0;
-                model.Id_User = 6; // temporary
-                model.CreationDate = DateTime.Now;
+                model.Id_CreatedBy = _auth.GetCurrentUser();
+
                 await _context.Pontaj.AddAsync(_mapper.Map<PontajModel>(model));
                 await _context.SaveChangesAsync();
+
                 return Ok("Added");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
-                await _audit.Add(new AuditModel{
-                    Id = 0,
-                    Description = "Added new pontaj",
-                    Details = ""
+                await _audit.Add(new AuditModel
+                {
+                    Entity = typeof(PontajModel).ToString(),
+                    Id_Entity = model.Id,
+                    Payload = JsonSerializer.Serialize(model)
                 });
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] PontajModel model)
+        public async Task<ActionResult> Update([FromBody] PontajModel model)
         {
             try
             {
+                model.Id_LastUpdateBy = _auth.GetCurrentUser();
                 model.LastUpdateDate = DateTime.Now;
+
                 _context.Pontaj.Update(_mapper.Map<PontajModel>(model));
                 await _context.SaveChangesAsync();
+
                 return Ok("Updated");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
-                await _audit.Add(new AuditModel{
-                    Id = 0,
-                    Description = model.Deleted == true ? "Pontaj deleted" : "Pontaj updated",
-                    Details = "",
-                    Entity = model.ToString(),
-                    Id_Entity = model.Id
+                await _audit.Add(new AuditModel
+                {
+                    Entity = typeof(PontajModel).ToString(),
+                    Id_Entity = model.Id,
+                    Payload = _audit.CompareObjects(model, model),
                 });
             }
         }
 
         [HttpDelete]
-        public async Task<ActionResult<bool>> Delete([FromBody] int id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
@@ -125,52 +133,38 @@ namespace Setia.Controllers
                 {
                     _context.Pontaj.Remove(pontajToDelete);
                     await _context.SaveChangesAsync();
-                    // add to audit
-                    return Ok("Deleted");
+                    return Ok();
                 }
                 else
                 {
-                    return NotFound("Not found");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
-                await _audit.Add(new AuditModel{
-                    Id = 0,
-                    Description = "Pontaj DELETED",
-                    Details = ""
+                await _audit.Add(new AuditModel
+                {
+                    Entity = typeof(PontajModel).ToString(),
+                    Id_Entity = id,
+                    Payload = "DELETED"
                 });
             }
         }
 
-        private static async Task<IQueryable<PontajModel>> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
+        private static IQueryable<PontajModel> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
         {
-            if (filter == null || query == null)
+            if (filter != null)
             {
-                return query;
-            }
-
-            foreach (var property in typeof(PontajModel).GetProperties())
-            {
-                var value = property.GetValue(filter);
-
-                if (value != null && value.GetType() != typeof(string) && !value.Equals(Activator.CreateInstance(property.PropertyType)))
+                foreach (var property in typeof(PontajModel).GetProperties())
                 {
-                    if (property.PropertyType == typeof(string))
-                    {
-                        query = query.Where(item => (string)property.GetValue(item) == (string)value);
-                    }
-                    else
-                    {
-                        query = query.Where(item => property.GetValue(item).Equals(value));
-                    }
+                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }
             }
-
             return query;
         }
     }

@@ -12,7 +12,11 @@ export default defineConfig(() => {
   return {
     plugins: [
       vue(),
-      Components({ resolvers: [PrimeVueResolver()], dirs: ['./src/components'], dts: true }),
+      Components({
+        resolvers: [PrimeVueResolver()],
+        dirs: ['./src/components', './src/views'],
+        dts: true
+      }),
       AutoImport({ imports: ['vue', 'vue-router'] })
     ],
     resolve: {

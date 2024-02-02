@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Setia.Data;
 
@@ -11,9 +12,11 @@ using Setia.Data;
 namespace Setia.Migrations
 {
     [DbContext(typeof(SetiaContext))]
-    partial class SetiaContextModelSnapshot : ModelSnapshot
+    [Migration("20240202202605_AuditChanges")]
+    partial class AuditChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,14 +45,14 @@ namespace Setia.Migrations
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("Id_Action")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Id_Entity")
                         .HasColumnType("int");
 
                     b.Property<int?>("Id_Executioner")
                         .HasColumnType("int");
-
-                    b.Property<string>("Payload")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -6,9 +6,10 @@ namespace Setia.Services.Interfaces
     public interface IAudit
     {
         Task<IEnumerable<AuditModel>> GetAll();
-        Task<IEnumerable<AuditModel>> GetAllWithFilter(AuditModel filter);
-        Task<string> Add(AuditModel model);
-        Task<ActionResult<bool>> Update(AuditModel model);
-        Task<ActionResult<bool>> Delete(int id);
+        IEnumerable<AuditModel> GetAllWithFilter(AuditModel filter);
+        Task<bool> Add(AuditModel model);
+        Task<bool> Update(AuditModel model);
+        Task<bool> Delete(int id);
+        string CompareObjects<T>(T obj1, T obj2);
     }
 }

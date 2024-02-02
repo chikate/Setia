@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
+using Setia.Structs;
 
 namespace Setia.Controllers
 {
@@ -15,19 +16,22 @@ namespace Setia.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IMapper _mapper;
         private readonly IAudit _audit;
+        private readonly IAuth _auth;
 
         public UserController
         (
             SetiaContext context,
             ILogger<UserController> logger,
             IMapper mapper,
-            IAudit audit
+            IAudit audit,
+            IAuth auth
         )
         {
             _context = context;
             _logger = logger;
             _mapper = mapper;
             _audit = audit;
+            _auth = auth;
         }
 
         [HttpGet]
@@ -36,147 +40,132 @@ namespace Setia.Controllers
             try
             {
                 return Ok(await _context.Users
-                    .Where(u => u.Deleted == false) // temporary
+                    .Where(p => p.Deleted == false) // temporary
                     .ToListAsync());
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetAllWithFilter([FromQuery] UserModel filter)
+        public ActionResult<IEnumerable<UserModel>> GetAllWithFilter([FromQuery] UserModel filter)
         {
             try
             {
-                if (filter == null)
-                {
-                    return BadRequest("Bad filter");
-                }
-
-                var query = _context.Users.AsQueryable();
-                var result = await AddFilter(query, filter);
-                return Ok(result);
+                return Ok(AddFilter(_context.Users.AsQueryable(), filter));
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<bool>> Add([FromBody] UserModel model)
+        public async Task<ActionResult> Add([FromBody] UserModel model)
         {
             try
             {
                 model.Id = 0;
-                model.CreationDate = DateTime.Now;
+                model.Id_CreatedBy = _auth.GetCurrentUser();
+                
+
                 await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
+
                 return Ok("Added");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
                 await _audit.Add(new AuditModel
                 {
-                    Id = 0,
-                    Description = "",
-                    Details = ""
-
+                    Entity = typeof(UserModel).ToString(),
+                    Id_Entity = model.Id,
+                    Payload = _audit.CompareObjects(model, model),
+                    Description = "User added",
                 });
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> Update([FromBody] UserModel model)
+        public async Task<ActionResult> Update([FromBody] UserModel model)
         {
             try
             {
+                model.Id_LastUpdateBy = _auth.GetCurrentUser();
                 model.LastUpdateDate = DateTime.Now;
+
                 _context.Users.Update(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
-                // add to audit
+
                 return Ok("Updated");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
                 await _audit.Add(new AuditModel
                 {
-                    Id = 0,
-                    Description = "",
-                    Details = ""
-
+                    Entity = typeof(UserModel).ToString(),
+                    Id_Entity = model.Id,
+                    Payload = _audit.CompareObjects(model, model),
                 });
             }
         }
 
         [HttpDelete]
-        public async Task<ActionResult<bool>> Delete([FromBody] int id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var userToDelete = await _context.Users.FindAsync(id);
-                if (userToDelete != null)
+                var UserToDelete = await _context.Users.FindAsync(id);
+                if (UserToDelete != null)
                 {
-                    _context.Users.Remove(userToDelete);
+                    _context.Users.Remove(UserToDelete);
                     await _context.SaveChangesAsync();
-                    // add to audit
-                    return Ok("Deleted");
+                    return Ok();
                 }
                 else
                 {
-                    return NotFound("Not found");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return Unauthorized(ex);
             }
             finally
             {
                 await _audit.Add(new AuditModel
                 {
-                    Id = 0,
-                    Description = "",
-                    Details = ""
-
+                    Entity = typeof(UserModel).ToString(),
+                    Id_Entity = id,
+                    Payload = "DELETED",
                 });
             }
         }
 
-        private static async Task<IQueryable<UserModel>> AddFilter(IQueryable<UserModel> query, UserModel filter)
+        private static IQueryable<UserModel> AddFilter(IQueryable<UserModel> query, UserModel filter)
         {
-            if (filter == null || query == null)
+            if (filter != null)
             {
-                return query;
-            }
-
-            foreach (var property in typeof(UserModel).GetProperties())
-            {
-                var value = property.GetValue(filter);
-
-                if (value != null && value.GetType() != typeof(string) && !value.Equals(Activator.CreateInstance(property.PropertyType)))
+                foreach (var property in typeof(UserModel).GetProperties())
                 {
-                    if (property.PropertyType == typeof(string))
-                    {
-                        query = query.Where(item => (string)property.GetValue(item) == (string)value);
-                    }
-                    else
-                    {
-                        query = query.Where(item => property.GetValue(item).Equals(value));
-                    }
+                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }
             }
-
             return query;
         }
     }

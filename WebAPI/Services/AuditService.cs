@@ -1,9 +1,9 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
+using System.Reflection;
 
 namespace Setia.Services
 {
@@ -28,24 +28,6 @@ namespace Setia.Services
             _auth = auth;
         }
 
-        public async Task<string> Add(AuditModel model)
-        {
-            try
-            {
-                model.Id = 0;
-                model.LastUpdateDate = DateTime.Now;
-                model.Id_LastUpdateBy = await _auth.GetCurrentUser();
-                await _context.Audit.AddAsync(_mapper.Map<AuditModel>(model));
-                await _context.SaveChangesAsync();
-
-                return "Added";
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
         public async Task<IEnumerable<AuditModel>> GetAll()
         {
             try
@@ -54,45 +36,74 @@ namespace Setia.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return [];
+            }
+            finally
+            {
+                _logger.LogInformation(this.GetType().FullName);
             }
         }
 
-        public async Task<IEnumerable<AuditModel>> GetAllWithFilter(AuditModel filter)
+        public IEnumerable<AuditModel> GetAllWithFilter(AuditModel filter)
         {
             try
             {
-                if (filter == null)
-                {
-                    return [];
-                }
-
                 var query = _context.Audit.AsQueryable();
-                var result = await AddFilter(query, filter);
+                var result = AddFilter(query, filter);
                 return result.ToList();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return [];
+            }
+            finally
+            {
+                _logger.LogInformation(this.GetType().FullName);
             }
         }
 
-        public async Task<ActionResult<bool>> Update(AuditModel model)
+        public async Task<bool> Add(AuditModel model)
         {
             try
             {
-                model.LastUpdateDate = DateTime.Now;
+                await _context.Audit.AddAsync(_mapper.Map<AuditModel>(model));
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                return false;
+            }
+            finally
+            {
+                _logger.LogInformation(this.GetType().FullName);
+            }
+        }
+
+        public async Task<bool> Update(AuditModel model)
+        {
+            try
+            {
                 _context.Audit.Update(_mapper.Map<AuditModel>(model));
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return false;
+            }
+            finally
+            {
+                _logger.LogInformation(this.GetType().FullName);
             }
         }
 
-        public async Task<ActionResult<bool>> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             try
             {
@@ -110,34 +121,45 @@ namespace Setia.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return false;
+            }
+            finally
+            {
+                _logger.LogInformation(this.GetType().FullName);
             }
         }
 
-        private static async Task<IQueryable<AuditModel>> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
+        public string CompareObjects<T>(T obj1, T obj2)
         {
-            if (filter == null || query == null)
-            {
-                return query;
-            }
+            Type type = typeof(T);
+            PropertyInfo[] properties = type.GetProperties();
 
-            foreach (var property in typeof(AuditModel).GetProperties())
-            {
-                var value = property.GetValue(filter);
+            var differences = new Dictionary<string, string>();
 
-                if (value != null && value.GetType() != typeof(string) && !value.Equals(Activator.CreateInstance(property.PropertyType)))
+            foreach (PropertyInfo property in properties)
+            {
+                string value1 = property.GetValue(obj1)?.ToString();
+                string value2 = property.GetValue(obj2)?.ToString();
+
+                if (value1 != value2)
                 {
-                    if (property.PropertyType == typeof(string))
-                    {
-                        query = query.Where(item => (string)property.GetValue(item) == (string)value);
-                    }
-                    else
-                    {
-                        query = query.Where(item => property.GetValue(item).Equals(value));
-                    }
+                    differences.Add(property.Name, $"Object 1 value: {value1}, Object 2 value: {value2}");
                 }
             }
 
+            return differences.ToString();
+        }
+
+        private static IQueryable<AuditModel> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
+        {
+            if (filter != null)
+            {
+                foreach (var property in typeof(AuditModel).GetProperties())
+                {
+                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
+                }
+            }
             return query;
         }
     }
