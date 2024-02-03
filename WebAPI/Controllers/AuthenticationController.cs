@@ -13,6 +13,8 @@ namespace Setia.Controllers
     [Route("/api/[controller]/[action]")]
     public class AuthenticationController : ControllerBase
     {
+        private readonly string regexEmailValidation = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+
         private readonly SetiaContext _context;
         private readonly ILogger<AuthenticationController> _logger;
         private readonly IMapper _mapper;
@@ -76,120 +78,13 @@ namespace Setia.Controllers
         }
         #endregion
 
-        #region Register
-        [HttpPost]
-        public async Task<IActionResult> Register(string email, string username, string password)
-        {
-            try
-            {
-                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
-                {
-                    return Unauthorized("Invalid email");
-                }
-
-                if (username == null || username.Length < 3)
-                {
-                    return Unauthorized("Invalid username (too short)");
-                }
-
-                var user = await _context.Users
-                    .Where(u => u.Username == username)
-                    .SingleOrDefaultAsync();
-                if (user != null)
-                {
-                    return Unauthorized("Username already exists");
-                }
-
-                if (password == null || password.Length < 6)
-                {
-                    return Unauthorized("Invalid password (too short)");
-                }
-
-                _context.Users.Add(new UserModel()
-                {
-                    Email = email,
-                    Username = username,
-                    Password = password,
-                    CreationDate = DateTime.UtcNow,
-                });
-                await _context.SaveChangesAsync();
-
-                //send email verification
-                return Ok("Account created");
-
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(ex);
-            }
-        }
-        #endregion
-
-        #region Login
-        [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
-        {
-            try
-            {
-                if (username == null || username.Length < 3)
-                {
-                    return Unauthorized("Invalid username (too short)");
-                }
-
-                if (password == null || password.Length < 6)
-                {
-                    return Unauthorized("Invalid password (too short)");
-                }
-
-                var user = await _context.Users
-                    .Where(u => u.Username == username & u.Password == password)
-                    .FirstOrDefaultAsync();
-                if (user != null)
-                {
-                    return Ok(JsonSerializer.Serialize(user));
-                }
-                else
-                {
-                    return NotFound("Invalid credentials / User not found");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(ex);
-            }
-        }
-        #endregion
-
-        #region GetUserData
-        [HttpGet]
-        public async Task<IActionResult> GetUserData(string username, string password)
-        {
-            try
-            {
-                var user = await _context.Users.Where(u => u.Username == username & u.Password == password).SingleAsync(); //should check if is the only one found?
-                if (user != null)
-                {
-                    return Ok(JsonSerializer.Serialize(user));
-                }
-                else
-                {
-                    return NotFound("User not found");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(ex);
-            }
-        }
-        #endregion
-
         #region Password Management
         [HttpPatch]
         public async Task<IActionResult> ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                if (email == null || !Regex.IsMatch(email, regexEmailValidation))
                 {
                     return Unauthorized("Invalid email");
                 }
@@ -210,7 +105,7 @@ namespace Setia.Controllers
                 }
 
                 var user = await _context.Users
-                    .Where(u => u.Email == email & u.Username == username & u.Password == currentPassword)
+                    .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)
                     .SingleOrDefaultAsync();
                 if (user != null)
                 {
@@ -234,7 +129,7 @@ namespace Setia.Controllers
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                if (email == null || !Regex.IsMatch(email, regexEmailValidation))
                 {
                     return Unauthorized("Invalid email");
                 }
@@ -245,7 +140,7 @@ namespace Setia.Controllers
                 }
 
                 var user = await _context.Users
-                    .Where(u => u.Email == email & u.Username == username)
+                    .Where(u => u.Email == email && u.Username == username)
                     .SingleOrDefaultAsync();
                 if (user != null)
                 {
@@ -269,7 +164,7 @@ namespace Setia.Controllers
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$"))
+                if (email == null || !Regex.IsMatch(email, regexEmailValidation))
                 {
                     return Unauthorized("Invalid email");
                 }

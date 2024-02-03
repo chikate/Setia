@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
@@ -35,6 +36,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PontajModel>>> GetAll()
         {
             try
@@ -52,6 +54,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<IEnumerable<PontajModel>> GetAllWithFilter([FromQuery] PontajModel filter)
         {
             try
@@ -66,12 +69,13 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> Add([FromBody] PontajModel model)
         {
             try
             {
                 model.Id = 0;
-                model.Id_CreatedBy = _auth.GetCurrentUser();
+                model.Id_CreatedBy = _auth.GetCurrentUser().Id;
 
                 await _context.Pontaj.AddAsync(_mapper.Map<PontajModel>(model));
                 await _context.SaveChangesAsync();
@@ -85,21 +89,23 @@ namespace Setia.Controllers
             }
             finally
             {
+                var last_id_added = await _context.Pontaj.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
                 await _audit.Add(new AuditModel
                 {
                     Entity = typeof(PontajModel).ToString(),
-                    Id_Entity = model.Id,
+                    Id_Entity = last_id_added.Id,
                     Payload = JsonSerializer.Serialize(model)
                 });
             }
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> Update([FromBody] PontajModel model)
         {
             try
             {
-                model.Id_LastUpdateBy = _auth.GetCurrentUser();
+                model.Id_LastUpdateBy = _auth.GetCurrentUser().Id;
                 model.LastUpdateDate = DateTime.Now;
 
                 _context.Pontaj.Update(_mapper.Map<PontajModel>(model));
@@ -124,6 +130,7 @@ namespace Setia.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         public async Task<ActionResult> Delete(int id)
         {
             try

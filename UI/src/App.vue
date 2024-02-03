@@ -1,19 +1,15 @@
 <template>
   <!-- class="fixed mt-7" -->
   <Toast position="bottom-left" group="bl" />
-  <div class="flex flex-column">
-    <NavBar />
-    <main>
-      <Transition name="fade" mode="out-in">
-        <main v-if="true">
-          <RouterView v-if="true" />
-          <PageNotFound v-else />
-          <FooterBar />
-        </main>
-      </Transition>
-    </main>
-    <main class="fixed vignette pointer-events-none" />
-  </div>
+  <NavBar />
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
+  <PageNotFound v-if="false" />
+  <FooterBar />
+  <main class="fixed vignette pointer-events-none" />
 </template>
 
 <script setup lang="ts">

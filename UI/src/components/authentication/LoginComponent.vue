@@ -1,38 +1,35 @@
 <template>
-  <div class="flex flex-column gap-2" style="width: 18rem">
-    <lable class="font-bold mb-1">Login</lable>
+  <div class="flex flex-column gap-3" style="width: 18rem">
+    <lable class="font-bold">Login</lable>
 
-    <span class="p-float-label">
-      <InputText v-model="inputUsername" class="w-full" />
-      <label>Username</label>
-    </span>
+    <div class="flex flex-column gap-2">
+      <InputGroup>
+        <InputGroupAddon v-if="inputUsername" style="min-width: 6rem" class="p-0">
+          Username
+        </InputGroupAddon>
+        <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
+      </InputGroup>
 
-    <span class="p-float-label">
-      <Password
-        v-model="inputPassword"
-        class="w-full"
-        :feedback="false"
-        :toggleMask="inputPassword.length > 0"
-      />
-      <label>Password</label>
-    </span>
+      <InputGroup>
+        <InputGroupAddon v-if="inputPassword" style="min-width: 6rem" class="p-0">
+          Password
+        </InputGroupAddon>
+        <Password
+          placeholder="Password"
+          v-model="inputPassword"
+          :feedback="false"
+          @keydown.enter="submitLogin"
+        />
+      </InputGroup>
+    </div>
 
-    <span class="flex flex-row gap-2 align-items-center">
+    <div class="flex flex-row gap-2 align-items-center">
       <Checkbox v-model="staySignedIn" :binary="true" />
       <label>Stay signed in</label>
-    </span>
+    </div>
 
-    <Button
-      label="Login"
-      @click="
-        useAuthenticationStore()
-          .tryLogin(inputUsername, inputPassword)
-          .then((value) => {
-            return value
-          })
-      "
-    />
-    <div class="flex flex-row justify-content-around mt-2" @click="$emit('onClose')">
+    <Button label="Login" @click="submitLogin" />
+    <div class="flex flex-row justify-content-around" @click="$emit('close')">
       <RouterLink to="/recovery">Can't sign in?</RouterLink>
       <RouterLink to="/register">Create Account</RouterLink>
     </div>
@@ -40,10 +37,17 @@
 </template>
 
 <script setup lang="ts">
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
+
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 import { ref } from 'vue'
 
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 const staySignedIn = ref<boolean>(false)
+
+function submitLogin() {
+  useAuthenticationStore().tryLogin(inputUsername.value, inputPassword.value)
+}
 </script>

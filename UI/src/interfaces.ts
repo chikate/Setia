@@ -1,4 +1,4 @@
-import type { User } from "./stores/UserStore"
+import type { User } from './stores/UserStore'
 
 export interface BaseAudit {
   creationDate?: string

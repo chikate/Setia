@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
-using Setia.Structs;
+using System.Text.Json;
 
 namespace Setia.Controllers
 {
@@ -41,6 +41,7 @@ namespace Setia.Controllers
             {
                 return Ok(await _context.Users
                     .Where(p => p.Deleted == false) // temporary
+                    
                     .ToListAsync());
             }
             catch (Exception ex)
@@ -70,8 +71,7 @@ namespace Setia.Controllers
             try
             {
                 model.Id = 0;
-                model.Id_CreatedBy = _auth.GetCurrentUser();
-                
+                model.Id_CreatedBy = _auth.GetCurrentUser().Id;
 
                 await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
@@ -85,12 +85,12 @@ namespace Setia.Controllers
             }
             finally
             {
+                var last_id_added = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
                 await _audit.Add(new AuditModel
                 {
                     Entity = typeof(UserModel).ToString(),
-                    Id_Entity = model.Id,
-                    Payload = _audit.CompareObjects(model, model),
-                    Description = "User added",
+                    Id_Entity = last_id_added.Id,
+                    Payload = JsonSerializer.Serialize(model)
                 });
             }
         }
@@ -100,7 +100,7 @@ namespace Setia.Controllers
         {
             try
             {
-                model.Id_LastUpdateBy = _auth.GetCurrentUser();
+                model.Id_LastUpdateBy = _auth.GetCurrentUser().Id;
                 model.LastUpdateDate = DateTime.Now;
 
                 _context.Users.Update(_mapper.Map<UserModel>(model));
@@ -129,10 +129,10 @@ namespace Setia.Controllers
         {
             try
             {
-                var UserToDelete = await _context.Users.FindAsync(id);
-                if (UserToDelete != null)
+                var pontajToDelete = await _context.Users.FindAsync(id);
+                if (pontajToDelete != null)
                 {
-                    _context.Users.Remove(UserToDelete);
+                    _context.Users.Remove(pontajToDelete);
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
@@ -152,7 +152,7 @@ namespace Setia.Controllers
                 {
                     Entity = typeof(UserModel).ToString(),
                     Id_Entity = id,
-                    Payload = "DELETED",
+                    Payload = "DELETED"
                 });
             }
         }

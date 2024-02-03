@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { makeRequest, checkRequest } from '@/helpers'
+import { makeRequest } from '@/helpers'
 import type { Definition } from '@/interfaces'
 import type { User } from './UserStore'
 
@@ -31,25 +31,22 @@ export const usePontajStore = defineStore('Pontaj', {
   },
   actions: {
     async getAll(): Promise<Pontaj[]> {
-      return await makeRequest(`${this.$id}/GetAll`, 'get').then(async (response: Response) => {
-        return await checkRequest(response).then((data) => {
-          return (this.allLoadedItems = data as Pontaj[])
-        })
-      })
+      return (this.allLoadedItems = ((await makeRequest(`${this.$id}/GetAll`, 'get')) ??
+        []) as Pontaj[])
     },
     async add() {
-      return await makeRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
+      await makeRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
         this.getAll()
       })
     },
     async update() {
-      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+      await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
         this.getAll()
       })
     },
     async delete() {
       this.selectedItem ? (this.selectedItem.deleted = true) : null
-      return await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+      await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
         this.getAll()
       })
     },

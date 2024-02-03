@@ -17,6 +17,6 @@ namespace Setia.Models
 
         public DateTime BeginTime { get; set; } = DateTime.Now;
         public DateTime? EndTime { get; set; } = DateTime.Now.AddHours(8);
-        public string? Description { get; set; }
+        public string? Description { get; set; } = string.Empty;
     }
 }

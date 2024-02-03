@@ -12,9 +12,8 @@
       </main>
     </div>
     <div class="flex flex-column py-8">
-      <PlayersLeaderboard class="my-8 py-8 align-self-center" />
-      <CRUDT :store="usePontajStore()" />
-      <Calendar
+      <CRUDT :store="usePontajStore()" class="py-8 my-8" />
+      <!-- <Calendar
         class="align-self-center flex flex-wrap"
         inline
         selectionMode="multiple"
@@ -27,8 +26,8 @@
         selectionMode="multiple"
         v-model="freeDays"
         :numberOfMonths="6"
-      />
-      <CRUDT :store="useUserStore()">
+      /> -->
+      <!-- <CRUDT :store="useUserStore()" class="py-8 my-8">
         <template #expansion>
           <TreeSelect
             v-model="selectedValue"
@@ -38,8 +37,8 @@
             class="w-20rem"
           />
         </template>
-      </CRUDT>
-      <StoryChapter />
+      </CRUDT> -->
+      <!-- <StoryChapter /> -->
     </div>
   </main>
 </template>

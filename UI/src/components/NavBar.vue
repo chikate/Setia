@@ -19,8 +19,7 @@
       <RouterLink to="/news"> {{ 'News' }} </RouterLink>
     </div>
     <RouterLink class="pointer-events-auto" to="/universe"> {{ 'Universe' }} </RouterLink>
-    <div class="flex-grow-1 pointer-events-none" />
-    <div class="flex flex-row gap-3 pointer-events-auto">
+    <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
         v-tooltip.left="{
           value: useSettingsStore().useDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
@@ -69,21 +68,19 @@
 
       <div @click="accountOverlay.toggle($event)" class="cursor-pointer">
         <i class="pi pi-user">
-          <OverlayPanel ref="accountOverlay" class="p-3 m-1">
+          <OverlayPanel ref="accountOverlay" class="p-0 m-0">
             <LoginComponent
-              @onClose="accountOverlay.toggle($event)"
-              @onLoginClick="
-                useAuthenticationStore().tryLogin($event.inputUsername, $event.inputPassword)
-              "
+              v-if="!useAuthenticationStore().token"
+              @close="accountOverlay.hide($event)"
             />
+            <div v-else class="flex flex-column gap-3">
+              <Button label="Profile" />
+              <Button label="LogOut" @click="useAuthenticationStore().token = null" />
+            </div>
           </OverlayPanel>
         </i>
         <a>
-          {{
-            useAuthenticationStore().user == null
-              ? 'Account'
-              : useAuthenticationStore().user?.email ?? 'User'
-          }}
+          {{ useAuthenticationStore().token ? 'Dragos' : 'Account' }}
         </a>
       </div>
     </div>
