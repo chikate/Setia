@@ -1,6 +1,6 @@
 ﻿namespace Setia.Structs
 {
-    public class DefinitionStruct : BaseAuditStruct
+    public class DefinitionDto : BaseAuditDto
     {
         public bool Active { get; set; } = true;
         public bool Deleted { get; set; } = false;

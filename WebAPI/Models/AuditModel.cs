@@ -13,7 +13,7 @@ namespace Setia.Models
         public string? Entity { get; set; } = null;
         public int? Id_Entity { get; set; } = null;
         public DateTime ExecutionDate { get; set; } = DateTime.Now;
-        public int? Id_Executioner { get; set; } = 7;
+        public int? Id_Executioner { get; set; } = null;
         public string? Payload { get; set; } = null;
     }
 }

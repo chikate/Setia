@@ -1,84 +1,89 @@
-using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
+using Setia.Structs;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace Setia.Services
 {
-    public class AuthenticationService : IAuth
+    public class AuthService : IAuth
     {
         private readonly string regexEmailValidation = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
 
         private readonly SetiaContext _context;
-        private readonly ILogger<AuthenticationService> _logger;
-        private readonly IMapper _mapper;
+        private readonly ILogger<AuthService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthenticationService
+        public AuthService
         (
             SetiaContext context,
-            ILogger<AuthenticationService> logger,
-            IMapper mapper,
+            ILogger<AuthService> logger,
             IHttpContextAccessor httpContextAccessor
         )
         {
             _context = context;
             _logger = logger;
-            _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public UserModel GetCurrentUser()
+        public async Task<int> GetCurrentUserId()
         {
             var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
             if (identity != null)
             {
                 var userClaims = identity.Claims;
-                return new UserModel
+
+                string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value;
+                string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                var user = await _context.Users
+                    .Where(u => u.Email == email && u.Username == username)
+                    .SingleOrDefaultAsync();
+                if (user != null)
                 {
-                    Email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value,
-                    Username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value,
-                };
+                    return user.Id;
+                }
             }
-            return new UserModel();
+            return 0;
         }
 
-        public async Task RegisterUser(string email, string username, string password)
+        public async Task Register(RegistrationDto registration)
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, regexEmailValidation))
+                if (registration.Email == null || !Regex.IsMatch(registration.Email, regexEmailValidation))
                 {
                     return;
                 }
 
-                if (username == null || username.Length < 3)
+                if (registration.Login.Username == null || registration.Login.Username.Length < 6)
                 {
                     return;
                 }
 
                 var user = await _context.Users
-                    .Where(u => u.Username == username)
+                    .Where(u => u.Username == registration.Login.Username)
                     .SingleOrDefaultAsync();
                 if (user != null)
                 {
                     return;
                 }
 
-                if (password == null || password.Length < 6)
+                if (registration.Login.Password == null || registration.Login.Password.Length < 6)
                 {
                     return;
                 }
 
                 _context.Users.Add(new UserModel()
                 {
-                    Email = email,
-                    Username = username,
-                    Password = password,
+                    Email = registration.Email,
+                    Username = registration.Login.Username,
+                    Password = registration.Login.Password,
                     CreationDate = DateTime.UtcNow,
                 });
                 await _context.SaveChangesAsync();
@@ -103,7 +108,7 @@ namespace Setia.Services
                     return;
                 }
 
-                if (username == null || username.Length < 3)
+                if (username == null || username.Length < 6)
                 {
                     return;
                 }
@@ -139,6 +144,22 @@ namespace Setia.Services
             }
         }
 
+        public IEnumerable<string> GetAllRights()
+        {
+            List<string> allRights = new List<string>();
+            foreach (var controller in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
+            {
+                foreach (var method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    if (method.DeclaringType == controller)
+                    {
+                        allRights.Add($"{controller.Name}.{method.Name}");
+                    }
+                }
+            }
+            return allRights;
+        }
+
         //public async Task ForgotPassword(string email, string username)
         //{
         //    try
@@ -148,7 +169,7 @@ namespace Setia.Services
         //            return;
         //        }
 
-        //        if (username == null || username.Length < 3)
+        //        if (username == null || username.Length < 6)
         //        {
         //            return;
         //        }

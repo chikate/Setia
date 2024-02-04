@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Setia.Models
 {
     [AutoMap(typeof(PontajModel), ReverseMap = true)]
-    public class PontajModel : DefinitionStruct
+    public class PontajModel : DefinitionDto
     {
         [Key]
         public int Id { get; set; } = 0;

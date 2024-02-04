@@ -1,7 +1,5 @@
 <template>
-  <main
-    class="w-screen h-max flex flex-column flex-grow-1 align-items-center justify-content-center"
-  >
+  <main>
     <div
       class="w-screen h-screen bg-cover bg-center flex flex-column"
       style="

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Structs
 {
-    public class BaseAuditStruct
+    public class BaseAuditDto
     {
         public DateTime CreationDate { get; set; } = DateTime.Now;
 

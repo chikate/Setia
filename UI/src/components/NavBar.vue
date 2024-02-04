@@ -70,17 +70,17 @@
         <i class="pi pi-user">
           <OverlayPanel ref="accountOverlay" class="p-0 m-0">
             <LoginComponent
-              v-if="!useAuthenticationStore().token"
+              v-if="!useAuthStore().getToken()"
               @close="accountOverlay.hide($event)"
             />
             <div v-else class="flex flex-column gap-3">
               <Button label="Profile" />
-              <Button label="LogOut" @click="useAuthenticationStore().token = null" />
+              <Button label="LogOut" @click="useAuthStore().LogOut()" />
             </div>
           </OverlayPanel>
         </i>
         <a>
-          {{ useAuthenticationStore().token ? 'Dragos' : 'Account' }}
+          {{ useAuthStore().getToken() ? 'Dragos' : 'Account' }}
         </a>
       </div>
     </div>
@@ -88,10 +88,12 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { useAuthStore } from '@/stores/AuthStore'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
+
+const toast = useToast()
 
 const accountOverlay = ref()
 const languageOverlay = ref()
@@ -103,11 +105,12 @@ const languages = ref([
     label: 'English',
     command: () => {
       languageOverlay.value.hide()
-      useToast().add({
+      toast.add({
         severity: 'success',
         summary: 'Changed language to English',
         detail: '',
-        life: 3000
+        life: 3000,
+        group: 'bl'
       })
     }
   },
@@ -115,11 +118,12 @@ const languages = ref([
     label: 'Română - Romanian',
     command: () => {
       languageOverlay.value.hide()
-      useToast().add({
+      toast.add({
         severity: 'success',
         summary: 'Schimbat limba în Română',
         detail: '',
-        life: 3000
+        life: 3000,
+        group: 'bl'
       })
     }
   }

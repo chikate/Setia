@@ -1,9 +1,12 @@
 using Setia.Models;
+using Setia.Structs;
 
 namespace Setia.Services.Interfaces
 {
     public interface IAuth
     {
-        UserModel GetCurrentUser();
+        Task<int> GetCurrentUserId();
+        Task Register(RegistrationDto registration);
+        IEnumerable<string> GetAllRights();
     }
 }

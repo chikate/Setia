@@ -16,5 +16,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const inputEmail = ref<string>()
+const inputEmail = ref<string>('')
 </script>

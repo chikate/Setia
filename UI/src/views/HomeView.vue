@@ -7,7 +7,9 @@
       "
     >
       <main style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))">
-        <a class="text-8xl font-bold">Hello there</a>
+        <a class="text-8xl font-bold">
+          Hello {{ useAuthStore()?.getToken() ? 'Dragos' : 'there' }}
+        </a>
         <a class="text-3xl font-bold">We are happy that you are here!</a>
       </main>
     </div>
@@ -44,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/AuthStore'
 import { usePontajStore } from '@/stores/PontajStore'
 import { useUserStore } from '@/stores/UserStore'
 import { ref } from 'vue'

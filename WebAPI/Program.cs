@@ -11,7 +11,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -28,7 +27,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // DbContexts
-builder.Services.AddDbContext<SetiaContext>(options => options.UseSqlServer("Server=DRAGOS;Database=Setia;Trusted_Connection=True;TrustServerCertificate=True;"));
+builder.Services.AddDbContext<SetiaContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:Setia"]));
 
 // AutoMappers
 builder.Services.AddAutoMapper(typeof(AuditModel));
@@ -36,7 +35,7 @@ builder.Services.AddAutoMapper(typeof(UserModel));
 builder.Services.AddAutoMapper(typeof(PontajModel));
 
 // Services
-builder.Services.AddScoped<IAuth, AuthenticationService>();
+builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IAudit, AuditService>();
 
 // Controllers
@@ -75,6 +74,7 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
+                .AllowAnyOrigin()
                 .AllowAnyMethod();
         });
 });

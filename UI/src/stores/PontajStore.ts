@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { makeRequest } from '@/helpers'
+import { makeApiRequest } from '@/helpers'
 import type { Definition } from '@/interfaces'
-import type { User } from './UserStore'
+import type { User } from '@/stores/UserStore'
 
 export interface Pontaj extends Definition {
   id?: number
@@ -31,22 +31,22 @@ export const usePontajStore = defineStore('Pontaj', {
   },
   actions: {
     async getAll(): Promise<Pontaj[]> {
-      return (this.allLoadedItems = ((await makeRequest(`${this.$id}/GetAll`, 'get')) ??
+      return (this.allLoadedItems = ((await makeApiRequest(`${this.$id}/GetAll`, 'get')) ??
         []) as Pontaj[])
     },
     async add() {
-      await makeRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
+      await makeApiRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
         this.getAll()
       })
     },
     async update() {
-      await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+      await makeApiRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
         this.getAll()
       })
     },
     async delete() {
       this.selectedItem ? (this.selectedItem.deleted = true) : null
-      await makeRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
+      await makeApiRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
         this.getAll()
       })
     },

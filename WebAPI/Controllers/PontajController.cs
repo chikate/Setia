@@ -10,6 +10,7 @@ using System.Text.Json;
 namespace Setia.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("/api/[controller]/[action]")]
     public class PontajController : ControllerBase
     {
@@ -36,7 +37,6 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<PontajModel>>> GetAll()
         {
             try
@@ -49,33 +49,42 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
         }
 
         [HttpGet]
-        [Authorize]
         public ActionResult<IEnumerable<PontajModel>> GetAllWithFilter([FromQuery] PontajModel filter)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
                 return Ok(AddFilter(_context.Pontaj.AsQueryable(), filter));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult> Add([FromBody] PontajModel model)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
                 model.Id = 0;
-                model.Id_CreatedBy = _auth.GetCurrentUser().Id;
+                model.Id_CreatedBy = await _auth.GetCurrentUserId();
+                model.Id_User = await _auth.GetCurrentUserId();
 
                 await _context.Pontaj.AddAsync(_mapper.Map<PontajModel>(model));
                 await _context.SaveChangesAsync();
@@ -85,27 +94,39 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
             finally
             {
-                var last_id_added = await _context.Pontaj.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
-                await _audit.Add(new AuditModel
+                try
                 {
-                    Entity = typeof(PontajModel).ToString(),
-                    Id_Entity = last_id_added.Id,
-                    Payload = JsonSerializer.Serialize(model)
-                });
+                    var last_id_added = await _context.Pontaj.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
+                    await _audit.Add(new AuditModel
+                    {
+                        Id_Executioner = await _auth.GetCurrentUserId(),
+                        Entity = typeof(PontajModel).ToString(),
+                        Id_Entity = last_id_added?.Id,
+                        Payload = JsonSerializer.Serialize(model)
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, this.GetType().FullName);
+                }
             }
         }
 
         [HttpPut]
-        [Authorize]
         public async Task<ActionResult> Update([FromBody] PontajModel model)
         {
             try
             {
-                model.Id_LastUpdateBy = _auth.GetCurrentUser().Id;
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
+                model.Id_LastUpdateBy = await _auth.GetCurrentUserId();
                 model.LastUpdateDate = DateTime.Now;
 
                 _context.Pontaj.Update(_mapper.Map<PontajModel>(model));
@@ -116,7 +137,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
             finally
             {
@@ -126,15 +147,33 @@ namespace Setia.Controllers
                     Id_Entity = model.Id,
                     Payload = _audit.CompareObjects(model, model),
                 });
+                try
+                {
+                    await _audit.Add(new AuditModel
+                    {
+                        Id_Executioner = await _auth.GetCurrentUserId(),
+                        Entity = typeof(PontajModel).ToString(),
+                        Id_Entity = model.Id,
+                        Payload = _audit.CompareObjects(model, model)
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, this.GetType().FullName);
+                }
             }
         }
 
         [HttpDelete]
-        [Authorize]
         public async Task<ActionResult> Delete(int id)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
                 var pontajToDelete = await _context.Pontaj.FindAsync(id);
                 if (pontajToDelete != null)
                 {
@@ -150,16 +189,24 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
             finally
             {
-                await _audit.Add(new AuditModel
+                try
                 {
-                    Entity = typeof(PontajModel).ToString(),
-                    Id_Entity = id,
-                    Payload = "DELETED"
-                });
+                    await _audit.Add(new AuditModel
+                    {
+                        Id_Executioner = await _auth.GetCurrentUserId(),
+                        Entity = typeof(PontajModel).ToString(),
+                        Id_Entity = id,
+                        Payload = "DELETED"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, this.GetType().FullName);
+                }
             }
         }
 

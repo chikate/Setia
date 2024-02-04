@@ -71,7 +71,7 @@ namespace Setia.Controllers
             try
             {
                 model.Id = 0;
-                model.Id_CreatedBy = _auth.GetCurrentUser().Id;
+                model.Id_CreatedBy = await _auth.GetCurrentUserId();
 
                 await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
                 await _context.SaveChangesAsync();
@@ -100,7 +100,7 @@ namespace Setia.Controllers
         {
             try
             {
-                model.Id_LastUpdateBy = _auth.GetCurrentUser().Id;
+                model.Id_LastUpdateBy = await _auth.GetCurrentUserId();
                 model.LastUpdateDate = DateTime.Now;
 
                 _context.Users.Update(_mapper.Map<UserModel>(model));

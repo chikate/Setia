@@ -77,52 +77,54 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthenticationStore } from '@/stores/AuthenticationStore'
-import { ref } from 'vue'
+import { useAuthStore } from '@/stores/AuthStore'
 import { useToast } from 'primevue/usetoast'
+import { ref } from 'vue'
 
-const inputEmail = ref<string>()
-const inputUsername = ref<string>()
-const inputPassword = ref<string>()
-const inputRepeatPassword = ref<string>()
+const toast = useToast()
+
+const inputEmail = ref<string>('')
+const inputUsername = ref<string>('')
+const inputPassword = ref<string>('')
+const inputRepeatPassword = ref<string>('')
 
 function registerClickedHandler() {
   if (!inputEmail.value) {
-    return useToast().add({
+    return toast.add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Email',
-      life: 3000
+      life: 3000,
+      group: 'bl'
     })
   }
-  if (String(inputUsername.value).length < 3) {
-    return useToast().add({
+  if (inputUsername.value.length < 6) {
+    return toast.add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Username',
-      life: 3000
+      life: 3000,
+      group: 'bl'
     })
   }
-  if (String(inputPassword.value).length < 7) {
-    return useToast().add({
+  if (inputPassword.value.length < 6) {
+    return toast.add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Invalid Password',
-      life: 3000
+      life: 3000,
+      group: 'bl'
     })
   }
   if (inputPassword.value !== inputRepeatPassword.value) {
-    return useToast().add({
+    return toast.add({
       severity: 'error',
       summary: 'Register Message',
       detail: 'Passwords does not match',
-      life: 3000
+      life: 3000,
+      group: 'bl'
     })
   }
-  return useAuthenticationStore().tryRegister(
-    inputEmail.value as string,
-    inputUsername.value as string,
-    inputPassword.value as string
-  )
+  return useAuthStore().tryRegister(inputEmail.value, inputUsername.value, inputPassword.value)
 }
 </script>

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Setia.Models
 {
     [AutoMap(typeof(QuizzModel), ReverseMap = true)]
-    public class QuizzModel : DefinitionStruct
+    public class QuizzModel : DefinitionDto
     {
         [Key]
         public int Id { get; set; } = 0;
