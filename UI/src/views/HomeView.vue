@@ -15,6 +15,7 @@
     </div>
     <div class="flex flex-column py-8">
       <CRUDT :store="usePontajStore()" class="py-8 my-8" />
+      <CRUDT :store="useUserStore()" class="py-8 my-8" />
       <!-- <Calendar
         class="align-self-center flex flex-wrap"
         inline
@@ -40,7 +41,7 @@
           />
         </template>
       </CRUDT> -->
-      <!-- <StoryChapter /> -->
+      <StoryChapter />
     </div>
   </main>
 </template>
@@ -48,7 +49,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore'
 import { usePontajStore } from '@/stores/PontajStore'
-import { useUserStore } from '@/stores/UserStore'
+import { useUserStore } from '@/stores/generated/UserStore'
 import { ref } from 'vue'
 
 const nodes = ref([])

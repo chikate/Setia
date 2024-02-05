@@ -111,11 +111,5 @@ namespace Setia.Controllers
                 return Unauthorized(ex);
             }
         }
-
-        [HttpPost]
-        public IActionResult GetAllRights()
-        {
-            return Ok(_auth.GetAllRights());
-        }
     }
 }

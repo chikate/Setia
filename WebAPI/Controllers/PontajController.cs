@@ -41,15 +41,17 @@ namespace Setia.Controllers
         {
             try
             {
+                var currentUserId = await _auth.GetCurrentUserId();
                 return Ok(await _context.Pontaj
                     .Where(p => p.Deleted == false) // temporary
+                    .Where(p => p.Id_User == currentUserId) // temporary
                     .Include(i => i.User)
                     .ToListAsync());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
+                return BadRequest([]);
             }
         }
 
@@ -60,7 +62,7 @@ namespace Setia.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest();
+                    return BadRequest([]);
                 }
 
                 return Ok(AddFilter(_context.Pontaj.AsQueryable(), filter));
@@ -68,7 +70,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
+                return BadRequest([]);
             }
         }
 
@@ -94,7 +96,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
+                return BadRequest();
             }
             finally
             {
@@ -143,6 +145,7 @@ namespace Setia.Controllers
             {
                 await _audit.Add(new AuditModel
                 {
+                    Id_Executioner = await _auth.GetCurrentUserId(),
                     Entity = typeof(PontajModel).ToString(),
                     Id_Entity = model.Id,
                     Payload = _audit.CompareObjects(model, model),

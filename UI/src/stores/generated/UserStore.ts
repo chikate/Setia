@@ -6,22 +6,23 @@ export interface User extends Definition {
   id?: number
   email: string
   username: string
-  password?: string
+  password: string
   name: string
   statusCode: number | null
-  authorityCode: number | null
+  rights: string[] | null
 }
 
 const defaultEditables: User = {
   email: '',
   username: '',
+  password: '',
   name: '',
-  statusCode: 0,
-  authorityCode: 0,
+  statusCode: null,
+  rights: null,
   active: true
 }
 
-export const useUserStore = defineStore('User', {
+export const useUserStore = defineStore('Users', {
   state: (): {
     allLoadedItems: User[]
     selectedItem: User

@@ -9,10 +9,13 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
     },
     body: body ? JSON.stringify(body) : undefined
   }).then(async (response: Response) => {
+    if (response.headers.get('Content-Type')?.includes('application/json')) {
+      return await response.json()
+    }
     if (response.headers.get('Content-Type')?.includes('text/plain')) {
       return await response.text()
     } else {
-      return await response.json()
+      return response
     }
   })
 }

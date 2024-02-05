@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { makeApiRequest } from '@/helpers'
 import type { Definition } from '@/interfaces'
-import type { User } from '@/stores/UserStore'
+import type { User } from '@/stores/generated/UserStore'
 
 export interface Pontaj extends Definition {
   id?: number

@@ -39,7 +39,9 @@ const filters = ref({
   username: { value: null, matchMode: FilterMatchMode.CONTAINS },
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   statusCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  authorityCode: { value: null, matchMode: FilterMatchMode.CONTAINS }
+  authorityCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  password: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  rights: { value: null, matchMode: FilterMatchMode.EQUALS }
 })
 </script>
 

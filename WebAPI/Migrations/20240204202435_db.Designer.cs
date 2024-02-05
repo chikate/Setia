@@ -12,8 +12,8 @@ using Setia.Data;
 namespace Setia.Migrations
 {
     [DbContext(typeof(SetiaContext))]
-    [Migration("20240204123035_Retusuri")]
-    partial class Retusuri
+    [Migration("20240204202435_db")]
+    partial class db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
