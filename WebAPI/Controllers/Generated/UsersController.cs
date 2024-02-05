@@ -1,11 +1,9 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
-using System.Text.Json;
 
 namespace Setia.Controllers
 {
@@ -16,7 +14,6 @@ namespace Setia.Controllers
     {
         private readonly SetiaContext _context;
         private readonly ILogger<UsersController> _logger;
-        private readonly IMapper _mapper;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
 
@@ -24,14 +21,12 @@ namespace Setia.Controllers
         (
             SetiaContext context,
             ILogger<UsersController> logger,
-            IMapper mapper,
             IAudit audit,
             IAuth auth
         )
         {
             _context = context;
             _logger = logger;
-            _mapper = mapper;
             _audit = audit;
             _auth = auth;
         }
@@ -82,10 +77,10 @@ namespace Setia.Controllers
                 }
 
                 model.Id = 0;
-                model.Id_CreatedBy = await _auth.GetCurrentUserId();
+                model.Id_Executioner = await _auth.GetCurrentUserId();
 
 
-                await _context.Users.AddAsync(_mapper.Map<UserModel>(model));
+                await _context.Users.AddAsync(model);
                 await _context.SaveChangesAsync();
 
                 return Ok("Added");
@@ -94,24 +89,6 @@ namespace Setia.Controllers
             {
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex);
-            }
-            finally
-            {
-                try
-                {
-                    var last_id_added = await _context.Users.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(UserModel).ToString(),
-                        Id_Entity = last_id_added?.Id,
-                        Payload = JsonSerializer.Serialize(model)
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
             }
         }
 
@@ -125,10 +102,9 @@ namespace Setia.Controllers
                     return BadRequest();
                 }
 
-                model.Id_LastUpdateBy = await _auth.GetCurrentUserId();
-                model.LastUpdateDate = DateTime.Now;
+                model.Id_Executioner = await _auth.GetCurrentUserId();
 
-                _context.Users.Update(_mapper.Map<UserModel>(model));
+                _context.Users.Update(model);
                 await _context.SaveChangesAsync();
 
                 return Ok("Updated");
@@ -137,30 +113,6 @@ namespace Setia.Controllers
             {
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex);
-            }
-            finally
-            {
-                await _audit.Add(new AuditModel
-                {
-                    Id_Executioner = await _auth.GetCurrentUserId(),
-                    Entity = typeof(UserModel).ToString(),
-                    Id_Entity = model.Id,
-                    Payload = _audit.CompareObjects(model, model),
-                });
-                try
-                {
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(UserModel).ToString(),
-                        Id_Entity = model.Id,
-                        Payload = _audit.CompareObjects(model, model)
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
             }
         }
 
@@ -191,23 +143,7 @@ namespace Setia.Controllers
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex);
             }
-            finally
-            {
-                try
-                {
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(UserModel).ToString(),
-                        Id_Entity = id,
-                        Payload = "DELETED"
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
-            }
+
         }
 
         private static IQueryable<UserModel> AddFilter(IQueryable<UserModel> query, UserModel filter)

@@ -1,9 +1,9 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Setia.Services
 {
@@ -11,21 +11,38 @@ namespace Setia.Services
     {
         private readonly SetiaContext _context;
         private readonly ILogger<AuditService> _logger;
-        private readonly IMapper _mapper;
         private readonly IAuth _auth;
 
         public AuditService
         (
             SetiaContext context,
             ILogger<AuditService> logger,
-            IMapper mapper,
             IAuth auth
         )
         {
             _context = context;
             _logger = logger;
-            _mapper = mapper;
             _auth = auth;
+        }
+
+        public async Task LogAuditTrail<T>(T model, T oldModel = default)
+        {
+            try
+            {
+                var auditModel = new AuditModel
+                {
+                    Id_Executioner = await _auth.GetCurrentUserId(),
+                    Entity = typeof(T).FullName,
+                    Id_Entity = GetEntityId(model),
+                    Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
+                };
+
+                await Add(auditModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+            }
         }
 
         public async Task<IEnumerable<AuditModel>> GetAll()
@@ -68,7 +85,7 @@ namespace Setia.Services
         {
             try
             {
-                await _context.Audit.AddAsync(_mapper.Map<AuditModel>(model));
+                await _context.Audit.AddAsync(model);
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -88,7 +105,7 @@ namespace Setia.Services
         {
             try
             {
-                _context.Audit.Update(_mapper.Map<AuditModel>(model));
+                _context.Audit.Update(model);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -161,6 +178,48 @@ namespace Setia.Services
                 }
             }
             return query;
+        }
+
+        private int GetEntityId<T>(T model)
+        {
+            // Assuming the entity has a property named "Id"
+            var property = typeof(T).GetProperty("Id");
+            if (property != null)
+            {
+                // Extract the value of the "Id" property
+                var value = property.GetValue(model);
+                if (value != null && int.TryParse(value.ToString(), out int id))
+                {
+                    return id;
+                }
+            }
+
+            // Default return value if the ID couldn't be retrieved
+            return -1;
+        }
+
+        private IDictionary<string, Dictionary<string, string>> CompareModels<T>(T oldModel, T newModel)
+        {
+            var differences = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (var property in typeof(T).GetProperties())
+            {
+                var existingValue = property.GetValue(oldModel)?.ToString();
+                var updatedValue = property.GetValue(newModel)?.ToString();
+
+                if (existingValue != updatedValue)
+                {
+                    var propertyDifference = new Dictionary<string, string>
+                    {
+                        { "old", existingValue ?? "null" },
+                        { "new", updatedValue ?? "null" }
+                    };
+
+                    differences[property.Name] = propertyDifference;
+                }
+            }
+
+            return differences;
         }
     }
 }

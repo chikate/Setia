@@ -84,7 +84,6 @@ namespace Setia.Services
                     Email = registration.Email,
                     Username = registration.Login.Username,
                     Password = registration.Login.Password,
-                    CreationDate = DateTime.UtcNow,
                 });
                 await _context.SaveChangesAsync();
 

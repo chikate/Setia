@@ -53,6 +53,8 @@ namespace Setia.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id_Executioner");
+
                     b.ToTable("Audit");
                 });
 
@@ -70,9 +72,6 @@ namespace Setia.Migrations
                     b.Property<DateTime>("BeginTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
@@ -82,23 +81,18 @@ namespace Setia.Migrations
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Id_CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("ExecutionDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("Id_LastUpdateBy")
+                    b.Property<int?>("Id_Executioner")
                         .HasColumnType("int");
 
                     b.Property<int>("Id_User")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastUpdateDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("Id_CreatedBy");
-
-                    b.HasIndex("Id_LastUpdateBy");
+                    b.HasIndex("Id_Executioner");
 
                     b.HasIndex("Id_User");
 
@@ -116,9 +110,6 @@ namespace Setia.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
@@ -126,14 +117,11 @@ namespace Setia.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Id_CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Id_LastUpdateBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastUpdateDate")
+                    b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("Id_Executioner")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -155,22 +143,25 @@ namespace Setia.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id_CreatedBy");
-
-                    b.HasIndex("Id_LastUpdateBy");
+                    b.HasIndex("Id_Executioner");
 
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Setia.Models.AuditModel", b =>
+                {
+                    b.HasOne("Setia.Models.UserModel", "Executioner")
+                        .WithMany()
+                        .HasForeignKey("Id_Executioner");
+
+                    b.Navigation("Executioner");
+                });
+
             modelBuilder.Entity("Setia.Models.PontajModel", b =>
                 {
-                    b.HasOne("Setia.Models.UserModel", "CreatedBy")
+                    b.HasOne("Setia.Models.UserModel", "Executioner")
                         .WithMany()
-                        .HasForeignKey("Id_CreatedBy");
-
-                    b.HasOne("Setia.Models.UserModel", "LastUpdateBy")
-                        .WithMany()
-                        .HasForeignKey("Id_LastUpdateBy");
+                        .HasForeignKey("Id_Executioner");
 
                     b.HasOne("Setia.Models.UserModel", "User")
                         .WithMany()
@@ -178,26 +169,18 @@ namespace Setia.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("LastUpdateBy");
+                    b.Navigation("Executioner");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Setia.Models.UserModel", b =>
                 {
-                    b.HasOne("Setia.Models.UserModel", "CreatedBy")
+                    b.HasOne("Setia.Models.UserModel", "Executioner")
                         .WithMany()
-                        .HasForeignKey("Id_CreatedBy");
+                        .HasForeignKey("Id_Executioner");
 
-                    b.HasOne("Setia.Models.UserModel", "LastUpdateBy")
-                        .WithMany()
-                        .HasForeignKey("Id_LastUpdateBy");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("LastUpdateBy");
+                    b.Navigation("Executioner");
                 });
 #pragma warning restore 612, 618
         }

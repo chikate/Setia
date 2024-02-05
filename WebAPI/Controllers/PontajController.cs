@@ -1,11 +1,9 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
-using System.Text.Json;
 
 namespace Setia.Controllers
 {
@@ -16,7 +14,6 @@ namespace Setia.Controllers
     {
         private readonly SetiaContext _context;
         private readonly ILogger<PontajController> _logger;
-        private readonly IMapper _mapper;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
 
@@ -24,14 +21,12 @@ namespace Setia.Controllers
         (
             SetiaContext context,
             ILogger<PontajController> logger,
-            IMapper mapper,
             IAudit audit,
             IAuth auth
         )
         {
             _context = context;
             _logger = logger;
-            _mapper = mapper;
             _audit = audit;
             _auth = auth;
         }
@@ -42,16 +37,16 @@ namespace Setia.Controllers
             try
             {
                 var currentUserId = await _auth.GetCurrentUserId();
-                return Ok(await _context.Pontaj
-                    .Where(p => p.Deleted == false) // temporary
-                    .Where(p => p.Id_User == currentUserId) // temporary
-                    .Include(i => i.User)
-                    .ToListAsync());
+                var pontajList = await _context.Pontaj
+                    .Where(p => p.Deleted == false && p.Id_User == currentUserId)
+                    .Include(p => p.User)
+                    .ToListAsync();
+                return Ok(pontajList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest([]);
+                return BadRequest("An error occurred while retrieving Pontaj records.");
             }
         }
 
@@ -60,17 +55,13 @@ namespace Setia.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest([]);
-                }
-
-                return Ok(AddFilter(_context.Pontaj.AsQueryable(), filter));
+                var filteredPontajList = AddFilter(_context.Pontaj.AsQueryable(), filter).ToList();
+                return Ok(filteredPontajList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest([]);
+                return BadRequest("An error occurred while retrieving Pontaj records.");
             }
         }
 
@@ -79,42 +70,23 @@ namespace Setia.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest();
-                }
+                if (!ModelState.IsValid) return BadRequest("Invalid model state.");
 
                 model.Id = 0;
-                model.Id_CreatedBy = await _auth.GetCurrentUserId();
+                model.Id_Executioner = await _auth.GetCurrentUserId();
                 model.Id_User = await _auth.GetCurrentUserId();
 
-                await _context.Pontaj.AddAsync(_mapper.Map<PontajModel>(model));
+                await _context.Pontaj.AddAsync(model);
                 await _context.SaveChangesAsync();
 
-                return Ok("Added");
+                await _audit.LogAuditTrail(model);
+
+                return Ok("Pontaj record added successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest();
-            }
-            finally
-            {
-                try
-                {
-                    var last_id_added = await _context.Pontaj.OrderBy(x => x.Id).LastOrDefaultAsync(); // we need a better method here
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(PontajModel).ToString(),
-                        Id_Entity = last_id_added?.Id,
-                        Payload = JsonSerializer.Serialize(model)
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
+                return BadRequest("An error occurred while adding Pontaj record.");
             }
         }
 
@@ -123,47 +95,23 @@ namespace Setia.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest();
-                }
+                if (!ModelState.IsValid) return BadRequest("Invalid model state.");
 
-                model.Id_LastUpdateBy = await _auth.GetCurrentUserId();
-                model.LastUpdateDate = DateTime.Now;
+                model.Id_Executioner = await _auth.GetCurrentUserId();
 
-                _context.Pontaj.Update(_mapper.Map<PontajModel>(model));
+                var oldModel = await _context.Pontaj.FindAsync(model.Id);
+
+                _context.Pontaj.Update(model);
                 await _context.SaveChangesAsync();
 
-                return Ok("Updated");
+                await _audit.LogAuditTrail(model, oldModel);
+
+                return Ok("Pontaj record updated successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
-            }
-            finally
-            {
-                await _audit.Add(new AuditModel
-                {
-                    Id_Executioner = await _auth.GetCurrentUserId(),
-                    Entity = typeof(PontajModel).ToString(),
-                    Id_Entity = model.Id,
-                    Payload = _audit.CompareObjects(model, model),
-                });
-                try
-                {
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(PontajModel).ToString(),
-                        Id_Entity = model.Id,
-                        Payload = _audit.CompareObjects(model, model)
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
+                return BadRequest("An error occurred while updating Pontaj record.");
             }
         }
 
@@ -172,48 +120,25 @@ namespace Setia.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest();
-                }
-
                 var pontajToDelete = await _context.Pontaj.FindAsync(id);
-                if (pontajToDelete != null)
-                {
-                    _context.Pontaj.Remove(pontajToDelete);
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-                else
-                {
-                    return NotFound();
-                }
+
+                if (pontajToDelete == null) return NotFound();
+
+                _context.Pontaj.Remove(pontajToDelete);
+                await _context.SaveChangesAsync();
+
+                await _audit.LogAuditTrail(pontajToDelete);
+
+                return Ok("Pontaj record deleted successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
-            }
-            finally
-            {
-                try
-                {
-                    await _audit.Add(new AuditModel
-                    {
-                        Id_Executioner = await _auth.GetCurrentUserId(),
-                        Entity = typeof(PontajModel).ToString(),
-                        Id_Entity = id,
-                        Payload = "DELETED"
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, this.GetType().FullName);
-                }
+                return BadRequest("An error occurred while deleting Pontaj record.");
             }
         }
 
-        private static IQueryable<PontajModel> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
+        private IQueryable<PontajModel> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
         {
             if (filter != null)
             {

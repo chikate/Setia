@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Setia.Data;
-using Setia.Models;
 using Setia.Services;
 using Setia.Services.Interfaces;
 using System.Text;
@@ -11,28 +10,26 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 
 // DbContexts
-builder.Services.AddDbContext<SetiaContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:Setia"]));
-
-// AutoMappers
-builder.Services.AddAutoMapper(typeof(AuditModel));
-builder.Services.AddAutoMapper(typeof(UserModel));
-builder.Services.AddAutoMapper(typeof(PontajModel));
+builder.Services.AddDbContext<SetiaContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:Setia"]);
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 // Services
 builder.Services.AddScoped<IAuth, AuthService>();
@@ -67,6 +64,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Cors
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

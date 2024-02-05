@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using Setia.Structs;
+﻿using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
-    [AutoMap(typeof(QuizzModel), ReverseMap = true)]
     public class QuizzModel : DefinitionDto
     {
         [Key]

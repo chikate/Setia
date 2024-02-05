@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Setia.Structs;
+﻿using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models
 {
-    [AutoMap(typeof(PontajModel), ReverseMap = true)]
     public class PontajModel : DefinitionDto
     {
         [Key]

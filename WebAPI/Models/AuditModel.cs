@@ -1,10 +1,10 @@
-﻿using AutoMapper;
+﻿using Setia.Services.Interfaces;
+using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
-    [AutoMap(typeof(AuditModel), ReverseMap = true)]
-    public class AuditModel
+    public class AuditModel : BaseAuditDto
     {
         [Key]
         public int Id { get; set; } = 0;
@@ -12,8 +12,6 @@ namespace Setia.Models
         public string? Details { get; set; } = null;
         public string? Entity { get; set; } = null;
         public int? Id_Entity { get; set; } = null;
-        public DateTime ExecutionDate { get; set; } = DateTime.Now;
-        public int? Id_Executioner { get; set; } = null;
         public string? Payload { get; set; } = null;
     }
 }
