@@ -1,16 +1,6 @@
 import { defineStore } from 'pinia'
 import { makeApiRequest } from '@/helpers'
-import type { Definition } from '@/interfaces'
-
-export interface User extends Definition {
-  id?: number
-  email: string
-  username: string
-  password: string
-  name: string
-  statusCode: number | null
-  rights: string[] | null
-}
+import type { User } from '@/interfaces'
 
 const defaultEditables: User = {
   email: '',

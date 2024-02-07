@@ -21,7 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Controllers\Generated\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

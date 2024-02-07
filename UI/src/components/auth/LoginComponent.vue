@@ -52,10 +52,9 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 
 import { useAuthStore } from '@/stores/AuthStore'
-import { useToast } from 'primevue/usetoast'
+
 import { ref } from 'vue'
 
-const toast = useToast()
 const showLoginSpinner = ref<boolean>(false)
 
 const inputUsername = ref<string>('')
@@ -64,22 +63,10 @@ const staySignedIn = ref<boolean>(false)
 
 function submitLogin() {
   if (inputUsername.value.length < 6) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Invalid Username',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   if (inputPassword.value.length < 6) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Invalid Password',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   showLoginSpinner.value = true
   return useAuthStore()
@@ -87,13 +74,6 @@ function submitLogin() {
     .then((success) => {
       if (!success) {
         showLoginSpinner.value = false
-        toast.add({
-          severity: 'error',
-          summary: 'Register Message',
-          detail: 'Invalid Account',
-          life: 3000,
-          group: 'bl'
-        })
       }
     })
 }

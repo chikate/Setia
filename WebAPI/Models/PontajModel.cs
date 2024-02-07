@@ -11,7 +11,7 @@ namespace Setia.Models
 
         [ForeignKey("User")]
         public int Id_User { get; set; }
-        public UserModel? User { get; set; }
+        public UseRoleModel? User { get; set; }
 
         public DateTime BeginTime { get; set; } = DateTime.Now;
         public DateTime? EndTime { get; set; } = DateTime.Now.AddHours(8);

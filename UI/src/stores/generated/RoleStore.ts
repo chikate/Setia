@@ -1,18 +1,16 @@
 import { defineStore } from 'pinia'
 import { makeApiRequest } from '@/helpers'
-import type { Pontaj } from '@/interfaces'
+import type { Role } from '@/interfaces'
 
-const defaultEditables: Pontaj = {
-  beginTime: new Date().toISOString(),
-  endTime: new Date().toISOString(),
-  description: null,
+const defaultEditables: Role = {
+  name: '',
   active: true
 }
 
-export const usePontajStore = defineStore('Pontaj', {
+export const useRoleStore = defineStore('Roles', {
   state: (): {
-    allLoadedItems: Pontaj[]
-    selectedItem: Pontaj
+    allLoadedItems: Role[]
+    selectedItem: Role
   } => {
     return {
       allLoadedItems: [],
@@ -20,9 +18,9 @@ export const usePontajStore = defineStore('Pontaj', {
     }
   },
   actions: {
-    async getAll(): Promise<Pontaj[]> {
+    async getAll(): Promise<Role[]> {
       return (this.allLoadedItems = ((await makeApiRequest(`${this.$id}/GetAll`, 'get')) ??
-        []) as Pontaj[])
+        []) as Role[])
     },
     async add() {
       await makeApiRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {

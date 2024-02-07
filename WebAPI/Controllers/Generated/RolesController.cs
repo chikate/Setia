@@ -10,17 +10,17 @@ namespace Setia.Controllers
     [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class PontajController : ControllerBase
+    public class RolesController : ControllerBase
     {
         private readonly SetiaContext _context;
-        private readonly ILogger<PontajController> _logger;
+        private readonly ILogger<RolesController> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
 
-        public PontajController
+        public RolesController
         (
             SetiaContext context,
-            ILogger<PontajController> logger,
+            ILogger<RolesController> logger,
             IAudit audit,
             IAuth auth
         )
@@ -32,41 +32,40 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PontajModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<RoleModel>>> GetAll()
         {
             try
             {
                 int currentUserId = await _auth.GetCurrentUserId();
-                var pontajList = await _context.Pontaj
-                    .Where(p => p.Deleted == false && p.Id_User == currentUserId)
-                    .Include(p => p.User)
+                var pontajList = await _context.Roles
+                    .Where(p => p.Deleted == false)
                     .ToListAsync();
                 return Ok(pontajList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while retrieving Pontaj records.");
+                return BadRequest("An error occurred while retrieving RS records.");
             }
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PontajModel>> GetAllWithFilter([FromQuery] PontajModel filter)
+        public ActionResult<IEnumerable<RoleModel>> GetAllWithFilter([FromQuery] RoleModel filter)
         {
             try
             {
-                var filteredPontajList = AddFilter(_context.Pontaj.AsQueryable(), filter).ToList();
-                return Ok(filteredPontajList);
+                var filteredRSList = AddFilter(_context.Roles.AsQueryable(), filter).ToList();
+                return Ok(filteredRSList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while retrieving Pontaj records.");
+                return BadRequest("An error occurred while retrieving Role records.");
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] PontajModel model)
+        public async Task<ActionResult> Add([FromBody] RoleModel model)
         {
             try
             {
@@ -74,24 +73,24 @@ namespace Setia.Controllers
 
                 model.Id = 0;
                 model.Id_Executioner = await _auth.GetCurrentUserId();
-                model.Id_User = await _auth.GetCurrentUserId();
 
-                await _context.Pontaj.AddAsync(model);
+
+                await _context.Roles.AddAsync(model);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(model);
 
-                return Ok("Pontaj record added successfully.");
+                return Ok("RS record added successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while adding Pontaj record.");
+                return BadRequest("An error occurred while adding Role record.");
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update([FromBody] PontajModel model)
+        public async Task<ActionResult> Update([FromBody] RoleModel model)
         {
             try
             {
@@ -99,19 +98,19 @@ namespace Setia.Controllers
 
                 model.Id_Executioner = await _auth.GetCurrentUserId();
 
-                var oldModel = await _context.Pontaj.FindAsync(model.Id);
+                var oldModel = await _context.Roles.FindAsync(model.Id);
 
-                _context.Pontaj.Update(model);
+                _context.Roles.Update(model);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(model, oldModel);
 
-                return Ok("Pontaj record updated successfully.");
+                return Ok("RS record updated successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while updating Pontaj record.");
+                return BadRequest("An error occurred while updating RS record.");
             }
         }
 
@@ -120,29 +119,29 @@ namespace Setia.Controllers
         {
             try
             {
-                var pontajToDelete = await _context.Pontaj.FindAsync(id);
+                var pontajToDelete = await _context.Roles.FindAsync(id);
 
                 if (pontajToDelete == null) return NotFound();
 
-                _context.Pontaj.Remove(pontajToDelete);
+                _context.Roles.Remove(pontajToDelete);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(pontajToDelete);
 
-                return Ok("Pontaj record deleted successfully.");
+                return Ok("RS record deleted successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while deleting Pontaj record.");
+                return BadRequest("An error occurred while deleting RS record.");
             }
         }
 
-        private IQueryable<PontajModel> AddFilter(IQueryable<PontajModel> query, PontajModel filter)
+        private IQueryable<RoleModel> AddFilter(IQueryable<RoleModel> query, RoleModel filter)
         {
             if (filter != null)
             {
-                foreach (var property in typeof(PontajModel).GetProperties())
+                foreach (var property in typeof(RoleModel).GetProperties())
                 {
                     query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }

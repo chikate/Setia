@@ -22,7 +22,7 @@
     <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
         v-tooltip.left="{
-          value: useSettingsStore().useDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+          value: `Switch to ${useSettingsStore().useDarkMode ? 'light' : 'dark'} mode`,
           showDelay: 700,
           hideDelay: 100
         }"
@@ -66,6 +66,30 @@
         </RouterLink>
       </div>
 
+      <i
+        v-badge="temp_notifications.length"
+        v-if="useAuthStore().getToken()"
+        v-tooltip.left="{
+          value: `Notifications`,
+          showDelay: 700,
+          hideDelay: 100
+        }"
+        class="pi pi-bell cursor-pointer"
+        @click="notificationsOverlay.toggle($event)"
+      >
+        <OverlayPanel ref="notificationsOverlay" class="p-0 m-0">
+          <div class="flex flex-column">
+            <Button
+              v-for="notification in temp_notifications"
+              :key="notification"
+              :label="notification"
+              class="p-1"
+              text
+            />
+          </div>
+        </OverlayPanel>
+      </i>
+
       <div @click="accountOverlay.toggle($event)" class="cursor-pointer">
         <i class="pi pi-user">
           <OverlayPanel ref="accountOverlay" class="p-0 m-0">
@@ -90,13 +114,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore'
 import { useSettingsStore } from '@/stores/SettingsStore'
-import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
 
-const toast = useToast()
-
 const accountOverlay = ref()
+const notificationsOverlay = ref()
 const languageOverlay = ref()
+
+const temp_notifications = ref(['Notification1', 'Notification2', 'Notification3'])
 
 const scrollPosition = ref<number>(0)
 const scrollThresHold = ref<number>(200)
@@ -105,26 +129,12 @@ const languages = ref([
     label: 'English',
     command: () => {
       languageOverlay.value.hide()
-      toast.add({
-        severity: 'success',
-        summary: 'Changed language to English',
-        detail: '',
-        life: 3000,
-        group: 'bl'
-      })
     }
   },
   {
     label: 'Română - Romanian',
     command: () => {
       languageOverlay.value.hide()
-      toast.add({
-        severity: 'success',
-        summary: 'Schimbat limba în Română',
-        detail: '',
-        life: 3000,
-        group: 'bl'
-      })
     }
   }
 ])

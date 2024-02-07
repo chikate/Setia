@@ -15,6 +15,11 @@
     </div>
     <div class="flex flex-column py-8">
       <CRUDT :store="usePontajStore()" class="py-8 my-8" />
+      <CRUDT :store="useRoleStore()" class="py-8 my-8">
+        <template #expansion>
+          <MultiSelect :options="['Action1', 'Action2']" display="chip" placeholder="Add action" />
+        </template>
+      </CRUDT>
       <CRUDT :store="useUserStore()" class="py-8 my-8" />
       <!-- <Calendar
         class="align-self-center flex flex-wrap"
@@ -50,6 +55,7 @@
 import { useAuthStore } from '@/stores/AuthStore'
 import { usePontajStore } from '@/stores/PontajStore'
 import { useUserStore } from '@/stores/generated/UserStore'
+import { useRoleStore } from '@/stores/generated/RoleStore'
 import { ref } from 'vue'
 
 const nodes = ref([])

@@ -8,7 +8,7 @@ namespace Setia.Structs
         public DateTime ExecutionDate { get; set; } = DateTime.Now;
 
         [ForeignKey("Executioner")]
-        public int? Id_Executioner { get; set; }
-        public UserModel? Executioner { get; set; }
+        public int? Id_Executioner { get; set; } = null;
+        public UseRoleModel? Executioner { get; set; } = null;
     }
 }

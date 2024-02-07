@@ -78,10 +78,8 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore'
-import { useToast } from 'primevue/usetoast'
-import { ref } from 'vue'
 
-const toast = useToast()
+import { ref } from 'vue'
 
 const inputEmail = ref<string>('')
 const inputUsername = ref<string>('')
@@ -90,40 +88,16 @@ const inputRepeatPassword = ref<string>('')
 
 function registerClickedHandler() {
   if (!inputEmail.value) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Invalid Email',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   if (inputUsername.value.length < 6) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Invalid Username',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   if (inputPassword.value.length < 6) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Invalid Password',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   if (inputPassword.value !== inputRepeatPassword.value) {
-    return toast.add({
-      severity: 'error',
-      summary: 'Register Message',
-      detail: 'Passwords does not match',
-      life: 3000,
-      group: 'bl'
-    })
+    return
   }
   return useAuthStore().tryRegister(inputEmail.value, inputUsername.value, inputPassword.value)
 }

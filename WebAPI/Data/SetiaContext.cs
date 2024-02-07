@@ -14,12 +14,14 @@ public partial class SetiaContext : DbContext
     {
     }
 
-    public DbSet<UserModel> Users { get; set; }
-    public DbSet<PontajModel> Pontaj { get; set; }
     public DbSet<AuditModel> Audit { get; set; }
+    public DbSet<PontajModel> Pontaj { get; set; }
+    public DbSet<UseRoleModel> Users { get; set; }
+    public DbSet<RoleModel> Roles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         OnModelCreatingPartial(modelBuilder);
     }
 

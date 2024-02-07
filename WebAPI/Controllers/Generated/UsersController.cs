@@ -32,7 +32,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UseRoleModel>>> GetAll()
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<UserModel>> GetAllWithFilter([FromQuery] UserModel filter)
+        public ActionResult<IEnumerable<UseRoleModel>> GetAllWithFilter([FromQuery] UseRoleModel filter)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] UserModel model)
+        public async Task<ActionResult> Add([FromBody] UseRoleModel model)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace Setia.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update([FromBody] UserModel model)
+        public async Task<ActionResult> Update([FromBody] UseRoleModel model)
         {
             try
             {
@@ -146,11 +146,11 @@ namespace Setia.Controllers
 
         }
 
-        private static IQueryable<UserModel> AddFilter(IQueryable<UserModel> query, UserModel filter)
+        private static IQueryable<UseRoleModel> AddFilter(IQueryable<UseRoleModel> query, UseRoleModel filter)
         {
             if (filter != null)
             {
-                foreach (var property in typeof(UserModel).GetProperties())
+                foreach (var property in typeof(UseRoleModel).GetProperties())
                 {
                     query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }

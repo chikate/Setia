@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { makeApiRequest } from '@/helpers'
-import type { User } from '@/stores/generated/UserStore'
+import type { User } from '@/interfaces'
 
 export const useAuthStore = defineStore('Auth', {
   state: (): {

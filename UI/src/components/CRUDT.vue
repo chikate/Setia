@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ROWS, DEFAULT_ROWS_INDEX } from '@/constants'
+import { useAuthStore } from '@/stores/AuthStore'
+import { FilterMatchMode } from 'primevue/api'
 import { capitalizeString } from '@/helpers'
 import { ref } from 'vue'
 
@@ -7,6 +9,7 @@ const props = defineProps(['store'])
 
 const showDialog = ref<boolean>()
 const showMultipleDelete = ref<boolean>(false)
+const showFilters = ref<boolean>(false)
 const selectedProduct = ref()
 const expandedRows = ref()
 const selectedColumns = ref<{ field: string; header: string }[]>([])
@@ -27,7 +30,6 @@ const exposedData = ref(
 )
 
 // add column filters here otherwhise it will brake, we need to make this runtime depending push values
-import { FilterMatchMode } from 'primevue/api'
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   'user.email': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -46,11 +48,16 @@ const filters = ref({
 </script>
 
 <template>
-  <div class="flex justify-content-center">
+  <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
+  <div class="flex justify-content-center" v-if="useAuthStore().getToken()">
     <DataTable
       @vue:before-mount="store.getAll()"
       :value="store.allLoadedItems"
-      @row-dblclick="(store.selectedItem = $event.data), (showDialog = !showDialog)"
+      @row-dblclick="
+        $slots.expansion
+          ? console.log('expand coming soon')
+          : ((store.selectedItem = $event.data), (showDialog = !showDialog))
+      "
       size="small"
       stripedRows
       scrollable
@@ -60,7 +67,7 @@ const filters = ref({
       v-model:selection="selectedProduct"
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
-      filterDisplay="row"
+      :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="exposedData.field"
       paginator
       :rows="ROWS[DEFAULT_ROWS_INDEX]"
@@ -72,7 +79,7 @@ const filters = ref({
       <template #header>
         <div class="flex flex-wrap gap-2 align-items-center">
           <h4 class="m-0 flex-grow-1">{{ store.$id }}</h4>
-          <div style="text-align: left">
+          <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
               :options="exposedData"
@@ -81,7 +88,7 @@ const filters = ref({
               placeholder="Select Columns"
             />
           </div>
-          <span class="p-float-label p-input-icon-left">
+          <span v-if="showFilters" class="p-float-label p-input-icon-left">
             <i class="pi pi-search" />
             <InputText v-model="filters['global'].value" placeholder="Search..." />
             <label>Search...</label>
@@ -99,6 +106,20 @@ const filters = ref({
                 command: () => {
                   ;(showMultipleDelete = !showMultipleDelete), (selectedProduct = [])
                 }
+              },
+              {
+                label: 'Collapse all',
+                icon: 'pi pi-angle-right',
+                command: () => {
+                  expandedRows = null
+                }
+              },
+              {
+                label: showMultipleDelete ? 'Hide' : 'Show' + ' filters',
+                icon: showMultipleDelete ? 'pi pi-filter' : 'pi-filter-slash',
+                command: () => {
+                  showFilters = !showFilters
+                }
               }
             ]"
           />
@@ -115,11 +136,13 @@ const filters = ref({
         v-if="showMultipleDelete && !(selectedColumns.length == exposedData?.length)"
         selectionMode="multiple"
         class="pr-0 pt-0"
+        style="width: 1%"
       />
       <Column
         v-if="!(selectedColumns.length == exposedData?.length) && $slots.expansion"
         expander
         class="pr-0"
+        style="width: 1%"
       />
 
       <Column v-if="!(selectedColumns.length == exposedData?.length)" style="width: 3rem">
