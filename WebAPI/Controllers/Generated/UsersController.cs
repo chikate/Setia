@@ -32,7 +32,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UseRoleModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<UserModel>>> GetAll()
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<UseRoleModel>> GetAllWithFilter([FromQuery] UseRoleModel filter)
+        public ActionResult<IEnumerable<UserModel>> GetAllWithFilter([FromQuery] UserModel filter)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] UseRoleModel model)
+        public async Task<IActionResult> Add([FromBody] UserModel model)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Setia.Controllers
                 }
 
                 model.Id = 0;
-                model.Id_Executioner = await _auth.GetCurrentUserId();
+                model.Author_Id = await _auth.GetCurrentUserId();
 
 
                 await _context.Users.AddAsync(model);
@@ -93,7 +93,7 @@ namespace Setia.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update([FromBody] UseRoleModel model)
+        public async Task<IActionResult> Update([FromBody] UserModel model)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace Setia.Controllers
                     return BadRequest();
                 }
 
-                model.Id_Executioner = await _auth.GetCurrentUserId();
+                model.Author_Id = await _auth.GetCurrentUserId();
 
                 _context.Users.Update(model);
                 await _context.SaveChangesAsync();
@@ -117,7 +117,7 @@ namespace Setia.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
@@ -146,11 +146,11 @@ namespace Setia.Controllers
 
         }
 
-        private static IQueryable<UseRoleModel> AddFilter(IQueryable<UseRoleModel> query, UseRoleModel filter)
+        private static IQueryable<UserModel> AddFilter(IQueryable<UserModel> query, UserModel filter)
         {
             if (filter != null)
             {
-                foreach (var property in typeof(UseRoleModel).GetProperties())
+                foreach (var property in typeof(UserModel).GetProperties())
                 {
                     query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }

@@ -16,7 +16,7 @@ namespace Setia.Services
             _logger = logger;
         }
 
-        public Task SendEmail(string email, string subject, string message)
+        public Task Send(string to, string subject, string message)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace Setia.Services
                     Credentials = new NetworkCredential(mail, "")
                 }.SendMailAsync(new MailMessage(
                    from: mail,
-                   to: email,
+                   to,
                    subject,
                    message));
             }
@@ -36,6 +36,11 @@ namespace Setia.Services
                 _logger.LogError(ex, this.GetType().FullName);
             }
             return Task.CompletedTask;
+        }
+
+        public Task UploadFile(IFormFile file, string description)
+        {
+            throw new NotImplementedException();
         }
     }
 }

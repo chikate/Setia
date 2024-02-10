@@ -1,4 +1,4 @@
-import { API_URL } from '@/constants'
+import { API_URL } from '@/config'
 
 export async function makeApiRequest(path: string, method: string, body?: any): Promise<any> {
   const response = await fetch(API_URL + path, {
@@ -20,6 +20,7 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
       return response
     }
   }
+  return false
 }
 
 export function capitalizeString(input: string): string {

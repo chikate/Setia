@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { makeApiRequest } from '@/helpers'
 
-export const useCRUDStore = (storeName: string) =>
+export const useCRUDStore = (storeName: string, defaultValues: any) =>
   defineStore(storeName, {
     state: (): {
-      allLoadedItems: []
-      selectedItem: any
+      allLoadedItems: (typeof defaultValues)[]
+      selectedItem: typeof defaultValues
     } => {
       return {
         allLoadedItems: [],
@@ -13,32 +13,32 @@ export const useCRUDStore = (storeName: string) =>
       }
     },
     actions: {
-      async getAll(): Promise<[]> {
-        return (this.allLoadedItems = (await makeApiRequest(`${storeName}/GetAll`, 'get')) ?? [])
+      async getAll(): Promise<(typeof this.allLoadedItems)[]> {
+        return (this.allLoadedItems = (await makeApiRequest(`${this.$id}/GetAll`, 'get')) ?? [])
       },
       async add() {
-        await makeApiRequest(`${storeName}/Add`, 'post', this.selectedItem).then(() => {
+        await makeApiRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {
           this.getAll()
         })
       },
       async update() {
-        await makeApiRequest(`${storeName}/Update`, 'put', this.selectedItem).then(() => {
+        await makeApiRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
           this.getAll()
         })
       },
       async delete() {
         if (this.selectedItem && 'delete' in this.selectedItem) {
           this.selectedItem.delete = false
-          await makeApiRequest(`${storeName}/Update`, 'put', this.selectedItem).then(() => {
+          await makeApiRequest(`${this.$id}/Update`, 'put', this.selectedItem).then(() => {
             this.getAll()
           })
         }
       },
       getDefaults() {
-        return {}
+        return defaultValues
       },
       async setSelectionToDefaults() {
-        this.selectedItem = {}
+        this.selectedItem = this.getDefaults()
       }
     }
   })

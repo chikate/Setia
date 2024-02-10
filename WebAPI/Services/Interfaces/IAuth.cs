@@ -1,4 +1,4 @@
-using Setia.Structs;
+using Setia.Models;
 
 namespace Setia.Services.Interfaces
 {
@@ -8,7 +8,7 @@ namespace Setia.Services.Interfaces
         Task<IEnumerable<string>> GetUserRights(int id_user);
         Task<IEnumerable<string>> GetUserRoles(int id_user);
         IEnumerable<string> GetAllActions();
-        Task Register(RegistrationDto registration);
+        Task Register(UserModel registration);
         Task AssignRoleToUser(int id_claim, int id_user);
         Task RemoveRoleFromUser(int id_claim, int id_user);
         Task AssignClaimToUser(int id_claim, int id_user);

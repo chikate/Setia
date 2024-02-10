@@ -31,7 +31,7 @@ namespace Setia.Services
             {
                 var auditModel = new AuditModel
                 {
-                    Id_Executioner = await _auth.GetCurrentUserId(),
+                    Author_Id = await _auth.GetCurrentUserId(),
                     Entity = typeof(T).FullName,
                     Id_Entity = GetEntityId(model),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))

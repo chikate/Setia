@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
-    public class QuizzModel : DefinitionDto
+    public class QuizzModel : DefinitionStruct
     {
         [Key]
         public int Id { get; set; } = 0;

@@ -1,10 +1,7 @@
 export interface BaseAudit {
-  creationDate?: string
-  id_CreatedBy?: number | null
-  createdBy?: User | null
-  lastUpdateDate?: string | null
-  id_LastUpdateBy?: number | null
-  lastUpdateBy?: User | null
+  creationDate: string
+  creator_Id: number | null
+  creator: User | null
 }
 export interface Definition extends BaseAudit {
   active: boolean
@@ -16,18 +13,22 @@ export interface User extends Definition {
   username: string
   password: string
   name: string
-  statusCode: number | null
-  rights: string[] | null
 }
 export interface Pontaj extends Definition {
   id?: number
   id_User?: number
-  user?: User | null
+  user?: User
   beginTime: string
   endTime?: string | null
-  description: string | null
+  description: string
 }
 export interface Role extends Definition {
   id?: number
-  name?: string
+  name: string
+}
+export interface Right extends Definition {
+  id?: number
+  name: string
+  action_id: number | null
+  filter: string | null
 }

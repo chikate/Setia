@@ -66,14 +66,14 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] PontajModel model)
+        public async Task<IActionResult> Add([FromBody] PontajModel model)
         {
             try
             {
                 if (!ModelState.IsValid) return BadRequest("Invalid model state.");
 
                 model.Id = 0;
-                model.Id_Executioner = await _auth.GetCurrentUserId();
+                model.Author_Id = await _auth.GetCurrentUserId();
                 model.Id_User = await _auth.GetCurrentUserId();
 
                 await _context.Pontaj.AddAsync(model);
@@ -91,13 +91,13 @@ namespace Setia.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update([FromBody] PontajModel model)
+        public async Task<IActionResult> Update([FromBody] PontajModel model)
         {
             try
             {
                 if (!ModelState.IsValid) return BadRequest("Invalid model state.");
 
-                model.Id_Executioner = await _auth.GetCurrentUserId();
+                model.Author_Id = await _auth.GetCurrentUserId();
 
                 var oldModel = await _context.Pontaj.FindAsync(model.Id);
 
@@ -116,7 +116,7 @@ namespace Setia.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {

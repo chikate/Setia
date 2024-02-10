@@ -15,9 +15,8 @@ export const useAuthStore = defineStore('Auth', {
           if (token.length > 50) {
             localStorage.setItem('token', token)
             window.location.reload()
-            return Boolean(token)
           }
-          return false
+          return Boolean(token)
         }
       )
     },
@@ -28,8 +27,15 @@ export const useAuthStore = defineStore('Auth', {
     getToken(): string | null {
       return localStorage.getItem('token')
     },
-    async tryRegister(email: string, username: string, password: string) {
-      return await makeApiRequest(`Auth/Register`, 'post', { email, login: { username, password } })
+    async tryRegister(email: string, username: string, password: string): Promise<boolean> {
+      return await makeApiRequest(`Auth/Register`, 'post', { email, username, password }).then(
+        (successful: boolean) => {
+          if (successful) {
+            window.location.assign('/')
+          }
+          return successful
+        }
+      )
     }
   }
 })

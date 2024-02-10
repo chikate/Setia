@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Setia.Data;
+using Setia.Models;
 using Setia.Services.Interfaces;
-using Setia.Structs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -36,24 +36,12 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginDto login)
+        public async Task<IActionResult> Login([FromBody] UserModel login)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Invalid credentials");
-                }
-
-                if (login.Username == null || login.Username.Length < 6)
-                {
-                    return BadRequest("Invalid username (too short)");
-                }
-
-                if (login.Password == null || login.Password.Length < 6)
-                {
-                    return BadRequest("Invalid password (too short)");
-                }
+                if (login.Username == null || login.Username.Length < 6) return BadRequest("Invalid username (too short)");
+                if (login.Password == null || login.Password.Length < 6) return BadRequest("Invalid password (too short)");
 
                 var user = await _context.Users
                     .Where(u => u.Username == login.Username && u.Password == login.Password)
@@ -62,20 +50,21 @@ namespace Setia.Controllers
                 {
                     List<Claim> claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.Username),
+                        new Claim(ClaimTypes.Name, user.Name),
                         new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Name, user.Username),
-                        new Claim(ClaimTypes.GivenName, user.Name),
-                        new Claim(ClaimTypes.Surname, user.Name),
+                        new Claim(ClaimTypes.NameIdentifier, user.Username),
                         new Claim(ClaimTypes.Role, "Default"),
                     };
 
                     var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
                         issuer: _config["Jwt:Issuer"],
                         audience: _config["Jwt:Audience"],
-                        claims: claims,
-                        expires: DateTime.Now.AddMinutes(15),
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"])), SecurityAlgorithms.HmacSha256)));
+                        claims,
+                        expires: DateTime.Now.AddDays(1),
+                        signingCredentials: new SigningCredentials(
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(_config["Jwt:Key"])),
+                                SecurityAlgorithms.HmacSha256)));
 
                     return Ok(token);
                 }
@@ -92,7 +81,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegistrationDto registration)
+        public async Task<IActionResult> Register([FromBody] UserModel registration)
         {
             try
             {

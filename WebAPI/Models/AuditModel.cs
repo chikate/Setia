@@ -1,10 +1,9 @@
-﻿using Setia.Services.Interfaces;
-using Setia.Structs;
+﻿using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models
 {
-    public class AuditModel : BaseAuditDto
+    public class AuditModel : BaseAuditStruct
     {
         [Key]
         public int Id { get; set; } = 0;

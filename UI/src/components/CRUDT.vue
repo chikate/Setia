@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ROWS, DEFAULT_ROWS_INDEX } from '@/constants'
+import { ROWS, DEFAULT_ROWS_INDEX } from '@/config'
 import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
 import { capitalizeString } from '@/helpers'
@@ -209,13 +209,30 @@ const filters = ref({
             showTime
             hourFormat="24"
           /> -->
-            <AutoComplete
-              v-if="typeof store.selectedItem[field] == 'object'"
+
+            <Dropdown
+              v-if="typeof store.selectedItem[field] == 'object' && field.includes('_id')"
               v-model="store.selectedItem[field]"
-              :options="store.selectedItem[field]"
-              option-label="name"
+              :placeholder="capitalizeString(field).replaceAll('_id', '')"
               filter
+              :options="[
+                { name: 'asd', id: 0 },
+                { name: 'asdas', id: 1 }
+              ]"
+              option-label="name"
+              option-value="id"
+            />
+            <AutoComplete
+              v-else-if="typeof store.selectedItem[field] == 'object'"
+              v-model="store.selectedItem[field]"
               :placeholder="capitalizeString(field)"
+              filter
+              :options="[
+                { name: 'asd', id: 0 },
+                { name: 'asdas', id: 1 }
+              ]"
+              option-label="name"
+              option-value="id"
             />
             <InputNumber
               v-else-if="typeof store.selectedItem[field] == 'number'"
@@ -238,7 +255,7 @@ const filters = ref({
               v-model="store.selectedItem[field]"
               :placeholder="capitalizeString(field)"
             />
-            <label>{{ capitalizeString(field) }}</label>
+            <label>{{ capitalizeString(field).replaceAll('_id', '') }}</label>
           </span>
         </div>
 

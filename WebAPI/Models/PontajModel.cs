@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models
 {
-    public class PontajModel : DefinitionDto
+    public class PontajModel : DefinitionStruct
     {
         [Key]
         public int Id { get; set; } = 0;
 
         [ForeignKey("User")]
         public int Id_User { get; set; }
-        public UseRoleModel? User { get; set; }
+        public UserModel? User { get; set; }
 
         public DateTime BeginTime { get; set; } = DateTime.Now;
         public DateTime? EndTime { get; set; } = DateTime.Now.AddHours(8);

@@ -1,10 +1,9 @@
 ﻿using Setia.Structs;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models
 {
-    public class UseRoleModel : DefinitionDto
+    public class UserModel : DefinitionStruct
     {
         [Key]
         public int Id { get; set; }

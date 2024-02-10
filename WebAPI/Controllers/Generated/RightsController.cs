@@ -10,17 +10,17 @@ namespace Setia.Controllers
     [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class RolesController : ControllerBase
+    public class RightsController : ControllerBase
     {
         private readonly SetiaContext _context;
-        private readonly ILogger<RolesController> _logger;
+        private readonly ILogger<RightsController> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
 
-        public RolesController
+        public RightsController
         (
             SetiaContext context,
-            ILogger<RolesController> logger,
+            ILogger<RightsController> logger,
             IAudit audit,
             IAuth auth
         )
@@ -32,12 +32,12 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoleModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<RightModel>>> GetAll()
         {
             try
             {
                 int currentUserId = await _auth.GetCurrentUserId();
-                var pontajList = await _context.Roles
+                var pontajList = await _context.Rights
                     .Where(p => p.Deleted == false)
                     .ToListAsync();
                 return Ok(pontajList);
@@ -45,27 +45,27 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while retrieving RS records.");
+                return BadRequest("An error occurred while retrieving Rights records.");
             }
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<RoleModel>> GetAllWithFilter([FromQuery] RoleModel filter)
+        public ActionResult<IEnumerable<RightModel>> GetAllWithFilter([FromQuery] RightModel filter)
         {
             try
             {
-                var filteredRSList = AddFilter(_context.Roles.AsQueryable(), filter).ToList();
-                return Ok(filteredRSList);
+                var filteredRightsList = AddFilter(_context.Rights.AsQueryable(), filter).ToList();
+                return Ok(filteredRightsList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while retrieving Role records.");
+                return BadRequest("An error occurred while retrieving Rights records.");
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] RoleModel model)
+        public async Task<IActionResult> Add([FromBody] RightModel model)
         {
             try
             {
@@ -75,22 +75,22 @@ namespace Setia.Controllers
                 model.Author_Id = await _auth.GetCurrentUserId();
 
 
-                await _context.Roles.AddAsync(model);
+                await _context.Rights.AddAsync(model);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(model);
 
-                return Ok("RS record added successfully.");
+                return Ok("Rights record added successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while adding Role record.");
+                return BadRequest("An error occurred while adding Rights record.");
             }
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] RoleModel model)
+        public async Task<IActionResult> Update([FromBody] RightModel model)
         {
             try
             {
@@ -98,19 +98,19 @@ namespace Setia.Controllers
 
                 model.Author_Id = await _auth.GetCurrentUserId();
 
-                var oldModel = await _context.Roles.FindAsync(model.Id);
+                var oldModel = await _context.Rights.FindAsync(model.Id);
 
-                _context.Roles.Update(model);
+                _context.Rights.Update(model);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(model, oldModel);
 
-                return Ok("RS record updated successfully.");
+                return Ok("Rights record updated successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while updating RS record.");
+                return BadRequest("An error occurred while updating Rights record.");
             }
         }
 
@@ -119,29 +119,29 @@ namespace Setia.Controllers
         {
             try
             {
-                var pontajToDelete = await _context.Roles.FindAsync(id);
+                var pontajToDelete = await _context.Rights.FindAsync(id);
 
                 if (pontajToDelete == null) return NotFound();
 
-                _context.Roles.Remove(pontajToDelete);
+                _context.Rights.Remove(pontajToDelete);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail(pontajToDelete);
 
-                return Ok("RS record deleted successfully.");
+                return Ok("Rights record deleted successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while deleting RS record.");
+                return BadRequest("An error occurred while deleting Rights record.");
             }
         }
 
-        private IQueryable<RoleModel> AddFilter(IQueryable<RoleModel> query, RoleModel filter)
+        private IQueryable<RightModel> AddFilter(IQueryable<RightModel> query, RightModel filter)
         {
             if (filter != null)
             {
-                foreach (var property in typeof(RoleModel).GetProperties())
+                foreach (var property in typeof(RightModel).GetProperties())
                 {
                     query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }

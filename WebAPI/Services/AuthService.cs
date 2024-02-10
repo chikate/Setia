@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
-using Setia.Structs;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -79,31 +78,26 @@ namespace Setia.Services
             }
             return actions;
         }
-        public async Task Register(RegistrationDto registration)
+        public async Task Register(UserModel registration)
         {
             try
             {
                 if (registration.Email == null || !Regex.IsMatch(registration.Email, regexEmailValidation)) return;
-                if (registration.Login.Username == null || registration.Login.Username.Length < 6) return;
+                if (registration.Username == null || registration.Username.Length < 6) return;
+                if (registration.Password == null || registration.Password.Length < 6) return;
 
                 await _context.Users
-                    .Where(u => u.Username == registration.Login.Username)
+                    .Where(u => u.Username == registration.Username)
                     .SingleOrDefaultAsync();
 
-                if (registration.Login.Password == null || registration.Login.Password.Length < 6) return;
-
-                _context.Users.Add(new UseRoleModel()
-                {
-                    Email = registration.Email,
-                    Username = registration.Login.Username,
-                    Password = registration.Login.Password,
-                });
+                registration.Id = 0;
+                _context.Users.Add(registration);
 
                 await _context.SaveChangesAsync();
 
-                await _sender.SendEmail(registration.Email, "Account registration / mail validation", "");
-                return;
+                await _sender.Send(registration.Email, "Account registration / mail validation", "");
 
+                return;
             }
             catch (Exception ex)
             {
@@ -127,7 +121,7 @@ namespace Setia.Services
                 {
                     user.Password = newPassword;
                     await _context.SaveChangesAsync();
-                    await _sender.SendEmail(email, "Account registration / mail validation", $"You just changed your password for {username}");
+                    await _sender.Send(email, "Account registration / mail validation", $"You just changed your password for {username}");
                     return;
                 }
                 return;

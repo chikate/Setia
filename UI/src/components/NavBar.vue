@@ -2,7 +2,7 @@
   <nav
     class="fixed z-5 w-screen flex flex-row gap-8 pointer-events-none px-8"
     :class="[
-      !(scrollPosition < scrollThresHold && $route.name == 'home')
+      !(scrollPosition < scrollThresHold && $route.name == '/')
         ? 'py-3 bg-gray-alpha-20 blur-10'
         : 'py-4 text-xl'
     ]"
@@ -98,7 +98,7 @@
               @close="accountOverlay.hide($event)"
             />
             <div v-else class="flex flex-column gap-3">
-              <Button label="Profile" />
+              <Button label="Profile" @click="$router.push('/profile')" />
               <Button label="LogOut" @click="useAuthStore().LogOut()" />
             </div>
           </OverlayPanel>
@@ -141,12 +141,8 @@ const languages = ref([
 
 // Functions
 window.addEventListener('scroll', function () {
-  scrollPosition.value = window.scrollY
-  if (languageOverlay.value.visible == true) {
-    languageOverlay.value.hide()
-  }
-  if (accountOverlay.value.visible == true) {
-    accountOverlay.value.hide()
+  if (window.location.pathname == '/') {
+    scrollPosition.value = window.scrollY
   }
 })
 </script>

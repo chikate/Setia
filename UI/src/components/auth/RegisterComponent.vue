@@ -86,19 +86,11 @@ const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 const inputRepeatPassword = ref<string>('')
 
-function registerClickedHandler() {
-  if (!inputEmail.value) {
-    return
-  }
-  if (inputUsername.value.length < 6) {
-    return
-  }
-  if (inputPassword.value.length < 6) {
-    return
-  }
-  if (inputPassword.value !== inputRepeatPassword.value) {
-    return
-  }
-  return useAuthStore().tryRegister(inputEmail.value, inputUsername.value, inputPassword.value)
+async function registerClickedHandler() {
+  if (!inputEmail.value) return
+  if (inputUsername.value.length < 6) return
+  if (inputPassword.value.length < 6) return
+  if (inputPassword.value !== inputRepeatPassword.value) return
+  await useAuthStore().tryRegister(inputEmail.value, inputUsername.value, inputPassword.value)
 }
 </script>
