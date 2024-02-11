@@ -18,7 +18,6 @@ public partial class SetiaContext : DbContext
     public DbSet<PontajModel> Pontaj { get; set; }
     public DbSet<UserModel> Users { get; set; }
     public DbSet<RoleModel> Roles { get; set; }
-    public DbSet<RightModel> Rights { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

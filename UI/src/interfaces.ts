@@ -19,7 +19,7 @@ export interface Pontaj extends Definition {
   id_User?: number
   user?: User
   beginTime: string
-  endTime?: string | null
+  endTime: string | null
   description: string
 }
 export interface Role extends Definition {

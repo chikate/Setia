@@ -1,13 +1,16 @@
 import { API_URL } from '@/config'
 
 export async function makeApiRequest(path: string, method: string, body?: any): Promise<any> {
+  const customHeader = new Headers()
+  if (!(body instanceof FormData)) {
+    customHeader.append('Content-Type', `application/${body ? 'json' : 'x-www-form-urlencoded'}`)
+  }
+  customHeader.append('Authorization', `Bearer ${localStorage.getItem('token')}`)
+
   const response = await fetch(API_URL + path, {
     method: method.toUpperCase(),
-    headers: {
-      'Content-Type': `application/${body ? 'json' : 'x-www-form-urlencoded'}`,
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    },
-    body: body ? JSON.stringify(body) : undefined
+    headers: customHeader,
+    body: body instanceof FormData ? body : JSON.stringify(body)
   })
 
   if (response.status === 200) {
@@ -20,6 +23,7 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
       return response
     }
   }
+
   return false
 }
 

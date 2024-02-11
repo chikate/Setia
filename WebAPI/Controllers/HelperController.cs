@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Setia.Data;
-using Setia.Models;
 using Setia.Services.Interfaces;
-using Setia.Structs;
 
 namespace Setia.Controllers
 {
@@ -36,21 +33,28 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload([FromForm] FileUploadDto files)
+        public async Task<IActionResult> Upload(List<IFormFile> files)
         {
             try
             {
-                files.Author_Id = await _auth.GetCurrentUserId();
+                var authorId = await _auth.GetCurrentUserId();
 
-                if (files.Author_Id == null || files.Author_Id == 0) return BadRequest();
+                if (authorId == null || authorId == 0) return BadRequest("Invalid author ID");
 
-                foreach (var file in files.Files)
+                var userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, authorId.ToString());
+                if (!Directory.Exists(userDirectory))
+                {
+                    Directory.CreateDirectory(userDirectory);
+                }
+
+                foreach (var file in files)
                 {
                     if (file.Length > 0)
                     {
-                        using (var stream = new FileStream(Path.Combine(_hostingEnvironment.WebRootPath, files.Author_Id.ToString(), file.FileName), FileMode.Create))
+                        using (var stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
+                            await _audit.LogAuditTrail(stream);
                         }
                     }
                 }
@@ -60,8 +64,14 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest("An error occurred while retrieving Pontaj records.");
+                return BadRequest("An error occurred while uploading files.");
             }
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> GetAllActions()
+        {
+            return Ok(_auth.GetAllActions());
         }
     }
 }

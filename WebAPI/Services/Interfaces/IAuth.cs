@@ -7,7 +7,7 @@ namespace Setia.Services.Interfaces
         Task<int> GetCurrentUserId();
         Task<IEnumerable<string>> GetUserRights(int id_user);
         Task<IEnumerable<string>> GetUserRoles(int id_user);
-        IEnumerable<string> GetAllActions();
+        IEnumerable<object> GetAllActions();
         Task Register(UserModel registration);
         Task AssignRoleToUser(int id_claim, int id_user);
         Task RemoveRoleFromUser(int id_claim, int id_user);

@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutView: typeof import('./src/views/AboutView.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
+    Avatar: typeof import('primevue/avatar')['default']
     Button: typeof import('primevue/button')['default']
     CareerView: typeof import('./src/views/CareerView.vue')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
@@ -21,6 +22,7 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     DownloadView: typeof import('./src/views/DownloadView.vue')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
+    FileUpload: typeof import('primevue/fileupload')['default']
     FooterBar: typeof import('./src/components/FooterBar.vue')['default']
     HomeView: typeof import('./src/views/HomeView.vue')['default']
     InlineMessage: typeof import('primevue/inlinemessage')['default']
@@ -50,6 +52,7 @@ declare module 'vue' {
     SumeruRegion: typeof import('./src/components/regions/SumeruRegion.vue')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabView: typeof import('primevue/tabview')['default']
+    TreeSelect: typeof import('primevue/treeselect')['default']
     TriStateCheckbox: typeof import('primevue/tristatecheckbox')['default']
     UniverseView: typeof import('./src/views/UniverseView.vue')['default']
     UsernameRecoveryComponent: typeof import('./src/components/auth/recovery/UsernameRecoveryComponent.vue')['default']

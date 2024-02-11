@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
@@ -63,21 +64,33 @@ namespace Setia.Services
             var user = await _context.Users.FindAsync(id_user);
             return [];
         }
-        public IEnumerable<string> GetAllActions()
+        public IEnumerable<object> GetAllActions()
         {
-            List<string> actions = new List<string>();
+            List<object> actions = new List<object>();
+
             foreach (var controller in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
             {
-                foreach (var method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                if (!controller.IsDefined(typeof(AllowAnonymousAttribute), inherit: true))
                 {
-                    if (method.DeclaringType == controller)
+                    List<object> children = new List<object>();
+
+                    foreach (var parameter in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
                     {
-                        string right = $"{controller.Name}.{method.Name}";
+                        children.Add(new { key = $"{controller.Name}", label = $"{controller.Name.Replace("Controller", "")}" });
+                    }
+
+                    foreach (var method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                    {
+                        if (method.DeclaringType == controller)
+                        {
+                            actions.Add(new { key = $"{controller.Name}.{method.Name}", label = $"{controller.Name.Replace("Controller", "")} {method.Name}", children });
+                        }
                     }
                 }
             }
             return actions;
         }
+
         public async Task Register(UserModel registration)
         {
             try

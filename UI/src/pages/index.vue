@@ -4,6 +4,7 @@ import { usePontajCRUDStore } from '@/stores/generated/PontajCRUDStore'
 import { useUserCRUDStore } from '@/stores/generated/UsersCRUDStore'
 import { useRoleCRUDStore } from '@/stores/generated/RolesCRUDStore'
 import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
+import { useHelperStore } from '@/stores/HelperStore'
 </script>
 
 <template>
@@ -25,7 +26,8 @@ import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
       <CRUDT :store="usePontajCRUDStore()" class="py-8 my-8" />
       <CRUDT :store="useUserCRUDStore()" class="py-8 my-8">
         <template #expansion>
-          <div class="flex flex-column">
+          <div class="flex flex-row gap-2 align-items-center">
+            <Avatar image="https://localhost:44381/1/path36.png" size="xlarge" shape="circle" />
             <MultiSelect
               @before-show="useRoleCRUDStore().getAll()"
               :options="useRoleCRUDStore().allLoadedItems"
@@ -34,11 +36,15 @@ import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
               display="chip"
               placeholder="Roles"
             />
-            <MultiSelect
-              @before-show="useRightsCRUDStore().getAll()"
-              :options="useRightsCRUDStore().allLoadedItems"
-              option-label="name"
-              option-value="id"
+            <TreeSelect
+              v-model="useHelperStore().focusedActions"
+              @before-show="useHelperStore().getAllActions()"
+              :options="useHelperStore().allLoadedActions"
+              @update:model-value="
+                console.log(useHelperStore().focusedActions.split('Controller.')[0])
+              "
+              selectionMode="checkbox"
+              filter
               display="chip"
               placeholder="Custom rights"
             />
@@ -47,19 +53,31 @@ import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
       </CRUDT>
       <CRUDT :store="useRoleCRUDStore()" class="py-8 my-8">
         <template #expansion>
-          <div class="flex flex-column">
+          <div class="flex flex-row gap-2 align-items-center">
             <MultiSelect
-              @before-show="useRightsCRUDStore().getAll()"
-              :options="useRightsCRUDStore().allLoadedItems"
+              :options="useRoleCRUDStore().allLoadedItems"
               option-label="name"
               option-value="id"
+              display="chip"
+              placeholder="Inherited roles"
+              class="align-self-start"
+            />
+            <TreeSelect
+              v-model="useHelperStore().focusedActions"
+              @before-show="useHelperStore().getAllActions()"
+              :options="useHelperStore().allLoadedActions"
+              @update:model-value="
+                console.log(useHelperStore().focusedActions.split('Controller.')[0])
+              "
+              selectionMode="checkbox"
+              filter
               display="chip"
               placeholder="Rights"
             />
             <MultiSelect
               @before-show="useUserCRUDStore().getAll()"
               :options="useUserCRUDStore().allLoadedItems"
-              option-label="name"
+              option-label="email"
               option-value="id"
               display="chip"
               placeholder="Assigned to"
@@ -67,7 +85,6 @@ import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
           </div>
         </template>
       </CRUDT>
-      <CRUDT :store="useRightsCRUDStore()" class="py-8 my-8" />
       <!-- <Calendar
         class="align-self-center flex flex-wrap"
         inline
@@ -86,3 +103,18 @@ import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
     </div>
   </main>
 </template>
+
+<style>
+.p-treeselect-label {
+  white-space: wrap !important;
+  flex-wrap: wrap !important;
+  display: flex !important;
+  row-gap: 0.25rem !important;
+}
+.p-treeselect.p-treeselect-chip .p-treeselect-token {
+  margin-right: 0.25rem;
+}
+.p-inputwrapper-filled.p-treeselect.p-treeselect-chip .p-treeselect-label {
+  padding: 0.25rem;
+}
+</style>

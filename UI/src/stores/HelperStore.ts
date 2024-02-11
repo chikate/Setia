@@ -2,17 +2,28 @@ import { makeApiRequest } from '@/helpers'
 import { defineStore } from 'pinia'
 
 export const useHelperStore = defineStore('Helper', {
-  state: (): {} => {
-    return {}
+  state: (): {
+    allLoadedActions: object[]
+    focusedActions: string
+  } => {
+    return {
+      allLoadedActions: [],
+      focusedActions: ''
+    }
   },
   actions: {
-    async uploadFiles(files: any[], details: string) {
+    async uploadFiles(file: File | File[]) {
       const formData = new FormData()
-      files.forEach((file: any, index: number) => {
-        formData.append(`Files[${index}]`, file)
-      })
-      formData.append('details', details)
+      if (Array.isArray(file)) {
+        file.forEach((file: File, index: number) => {
+          formData.append(`files[${index}]`, file)
+          formData.append(`files`, file)
+        })
+      }
       await makeApiRequest(`${this.$id}/Upload`, 'post', formData)
+    },
+    async getAllActions(): Promise<object[]> {
+      return (this.allLoadedActions = await makeApiRequest(`${this.$id}/GetAllActions`, 'get'))
     }
   }
 })

@@ -3,7 +3,6 @@ using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
 using System.Reflection;
-using System.Text.Json;
 
 namespace Setia.Services
 {
@@ -34,7 +33,8 @@ namespace Setia.Services
                     Author_Id = await _auth.GetCurrentUserId(),
                     Entity = typeof(T).FullName,
                     Id_Entity = GetEntityId(model),
-                    Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
+                    //Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
+                    Payload = null
                 };
 
                 await Add(auditModel);
