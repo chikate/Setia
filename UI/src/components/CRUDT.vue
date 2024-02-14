@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
+
 import { ROWS, DEFAULT_ROWS_INDEX } from '@/config'
 import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
@@ -21,6 +24,7 @@ const exposedData = ref(
         param != 'deleted' &&
         param != 'createdBy' &&
         param != 'id_createdBy' &&
+        param != 'password' &&
         param != 'updatedBy'
     )
     .map((elem) => ({
@@ -42,7 +46,6 @@ const filters = ref({
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   statusCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
   authorityCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  password: { value: null, matchMode: FilterMatchMode.CONTAINS },
   rights: { value: null, matchMode: FilterMatchMode.EQUALS }
 })
 </script>
@@ -75,6 +78,7 @@ const filters = ref({
       :totalRecords="store.allLoadedItems.length"
       style="max-height: 80vh"
       class="flex-grow-1 px-8"
+      reorderableColumns
     >
       <template #header>
         <div class="flex flex-wrap gap-2 align-items-center">
@@ -137,15 +141,21 @@ const filters = ref({
         selectionMode="multiple"
         class="pr-0 pt-0"
         style="width: 1%"
+        key="select"
       />
       <Column
         v-if="!(selectedColumns.length == exposedData?.length) && $slots.expansion"
         expander
         class="pr-0"
         style="width: 1%"
+        key="expander"
       />
 
-      <Column v-if="!(selectedColumns.length == exposedData?.length)" style="width: 3rem">
+      <Column
+        v-if="!(selectedColumns.length == exposedData?.length)"
+        style="width: 3rem"
+        key="index"
+      >
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
         </template>
@@ -202,14 +212,10 @@ const filters = ref({
     >
       <div class="flex flex-column gap-4">
         <div v-for="field in Object.getOwnPropertyNames(store.getDefaults())" :key="field">
-          <span class="p-float-label">
-            <!-- <Calendar
-            v-if="!isNaN(new Date(store.selectedItem[field]).getTime())"
-            v-model="store.selectedItem[field]"
-            showTime
-            hourFormat="24"
-          /> -->
-
+          <InputGroup>
+            <InputGroupAddon class="py-0" style="min-width: 7rem">
+              {{ capitalizeString(field).replaceAll('_id', '') }}
+            </InputGroupAddon>
             <Dropdown
               v-if="typeof store.selectedItem[field] == 'object' && field.includes('_id')"
               v-model="store.selectedItem[field]"
@@ -241,7 +247,7 @@ const filters = ref({
             />
             <Button
               v-else-if="typeof store.selectedItem[field] == 'boolean'"
-              class="p-0 bg-gray-900"
+              class="p-0 bg-gray-900 border-gray-700 w-full"
             >
               <Checkbox
                 class="p-2 w-full h-full justify-content-end"
@@ -250,13 +256,21 @@ const filters = ref({
                 binary
               />
             </Button>
+            <Calendar
+              v-else-if="!isNaN(new Date(store.selectedItem[field]).getTime())"
+              @vue:beforeMount="
+                store.selectedItem[field] = new Date(store.selectedItem[field]).toLocaleString()
+              "
+              v-model="store.selectedItem[field]"
+              showTime
+              hourFormat="24"
+            />
             <InputText
               v-else-if="typeof store.selectedItem[field] == 'string'"
               v-model="store.selectedItem[field]"
               :placeholder="capitalizeString(field)"
             />
-            <label>{{ capitalizeString(field).replaceAll('_id', '') }}</label>
-          </span>
+          </InputGroup>
         </div>
 
         <div class="flex flex-row gap-3 font-bold">
