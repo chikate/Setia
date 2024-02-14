@@ -3,7 +3,6 @@ import { useAuthStore } from '@/stores/AuthStore'
 import { usePontajCRUDStore } from '@/stores/generated/PontajCRUDStore'
 import { useUserCRUDStore } from '@/stores/generated/UsersCRUDStore'
 import { useRoleCRUDStore } from '@/stores/generated/RolesCRUDStore'
-import { useRightsCRUDStore } from '@/stores/generated/RightsCRUDStore'
 import { useHelperStore } from '@/stores/HelperStore'
 </script>
 

@@ -1,11 +1,13 @@
 <template>
   <NavBar />
-  <router-view v-slot="{ Component }">
-    <transition name="fade" mode="out-in">
-      <component :is="Component" />
-    </transition>
-  </router-view>
-  <PageNotFound v-if="false" />
+  <main>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+    <PageNotFound v-if="false" />
+  </main>
   <FooterBar />
   <main class="fixed vignette pointer-events-none" />
 </template>
