@@ -54,7 +54,7 @@ namespace Setia.Controllers
                         using (var stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
-                            await _audit.LogAuditTrail(stream);
+                            await _audit.LogAuditTrail<FileStream>(stream);
                         }
                     }
                 }

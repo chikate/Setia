@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Setia.Services
 {
@@ -33,11 +33,10 @@ namespace Setia.Services
                     Author_Id = await _auth.GetCurrentUserId(),
                     Entity = typeof(T).FullName,
                     Id_Entity = GetEntityId(model),
-                    //Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
-                    Payload = null
+                    Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
                 };
 
-                await Add(auditModel);
+                await _context.Audit.AddAsync(auditModel);
             }
             catch (Exception ex)
             {
@@ -45,106 +44,16 @@ namespace Setia.Services
             }
         }
 
-        public async Task<IEnumerable<AuditModel>> GetAll()
+        private static IQueryable<AuditModel> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
         {
-            try
+            if (filter != null)
             {
-                return await _context.Audit.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return [];
-            }
-            finally
-            {
-                _logger.LogInformation(this.GetType().FullName);
-            }
-        }
-
-        public IEnumerable<AuditModel> GetAllWithFilter(AuditModel filter)
-        {
-            try
-            {
-                var query = _context.Audit.AsQueryable();
-                var result = AddFilter(query, filter);
-                return result.ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return [];
-            }
-            finally
-            {
-                _logger.LogInformation(this.GetType().FullName);
-            }
-        }
-
-        public async Task<bool> Add(AuditModel model)
-        {
-            try
-            {
-                await _context.Audit.AddAsync(model);
-                await _context.SaveChangesAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return false;
-            }
-            finally
-            {
-                _logger.LogInformation(this.GetType().FullName);
-            }
-        }
-
-        public async Task<bool> Update(AuditModel model)
-        {
-            try
-            {
-                _context.Audit.Update(model);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return false;
-            }
-            finally
-            {
-                _logger.LogInformation(this.GetType().FullName);
-            }
-        }
-
-        public async Task<bool> Delete(int id)
-        {
-            try
-            {
-                var auditToDelete = await _context.Audit.FindAsync(id);
-                if (auditToDelete != null)
+                foreach (var property in typeof(AuditModel).GetProperties())
                 {
-                    _context.Audit.Remove(auditToDelete);
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return false;
-            }
-            finally
-            {
-                _logger.LogInformation(this.GetType().FullName);
-            }
+            return query;
         }
 
         public string CompareObjects<T>(T obj1, T obj2)
@@ -166,18 +75,6 @@ namespace Setia.Services
             }
 
             return differences.ToString();
-        }
-
-        private static IQueryable<AuditModel> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
-        {
-            if (filter != null)
-            {
-                foreach (var property in typeof(AuditModel).GetProperties())
-                {
-                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
-                }
-            }
-            return query;
         }
 
         private int GetEntityId<T>(T model)

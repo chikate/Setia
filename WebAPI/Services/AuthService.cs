@@ -90,7 +90,6 @@ namespace Setia.Services
             }
             return actions;
         }
-
         public async Task Register(UserModel registration)
         {
             try

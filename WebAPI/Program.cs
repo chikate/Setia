@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Setia.Controllers;
 using Setia.Data;
+using Setia.Models;
 using Setia.Services;
 using Setia.Services.Interfaces;
 using System.Text;
@@ -35,6 +37,10 @@ builder.Services.AddDbContext<SetiaContext>(options =>
 // Services
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IAudit, AuditService>();
+    // CRUDs
+    builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel>>();
+    builder.Services.AddScoped<ICRUD<RoleModel>, CRUDService<RoleModel>>();
+    builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel>>();
 
 // Controllers
 builder.Services.AddControllers();
