@@ -56,11 +56,7 @@ const filters = ref({
     <DataTable
       @vue:before-mount="store.getAll()"
       :value="store.allLoadedItems"
-      @row-dblclick="
-        $slots.expansion
-          ? console.log('expand coming soon')
-          : ((store.selectedItem = $event.data), (showDialog = !showDialog))
-      "
+      @row-dblclick="(store.selectedItem = $event.data), (showDialog = !showDialog)"
       size="small"
       stripedRows
       scrollable
@@ -105,8 +101,8 @@ const filters = ref({
             "
             :model="[
               {
-                label: showMultipleDelete ? 'Cancel multiple delete' : 'Multiple delete',
-                icon: 'pi pi-trash',
+                label: showMultipleDelete ? 'Cancel multiple select' : 'Multiple select',
+                icon: 'pi pi-th-large',
                 command: () => {
                   ;(showMultipleDelete = !showMultipleDelete), (selectedProduct = [])
                 }

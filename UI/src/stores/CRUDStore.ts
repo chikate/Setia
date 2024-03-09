@@ -14,7 +14,7 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
     },
     actions: {
       async getAll(): Promise<(typeof this.allLoadedItems)[]> {
-        return (this.allLoadedItems = (await makeApiRequest(`${this.$id}/GetAll`, 'get')) ?? [])
+        return (this.allLoadedItems = (await makeApiRequest(`${this.$id}/GetAll`, 'post')) ?? [])
       },
       async add() {
         await makeApiRequest(`${this.$id}/Add`, 'post', this.selectedItem).then(() => {

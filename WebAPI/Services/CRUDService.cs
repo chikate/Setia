@@ -1,11 +1,14 @@
+using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace Setia.Controllers
 {
     public class CRUDService<T> : ICRUD<T> where T : class
     {
         private readonly SetiaContext _context;
+        private readonly DbSet<T> _dbTable;
         private readonly ILogger<CRUDService<T>> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
@@ -19,6 +22,7 @@ namespace Setia.Controllers
         )
         {
             _context = context;
+            _dbTable = context.Set<T>();
             _logger = logger;
             _audit = audit;
             _auth = auth;
@@ -34,7 +38,7 @@ namespace Setia.Controllers
 
                 model.GetType().GetProperty("Id")?.SetValue(model, 0);
 
-                await _context.Set<T>().AddAsync(model);
+                await _dbTable.AddAsync(model);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail<T>(model);
@@ -63,12 +67,12 @@ namespace Setia.Controllers
                 var idValue = idProperty.GetValue(model);
                 if (idValue == null) throw new ArgumentException("Id value cannot be null.");
 
-                var oldModel = await _context.Set<T>().FindAsync(idValue);
+                var oldModel = await _dbTable.FindAsync(idValue);
 
                 if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the database.");
 
                 // Update the context with the new model
-                _context.Set<T>().Entry(oldModel).CurrentValues.SetValues(model);
+                _dbTable.Entry(oldModel).CurrentValues.SetValues(model);
                 await _context.SaveChangesAsync();
 
                 // Log audit trail
@@ -87,11 +91,11 @@ namespace Setia.Controllers
         {
             try
             {
-                var itemToDelete = await _context.Set<T>().FindAsync(id);
+                var itemToDelete = await _dbTable.FindAsync(id);
 
                 if (itemToDelete == null) return false;
 
-                _context.Set<T>().Remove(itemToDelete);
+                _dbTable.Remove(itemToDelete);
                 await _context.SaveChangesAsync();
 
                 await _audit.LogAuditTrail<T>(itemToDelete);
@@ -105,11 +109,11 @@ namespace Setia.Controllers
             }
         }
 
-        public async Task<IEnumerable<T>> GetAll(T filter)
+        public async Task<IEnumerable<T>> GetAll(T? filter)
         {
             try
             {
-                return await AddFilter(_context.Set<T>().AsQueryable(), filter);
+                return await ApplyFilter(_dbTable.AsQueryable(), filter);
             }
             catch (Exception ex)
             {
@@ -118,7 +122,7 @@ namespace Setia.Controllers
             }
         }
 
-        private async Task<IQueryable<T>> AddFilter(IQueryable<T> query, T filter)
+        private async Task<IQueryable<T>> ApplyFilter(IQueryable<T> query, T? filter)
         {
             if (filter != null)
             {

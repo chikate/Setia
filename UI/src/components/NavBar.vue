@@ -19,6 +19,7 @@
       <RouterLink to="/news"> {{ 'News' }} </RouterLink>
     </div>
     <RouterLink class="pointer-events-auto" to="/universe"> {{ 'Universe' }} </RouterLink>
+    <RouterLink class="pointer-events-auto" to="/map"> {{ 'Map' }} </RouterLink>
     <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
         v-tooltip.left="{

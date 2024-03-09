@@ -37,9 +37,9 @@ namespace Setia.Controllers
         {
             try
             {
-                var authorId = await _auth.GetCurrentUserId();
+                int authorId = await _auth.GetCurrentUserId();
 
-                if (authorId == null || authorId == 0) return BadRequest("Invalid author ID");
+                if (authorId <= 0) return BadRequest("Invalid author ID");
 
                 var userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, authorId.ToString());
                 if (!Directory.Exists(userDirectory))
