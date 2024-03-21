@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Services.Interfaces;
-using System.Linq.Expressions;
 
 namespace Setia.Controllers
 {
@@ -109,11 +108,11 @@ namespace Setia.Controllers
             }
         }
 
-        public async Task<IEnumerable<T>> GetAll(T? filter)
+        public IEnumerable<T> GetAll(T? filter)
         {
             try
             {
-                return await ApplyFilter(_dbTable.AsQueryable(), filter);
+                return ApplyFilter(_dbTable.AsQueryable(), filter);
             }
             catch (Exception ex)
             {
@@ -122,7 +121,7 @@ namespace Setia.Controllers
             }
         }
 
-        private async Task<IQueryable<T>> ApplyFilter(IQueryable<T> query, T? filter)
+        private IQueryable<T> ApplyFilter(IQueryable<T> query, T? filter)
         {
             if (filter != null)
             {

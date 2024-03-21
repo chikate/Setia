@@ -1,4 +1,4 @@
-﻿namespace Setia.Structs
+﻿namespace Setia.Models.Structs
 {
     public class DefinitionStruct : BaseAuditStruct
     {

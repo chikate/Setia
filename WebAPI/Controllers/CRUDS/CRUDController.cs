@@ -13,10 +13,10 @@ namespace Setia.Controllers.CRUDS
 
         public CRUDController(ICRUD<T> CRUD) { _CRUD = CRUD; }
 
-        [HttpPost]
-        public async Task<IEnumerable<T>> GetAll([FromBody] T? filter)
+        [HttpGet]
+        public IEnumerable<T> GetAll([FromQuery] T? filter)
         {
-            return await _CRUD.GetAll(filter);
+            return _CRUD.GetAll(filter);
         }
 
         [HttpPost]

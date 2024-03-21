@@ -1,4 +1,4 @@
-﻿using Setia.Structs;
+﻿using Setia.Models.Structs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-
-import { ROWS, DEFAULT_ROWS_INDEX } from '@/config'
+import { DEFAULT_ROWS_OPTIONS, DEFAULT_ROWS_INDEX } from '@/config'
 import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
 import { capitalizeString } from '@/helpers'
@@ -69,8 +66,8 @@ const filters = ref({
       :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="exposedData.field"
       paginator
-      :rows="ROWS[DEFAULT_ROWS_INDEX]"
-      :rowsPerPageOptions="ROWS"
+      :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
+      :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
       :totalRecords="store.allLoadedItems.length"
       style="max-height: 80vh"
       class="flex-grow-1 px-8"
@@ -256,6 +253,11 @@ const filters = ref({
               v-else-if="!isNaN(new Date(store.selectedItem[field]).getTime())"
               @vue:beforeMount="
                 store.selectedItem[field] = new Date(store.selectedItem[field]).toLocaleString()
+              "
+              @update:modelValue="
+                store.selectedItem[field] = $event
+                  ? useDateFormat($event, DD - MM - YYYY).value
+                  : undefined
               "
               v-model="store.selectedItem[field]"
               showTime

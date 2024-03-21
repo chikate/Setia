@@ -48,9 +48,6 @@
 </template>
 
 <script setup lang="ts">
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-
 import { useAuthStore } from '@/stores/AuthStore'
 
 import { ref } from 'vue'
