@@ -25,5 +25,6 @@ export const useHelperStore = defineStore('Helper', {
     async getAllActions(): Promise<object[]> {
       return (this.allLoadedActions = await makeApiRequest(`${this.$id}/GetAllActions`, 'get'))
     }
-  }
+  },
+  persist: true
 })

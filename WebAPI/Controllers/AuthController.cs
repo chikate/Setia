@@ -36,15 +36,14 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] UserModel login)
+        public async Task<IActionResult> Login([FromBody] UserModel loginCredentials)
         {
             try
             {
-                if (login.Username == null || login.Username.Length < 6) return BadRequest("Invalid username (too short)");
-                if (login.Password == null || login.Password.Length < 6) return BadRequest("Invalid password (too short)");
+                if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) return BadRequest("Invalid password (too short)");
 
                 var user = await _context.Users
-                    .Where(u => u.Username == login.Username && u.Password == login.Password)
+                    .Where(u => u.Username == loginCredentials.Username && u.Password == loginCredentials.Password)
                     .FirstOrDefaultAsync();
                 if (user != null)
                 {
@@ -57,16 +56,16 @@ namespace Setia.Controllers
                     };
 
                     var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                        issuer: _config["Jwt:Issuer"],
-                        audience: _config["Jwt:Audience"],
+                        issuer: _config["JWT:Issuer"],
+                        audience: _config["JWT:Audience"],
                         claims,
                         expires: DateTime.Now.AddDays(1),
                         signingCredentials: new SigningCredentials(
                             new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(_config["Jwt:Key"])),
+                                Encoding.UTF8.GetBytes(_config["JWT:Key"] ?? "")),
                                 SecurityAlgorithms.HmacSha256)));
 
-                    return Ok(token);
+                    return Ok(new LoginResultDto { Token = token, User = user });
                 }
                 else
                 {

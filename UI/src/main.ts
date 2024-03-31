@@ -2,6 +2,7 @@ import App from './App.vue'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import router from './pages/router'
 import PrimeVue from 'primevue/config'
@@ -13,7 +14,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 
 const app = createApp(App)
 
-app.use(createPinia())
+app.use(createPinia().use(piniaPluginPersistedstate))
 app.use(router)
 app.use(PrimeVue)
 app.directive('tooltip', Tooltip)

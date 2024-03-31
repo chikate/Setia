@@ -8,7 +8,7 @@ using Setia.Data;
 
 #nullable disable
 
-namespace Setia.Migrations
+namespace Setia.Context.Migrations
 {
     [DbContext(typeof(SetiaContext))]
     partial class SetiaContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace Setia.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -30,7 +30,7 @@ namespace Setia.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Author_Id")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -42,18 +42,18 @@ namespace Setia.Migrations
                     b.Property<string>("Entity")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("Id_Entity")
-                        .HasColumnType("int");
 
                     b.Property<string>("Payload")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Author_Id");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Audit");
                 });
@@ -69,7 +69,7 @@ namespace Setia.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Author_Id")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("BeginTime")
@@ -87,53 +87,16 @@ namespace Setia.Migrations
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id_User")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Author_Id");
+                    b.HasIndex("AuthorId");
 
-                    b.HasIndex("Id_User");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Pontaj");
-                });
-
-            modelBuilder.Entity("Setia.Models.RightModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Author_Id")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ExecutionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Filter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Author_Id");
-
-                    b.ToTable("Rights");
                 });
 
             modelBuilder.Entity("Setia.Models.RoleModel", b =>
@@ -147,7 +110,7 @@ namespace Setia.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Author_Id")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Deleted")
@@ -159,9 +122,6 @@ namespace Setia.Migrations
                     b.Property<int?>("InheritsRoleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InheritsRole_Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -171,7 +131,7 @@ namespace Setia.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Author_Id");
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("InheritsRoleId");
 
@@ -189,7 +149,7 @@ namespace Setia.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Author_Id")
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<bool>("Deleted")
@@ -216,7 +176,7 @@ namespace Setia.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Author_Id");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Users");
                 });
@@ -225,7 +185,7 @@ namespace Setia.Migrations
                 {
                     b.HasOne("Setia.Models.UserModel", "Author")
                         .WithMany()
-                        .HasForeignKey("Author_Id");
+                        .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });
@@ -234,11 +194,11 @@ namespace Setia.Migrations
                 {
                     b.HasOne("Setia.Models.UserModel", "Author")
                         .WithMany()
-                        .HasForeignKey("Author_Id");
+                        .HasForeignKey("AuthorId");
 
                     b.HasOne("Setia.Models.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("Id_User")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -247,20 +207,11 @@ namespace Setia.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Setia.Models.RightModel", b =>
-                {
-                    b.HasOne("Setia.Models.UserModel", "Author")
-                        .WithMany()
-                        .HasForeignKey("Author_Id");
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("Setia.Models.RoleModel", b =>
                 {
                     b.HasOne("Setia.Models.UserModel", "Author")
                         .WithMany()
-                        .HasForeignKey("Author_Id");
+                        .HasForeignKey("AuthorId");
 
                     b.HasOne("Setia.Models.RoleModel", "InheritsRole")
                         .WithMany()
@@ -275,7 +226,7 @@ namespace Setia.Migrations
                 {
                     b.HasOne("Setia.Models.UserModel", "Author")
                         .WithMany()
-                        .HasForeignKey("Author_Id");
+                        .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });

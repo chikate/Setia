@@ -15,5 +15,6 @@ export const useSettingsStore = defineStore('Settings', {
       this.useDarkMode = !this.useDarkMode
       // document.querySelector('app')?.classList.toggle('dark-theme', this.useDarkMode)
     }
-  }
+  },
+  persist: true
 })

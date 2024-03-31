@@ -40,5 +40,6 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
       async setSelectionToDefaults() {
         this.selectedItem = this.getDefaults()
       }
-    }
+    },
+    persist: true
   })

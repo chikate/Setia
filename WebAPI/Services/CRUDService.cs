@@ -27,6 +27,19 @@ namespace Setia.Controllers
             _auth = auth;
         }
 
+        public IEnumerable<T> Get(T? filter)
+        {
+            try
+            {
+                return ApplyFilter(_dbTable.AsQueryable(), filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                return [];
+            }
+        }
+
         async Task<bool> ICRUD<T>.Add(T model)
         {
             try
@@ -107,20 +120,6 @@ namespace Setia.Controllers
                 return false;
             }
         }
-
-        public IEnumerable<T> GetAll(T? filter)
-        {
-            try
-            {
-                return ApplyFilter(_dbTable.AsQueryable(), filter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                return [];
-            }
-        }
-
         private IQueryable<T> ApplyFilter(IQueryable<T> query, T? filter)
         {
             if (filter != null)

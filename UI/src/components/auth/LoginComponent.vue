@@ -69,8 +69,9 @@ function submitLogin() {
   return useAuthStore()
     .tryLogin(inputUsername.value, inputPassword.value)
     .then((success) => {
-      if (!success) {
-        showLoginSpinner.value = false
+      showLoginSpinner.value = false
+      if (success) {
+        window.location.reload()
       }
     })
 }

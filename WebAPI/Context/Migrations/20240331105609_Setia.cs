@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Setia.Migrations
+namespace Setia.Context.Migrations
 {
     /// <inheritdoc />
     public partial class Setia : Migration
@@ -22,7 +22,7 @@ namespace Setia.Migrations
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Author_Id = table.Column<int>(type: "int", nullable: true),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -30,8 +30,8 @@ namespace Setia.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Users_Author_Id",
-                        column: x => x.Author_Id,
+                        name: "FK_Users_Users_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -45,17 +45,17 @@ namespace Setia.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Entity = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Id_Entity = table.Column<int>(type: "int", nullable: true),
+                    EntityId = table.Column<int>(type: "int", nullable: true),
                     Payload = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Author_Id = table.Column<int>(type: "int", nullable: true)
+                    AuthorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Audit", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Audit_Users_Author_Id",
-                        column: x => x.Author_Id,
+                        name: "FK_Audit_Users_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -66,12 +66,12 @@ namespace Setia.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Id_User = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     BeginTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Author_Id = table.Column<int>(type: "int", nullable: true),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -79,40 +79,16 @@ namespace Setia.Migrations
                 {
                     table.PrimaryKey("PK_Pontaj", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Pontaj_Users_Author_Id",
-                        column: x => x.Author_Id,
+                        name: "FK_Pontaj_Users_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Pontaj_Users_Id_User",
-                        column: x => x.Id_User,
+                        name: "FK_Pontaj_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rights",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Filter = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Author_Id = table.Column<int>(type: "int", nullable: true),
-                    Active = table.Column<bool>(type: "bit", nullable: false),
-                    Deleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rights", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rights_Users_Author_Id",
-                        column: x => x.Author_Id,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -123,10 +99,9 @@ namespace Setia.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Rights = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    InheritsRole_Id = table.Column<int>(type: "int", nullable: true),
                     InheritsRoleId = table.Column<int>(type: "int", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Author_Id = table.Column<int>(type: "int", nullable: true),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -139,36 +114,31 @@ namespace Setia.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Roles_Users_Author_Id",
-                        column: x => x.Author_Id,
+                        name: "FK_Roles_Users_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Audit_Author_Id",
+                name: "IX_Audit_AuthorId",
                 table: "Audit",
-                column: "Author_Id");
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Pontaj_Author_Id",
+                name: "IX_Pontaj_AuthorId",
                 table: "Pontaj",
-                column: "Author_Id");
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Pontaj_Id_User",
+                name: "IX_Pontaj_UserId",
                 table: "Pontaj",
-                column: "Id_User");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rights_Author_Id",
-                table: "Rights",
-                column: "Author_Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Roles_Author_Id",
+                name: "IX_Roles_AuthorId",
                 table: "Roles",
-                column: "Author_Id");
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_InheritsRoleId",
@@ -176,9 +146,9 @@ namespace Setia.Migrations
                 column: "InheritsRoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Author_Id",
+                name: "IX_Users_AuthorId",
                 table: "Users",
-                column: "Author_Id");
+                column: "AuthorId");
         }
 
         /// <inheritdoc />
@@ -189,9 +159,6 @@ namespace Setia.Migrations
 
             migrationBuilder.DropTable(
                 name: "Pontaj");
-
-            migrationBuilder.DropTable(
-                name: "Rights");
 
             migrationBuilder.DropTable(
                 name: "Roles");

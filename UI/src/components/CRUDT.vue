@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DEFAULT_ROWS_OPTIONS, DEFAULT_ROWS_INDEX } from '@/config'
+import { DEFAULT_ROWS_OPTIONS, DEFAULT_ROWS_INDEX } from '@/constants'
 import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
 import { capitalizeString } from '@/helpers'
@@ -74,25 +74,21 @@ const filters = ref({
       reorderableColumns
     >
       <template #header>
-        <div class="flex flex-wrap gap-2 align-items-center">
-          <h4 class="m-0 flex-grow-1">{{ store.$id }}</h4>
+        <div class="flex flex-row gap-2 align-items-center">
+          <h4 class="m-0 w-full">{{ store.$id }}</h4>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
               :options="exposedData"
               optionLabel="header"
               display="chip"
-              placeholder="Select Columns"
+              placeholder="Hide columns"
             />
           </div>
-          <span v-if="showFilters" class="p-float-label p-input-icon-left">
-            <i class="pi pi-search" />
+          <div>
             <InputText v-model="filters['global'].value" placeholder="Search..." />
-            <label>Search...</label>
-          </span>
+          </div>
           <SplitButton
-            rounded
-            :icon="showMultipleDelete ? 'pi pi-trash' : 'pi pi-plus'"
             @click="
               showMultipleDelete ? '' : (showDialog = !showDialog), store.setSelectionToDefaults()
             "
@@ -119,7 +115,9 @@ const filters = ref({
                 }
               }
             ]"
-          />
+          >
+            <i :class="showMultipleDelete ? 'pi pi-trash' : 'pi pi-plus'" />
+          </SplitButton>
         </div>
       </template>
       <template #empty>

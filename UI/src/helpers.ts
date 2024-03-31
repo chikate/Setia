@@ -1,4 +1,4 @@
-import { API_URL } from '@/config'
+import { API_URL } from '@/constants'
 
 export async function makeApiRequest(path: string, method: string, body?: any): Promise<any> {
   const customHeader = new Headers()

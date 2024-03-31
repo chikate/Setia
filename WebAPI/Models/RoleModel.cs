@@ -12,7 +12,7 @@ namespace Setia.Models
         public List<string>? Rights { get; set; }
 
         [ForeignKey("InheritedRole")]
-        public int? InheritsRole_Id { get; set; }
+        public int? InheritsRoleId { get; set; }
         public RoleModel? InheritsRole { get; set; }
     }
 }

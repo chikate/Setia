@@ -18,8 +18,6 @@
       <RouterLink to="/career"> {{ 'Join us' }} </RouterLink>
       <RouterLink to="/news"> {{ 'News' }} </RouterLink>
     </div>
-    <RouterLink class="pointer-events-auto" to="/universe"> {{ 'Universe' }} </RouterLink>
-    <RouterLink class="pointer-events-auto" to="/map"> {{ 'Map' }} </RouterLink>
     <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
         v-tooltip.left="{
@@ -100,12 +98,13 @@
             />
             <div v-else class="flex flex-column gap-3">
               <Button label="Profile" @click="$router.push('/profile')" />
+              <Button label="Administration" @click="$router.push('/adm')" />
               <Button label="LogOut" @click="useAuthStore().LogOut()" />
             </div>
           </OverlayPanel>
         </i>
         <a>
-          {{ useAuthStore().getToken() ? 'Dragos' : 'Account' }}
+          {{ useAuthStore().userData?.email ?? 'Account' }}
         </a>
       </div>
     </div>
@@ -154,9 +153,11 @@ a {
   text-shadow: rgba(12, 12, 12, 0.2) 0 0 25px;
   font-weight: 500;
 }
+
 a:hover {
   text-shadow: rgba(12, 12, 12, 0.8) 0 0 25px;
 }
+
 i {
   padding-inline: 0.33rem;
 }

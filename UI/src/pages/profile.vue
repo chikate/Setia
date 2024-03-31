@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { useHelperStore } from '@/stores/HelperStore'
-</script>
-
 <template>
   <main>
     <div
@@ -22,3 +18,7 @@ import { useHelperStore } from '@/stores/HelperStore'
     </div>
   </main>
 </template>
+
+<script setup lang="ts">
+import { useHelperStore } from '@/stores/HelperStore'
+</script>

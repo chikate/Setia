@@ -14,9 +14,9 @@ namespace Setia.Controllers.CRUDS
         public CRUDController(ICRUD<T> CRUD) { _CRUD = CRUD; }
 
         [HttpGet]
-        public IEnumerable<T> GetAll([FromQuery] T? filter)
+        public IEnumerable<T> Get([FromQuery] T? filter)
         {
-            return _CRUD.GetAll(filter);
+            return _CRUD.Get(filter);
         }
 
         [HttpPost]

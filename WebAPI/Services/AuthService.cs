@@ -35,14 +35,14 @@ namespace Setia.Services
 
         public async Task<int> GetCurrentUserId()
         {
-            var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            var identity = _httpContextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
 
             if (identity != null)
             {
                 var userClaims = identity.Claims;
 
-                string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value;
-                string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value;
+                string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value ?? "";
+                string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
 
                 var user = await _context.Users
                     .Where(u => u.Email == email && u.Username == username)
@@ -64,7 +64,7 @@ namespace Setia.Services
             var user = await _context.Users.FindAsync(id_user);
             return [];
         }
-        public IEnumerable<object> GetAllActions()
+        public IEnumerable<object> GetActions()
         {
             List<object> actions = new List<object>();
 

@@ -10,8 +10,8 @@ using Setia.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
-builder.Services.AddTransient<ISender, SenderService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -21,22 +21,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        ValidIssuer = config["JWT:Issuer"],
+        ValidAudience = config["JWT:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Key"] ?? ""))
     };
 });
 
 // DbContexts
 builder.Services.AddDbContext<SetiaContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:Setia"]);
+    options.UseSqlServer(config["ConnectionStrings:Setia"]);
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 // Services
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IAudit, AuditService>();
+builder.Services.AddTransient<ISender, SenderService>();
 // CRUDs
 builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel>>();
 builder.Services.AddScoped<ICRUD<RoleModel>, CRUDService<RoleModel>>();
@@ -77,7 +78,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5173")
+            builder.WithOrigins(config["Origin"] ?? "")
                 .AllowAnyHeader()
                 .AllowAnyOrigin()
                 .AllowAnyMethod();

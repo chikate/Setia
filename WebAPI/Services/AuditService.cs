@@ -24,15 +24,15 @@ namespace Setia.Services
             _auth = auth;
         }
 
-        public async Task LogAuditTrail<T>(T model, T oldModel = default)
+        public async Task LogAuditTrail<T>(T model, T? oldModel = default)
         {
             try
             {
-                var auditModel = new AuditModel
+                AuditModel auditModel = new AuditModel
                 {
-                    Author_Id = await _auth.GetCurrentUserId(),
+                    AuthorId = await _auth.GetCurrentUserId(),
                     Entity = typeof(T).FullName,
-                    Id_Entity = GetEntityId(model),
+                    EntityId = GetEntityId(model),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
                 };
 
@@ -65,8 +65,8 @@ namespace Setia.Services
 
             foreach (PropertyInfo property in properties)
             {
-                string value1 = property.GetValue(obj1)?.ToString();
-                string value2 = property.GetValue(obj2)?.ToString();
+                string value1 = property.GetValue(obj1)?.ToString() ?? "";
+                string value2 = property.GetValue(obj2)?.ToString() ?? "";
 
                 if (value1 != value2)
                 {
@@ -74,7 +74,7 @@ namespace Setia.Services
                 }
             }
 
-            return differences.ToString();
+            return differences.ToString() ?? "";
         }
 
         private int GetEntityId<T>(T model)

@@ -11,12 +11,14 @@ export const useAuthStore = defineStore('Auth', {
   actions: {
     async tryLogin(username: string, password: string): Promise<boolean> {
       return await makeApiRequest(`Auth/Login`, 'post', { username, password }).then(
-        (token: string) => {
-          if (token.length > 50) {
-            localStorage.setItem('token', token)
-            window.location.reload()
+        (loginResult) => {
+          console.log(loginResult)
+          if (loginResult.token.length > 50) {
+            localStorage.setItem('token', loginResult.token)
           }
-          return Boolean(token)
+          this.userData = loginResult.user
+          console.log(this.userData)
+          return Boolean(loginResult)
         }
       )
     },
@@ -37,5 +39,6 @@ export const useAuthStore = defineStore('Auth', {
         }
       )
     }
-  }
+  },
+  persist: true
 })

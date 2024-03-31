@@ -69,9 +69,9 @@ namespace Setia.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<string>> GetAllActions()
+        public ActionResult<IEnumerable<string>> GetActions()
         {
-            return Ok(_auth.GetAllActions());
+            return Ok(_auth.GetActions());
         }
     }
 }
