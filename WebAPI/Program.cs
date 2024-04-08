@@ -9,8 +9,8 @@ using Setia.Services;
 using Setia.Services.Interfaces;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+ConfigurationManager config = builder.Configuration;
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -28,10 +28,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 // DbContexts
-builder.Services.AddDbContext<SetiaContext>(options =>
+builder.Services.AddDbContext<BaseContext>(options =>
 {
     options.UseSqlServer(config["ConnectionStrings:Setia"]);
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 // Services
@@ -40,7 +40,7 @@ builder.Services.AddScoped<IAudit, AuditService>();
 builder.Services.AddTransient<ISender, SenderService>();
 // CRUDs
 builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel>>();
-builder.Services.AddScoped<ICRUD<RoleModel>, CRUDService<RoleModel>>();
+builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel>>();
 builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel>>();
 
 // Controllers
@@ -67,7 +67,7 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
@@ -86,7 +86,7 @@ builder.Services.AddCors(options =>
 });
 
 // App
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseCors("AllowSpecificOrigin");
 

@@ -4,7 +4,7 @@ namespace Setia.Services.Interfaces
 {
     public interface IAuth
     {
-        Task<int> GetCurrentUserId();
+        Task<UserModel> GetCurrentUser();
         Task<IEnumerable<string>> GetUserRights(int id_user);
         Task<IEnumerable<string>> GetUserRoles(int id_user);
         IEnumerable<object> GetActions();

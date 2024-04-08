@@ -10,7 +10,7 @@ namespace Setia.Controllers
     [Route("/api/[controller]/[action]")]
     public class HelperController : ControllerBase
     {
-        private readonly SetiaContext _context;
+        private readonly BaseContext _context;
         private readonly ILogger<HelperController> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
@@ -18,7 +18,7 @@ namespace Setia.Controllers
 
         public HelperController
         (
-            SetiaContext context,
+            BaseContext context,
             ILogger<HelperController> logger,
             IAudit audit,
             IAuth auth,
@@ -37,21 +37,20 @@ namespace Setia.Controllers
         {
             try
             {
-                int authorId = await _auth.GetCurrentUserId();
-
+                int authorId = _auth.GetCurrentUser().Id;
                 if (authorId <= 0) return BadRequest("Invalid author ID");
 
-                var userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, authorId.ToString());
+                string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, authorId.ToString());
                 if (!Directory.Exists(userDirectory))
                 {
                     Directory.CreateDirectory(userDirectory);
                 }
 
-                foreach (var file in files)
+                foreach (IFormFile file in files)
                 {
                     if (file.Length > 0)
                     {
-                        using (var stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
+                        using (FileStream stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                             await _audit.LogAuditTrail<FileStream>(stream);

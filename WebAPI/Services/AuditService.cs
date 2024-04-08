@@ -8,13 +8,13 @@ namespace Setia.Services
 {
     public class AuditService : IAudit
     {
-        private readonly SetiaContext _context;
+        private readonly BaseContext _context;
         private readonly ILogger<AuditService> _logger;
         private readonly IAuth _auth;
 
         public AuditService
         (
-            SetiaContext context,
+            BaseContext context,
             ILogger<AuditService> logger,
             IAuth auth
         )
@@ -30,7 +30,7 @@ namespace Setia.Services
             {
                 AuditModel auditModel = new AuditModel
                 {
-                    AuthorId = await _auth.GetCurrentUserId(),
+                    AuthorId = _auth.GetCurrentUser().Id,
                     Entity = typeof(T).FullName,
                     EntityId = GetEntityId(model),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
@@ -44,24 +44,12 @@ namespace Setia.Services
             }
         }
 
-        private static IQueryable<AuditModel> AddFilter(IQueryable<AuditModel> query, AuditModel filter)
-        {
-            if (filter != null)
-            {
-                foreach (var property in typeof(AuditModel).GetProperties())
-                {
-                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
-                }
-            }
-            return query;
-        }
-
         public string CompareObjects<T>(T obj1, T obj2)
         {
             Type type = typeof(T);
             PropertyInfo[] properties = type.GetProperties();
 
-            var differences = new Dictionary<string, string>();
+            Dictionary<string, string> differences = [];
 
             foreach (PropertyInfo property in properties)
             {
@@ -80,11 +68,11 @@ namespace Setia.Services
         private int GetEntityId<T>(T model)
         {
             // Assuming the entity has a property named "Id"
-            var property = typeof(T).GetProperty("Id");
+            PropertyInfo? property = typeof(T).GetProperty("Id");
             if (property != null)
             {
                 // Extract the value of the "Id" property
-                var value = property.GetValue(model);
+                object? value = property.GetValue(model);
                 if (value != null && int.TryParse(value.ToString(), out int id))
                 {
                     return id;
@@ -97,16 +85,16 @@ namespace Setia.Services
 
         private IDictionary<string, Dictionary<string, string>> CompareModels<T>(T oldModel, T newModel)
         {
-            var differences = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> differences = [];
 
-            foreach (var property in typeof(T).GetProperties())
+            foreach (PropertyInfo property in typeof(T).GetProperties())
             {
-                var existingValue = property.GetValue(oldModel)?.ToString();
-                var updatedValue = property.GetValue(newModel)?.ToString();
+                string? existingValue = property.GetValue(oldModel)?.ToString();
+                string? updatedValue = property.GetValue(newModel)?.ToString();
 
                 if (existingValue != updatedValue)
                 {
-                    var propertyDifference = new Dictionary<string, string>
+                    Dictionary<string, string> propertyDifference = new Dictionary<string, string>
                     {
                         { "old", existingValue ?? "null" },
                         { "new", updatedValue ?? "null" }

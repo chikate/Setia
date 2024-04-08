@@ -16,14 +16,14 @@ namespace Setia.Controllers
     [Route("/api/[controller]/[action]")]
     public class AuthController : ControllerBase
     {
-        private readonly SetiaContext _context;
+        private readonly BaseContext _context;
         private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _config;
         private readonly IAuth _auth;
 
         public AuthController
         (
-            SetiaContext context,
+            BaseContext context,
             ILogger<AuthController> logger,
             IConfiguration config,
             IAuth auth
@@ -42,7 +42,7 @@ namespace Setia.Controllers
             {
                 if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) return BadRequest("Invalid password (too short)");
 
-                var user = await _context.Users
+                UserModel? user = await _context.Users
                     .Where(u => u.Username == loginCredentials.Username && u.Password == loginCredentials.Password)
                     .FirstOrDefaultAsync();
                 if (user != null)
@@ -55,7 +55,7 @@ namespace Setia.Controllers
                         new Claim(ClaimTypes.Role, "Default"),
                     };
 
-                    var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                    string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
                         issuer: _config["JWT:Issuer"],
                         audience: _config["JWT:Audience"],
                         claims,

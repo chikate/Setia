@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Setia.Controllers;
 using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
@@ -12,56 +13,52 @@ namespace Setia.Services
 {
     public class AuthService : IAuth
     {
-        private readonly string regexEmailValidation = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
-
-        private readonly SetiaContext _context;
+        private readonly BaseContext _context;
         private readonly ILogger<AuthService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISender _sender;
+        private readonly IConfiguration _config;
 
         public AuthService
         (
-            SetiaContext context,
+            BaseContext context,
             ILogger<AuthService> logger,
             IHttpContextAccessor httpContextAccessor,
-            ISender sender
+            ISender sender,
+            IConfiguration config
         )
         {
             _context = context;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _sender = sender;
+            _config = config;
         }
 
-        public async Task<int> GetCurrentUserId()
+        public async Task<UserModel> GetCurrentUser()
         {
-            var identity = _httpContextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
-
-            if (identity != null)
+            UserModel? user = null;
+            if (_httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
             {
-                var userClaims = identity.Claims;
+                IEnumerable<Claim> userClaims = identity.Claims;
 
                 string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value ?? "";
                 string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
 
-                var user = await _context.Users
+                user = await _context.Users
                     .Where(u => u.Email == email && u.Username == username)
                     .SingleOrDefaultAsync();
-                if (user != null)
-                {
-                    return user.Id;
-                }
             }
-            return 0;
+            return user ?? new UserModel();
         }
         public async Task<IEnumerable<string>> GetUserRights(int id_user)
         {
-            var user = await _context.Users.FindAsync(id_user);
+            UserModel? user = await _context.Users.FindAsync(id_user);
             return [];
         }
         public async Task<IEnumerable<string>> GetUserRoles(int id_user)
         {
-            var user = await _context.Users.FindAsync(id_user);
+            UserModel? user = await _context.Users.FindAsync(id_user);
             return [];
         }
         public IEnumerable<object> GetActions()
@@ -94,7 +91,7 @@ namespace Setia.Services
         {
             try
             {
-                if (registration.Email == null || !Regex.IsMatch(registration.Email, regexEmailValidation)) return;
+                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexEmailValidationString"] ?? "")) return;
                 if (registration.Username == null || registration.Username.Length < 6) return;
                 if (registration.Password == null || registration.Password.Length < 6) return;
 
@@ -121,12 +118,12 @@ namespace Setia.Services
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, regexEmailValidation)) return;
+                if (email == null || !Regex.IsMatch(email, _config["RegexEmailValidationString"] ?? "")) return;
                 if (username == null || username.Length < 6) return;
                 if (currentPassword == null || currentPassword.Length < 6) return;
                 if (newPassword == null || newPassword.Length < 6) return;
 
-                var user = await _context.Users
+                UserModel? user = await _context.Users
                     .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)
                     .SingleOrDefaultAsync();
                 if (user != null)

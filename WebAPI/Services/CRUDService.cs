@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Setia.Data;
 using Setia.Services.Interfaces;
+using System.Reflection;
 
 namespace Setia.Controllers
 {
     public class CRUDService<T> : ICRUD<T> where T : class
     {
-        private readonly SetiaContext _context;
+        private readonly BaseContext _context;
         private readonly DbSet<T> _dbTable;
         private readonly ILogger<CRUDService<T>> _logger;
         private readonly IAudit _audit;
@@ -14,7 +15,7 @@ namespace Setia.Controllers
 
         public CRUDService
         (
-            SetiaContext context,
+            BaseContext context,
             ILogger<CRUDService<T>> logger,
             IAudit audit,
             IAuth auth
@@ -44,7 +45,7 @@ namespace Setia.Controllers
         {
             try
             {
-                model.GetType().GetProperty("Author_Id")?.SetValue(model, await _auth.GetCurrentUserId());
+                model.GetType().GetProperty("Author_Id")?.SetValue(model, _auth.GetCurrentUser().Id);
 
                 // check rights
 
@@ -69,17 +70,17 @@ namespace Setia.Controllers
             try
             {
                 // Set the Author_Id property of the model
-                var authorIdProperty = model.GetType().GetProperty("Author_Id");
-                if (authorIdProperty != null) authorIdProperty.SetValue(model, await _auth.GetCurrentUserId());
+                PropertyInfo? authorIdProperty = model.GetType().GetProperty("Author_Id");
+                if (authorIdProperty != null) authorIdProperty.SetValue(model, _auth.GetCurrentUser().Id);
 
                 // Find the old model in the database
-                var idProperty = model.GetType().GetProperty("Id");
+                PropertyInfo? idProperty = model.GetType().GetProperty("Id");
                 if (idProperty == null) throw new InvalidOperationException("Model does not have an Id property.");
 
-                var idValue = idProperty.GetValue(model);
+                object? idValue = idProperty.GetValue(model);
                 if (idValue == null) throw new ArgumentException("Id value cannot be null.");
 
-                var oldModel = await _dbTable.FindAsync(idValue);
+                T? oldModel = await _dbTable.FindAsync(idValue);
 
                 if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the database.");
 
@@ -103,7 +104,7 @@ namespace Setia.Controllers
         {
             try
             {
-                var itemToDelete = await _dbTable.FindAsync(id);
+                T? itemToDelete = await _dbTable.FindAsync(id);
 
                 if (itemToDelete == null) return false;
 
@@ -124,7 +125,7 @@ namespace Setia.Controllers
         {
             if (filter != null)
             {
-                foreach (var property in typeof(T).GetProperties())
+                foreach (PropertyInfo property in typeof(T).GetProperties())
                 {
                     query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
                 }

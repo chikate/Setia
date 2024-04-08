@@ -6,8 +6,8 @@ namespace Setia.Controllers.CRUDS
 {
     [ApiController]
     [Route("/api/[controller]/[action]")]
-    public class RolesController : CRUDController<RoleModel>
+    public class RolesController : CRUDController<TagModel>
     {
-        public RolesController(ICRUD<RoleModel> CRUD) : base(CRUD) { }
+        public RolesController(ICRUD<TagModel> CRUD) : base(CRUD) { }
     }
 }
