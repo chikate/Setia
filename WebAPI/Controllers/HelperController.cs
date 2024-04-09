@@ -1,6 +1,6 @@
+using Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Setia.Data;
 using Setia.Services.Interfaces;
 
 namespace Setia.Controllers
@@ -65,12 +65,6 @@ namespace Setia.Controllers
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest("An error occurred while uploading files.");
             }
-        }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> GetActions()
-        {
-            return Ok(_auth.GetActions());
         }
     }
 }

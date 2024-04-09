@@ -1,8 +1,8 @@
+using Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;

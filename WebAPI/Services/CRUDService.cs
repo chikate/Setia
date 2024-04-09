@@ -1,5 +1,5 @@
+using Base;
 using Microsoft.EntityFrameworkCore;
-using Setia.Data;
 using Setia.Services.Interfaces;
 using System.Reflection;
 
@@ -45,7 +45,7 @@ namespace Setia.Controllers
         {
             try
             {
-                model.GetType().GetProperty("Author_Id")?.SetValue(model, _auth.GetCurrentUser().Id);
+                model.GetType().GetProperty("AuthorId")?.SetValue(model, _auth.GetCurrentUser().Id);
 
                 // check rights
 
@@ -69,8 +69,8 @@ namespace Setia.Controllers
         {
             try
             {
-                // Set the Author_Id property of the model
-                PropertyInfo? authorIdProperty = model.GetType().GetProperty("Author_Id");
+                // Set the AuthorId property of the model
+                PropertyInfo? authorIdProperty = model.GetType().GetProperty("AuthorId");
                 if (authorIdProperty != null) authorIdProperty.SetValue(model, _auth.GetCurrentUser().Id);
 
                 // Find the old model in the database

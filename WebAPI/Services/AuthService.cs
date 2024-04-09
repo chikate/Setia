@@ -1,11 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Base;
 using Microsoft.EntityFrameworkCore;
-using Setia.Controllers;
-using Setia.Data;
 using Setia.Models;
 using Setia.Services.Interfaces;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 
@@ -51,47 +47,21 @@ namespace Setia.Services
             }
             return user ?? new UserModel();
         }
-        public async Task<IEnumerable<string>> GetUserRights(int id_user)
+        public async Task<IEnumerable<string>> GetUserRights(int idUser)
         {
-            UserModel? user = await _context.Users.FindAsync(id_user);
+            UserModel? user = await _context.Users.FindAsync(idUser);
             return [];
         }
-        public async Task<IEnumerable<string>> GetUserRoles(int id_user)
+        public async Task<IEnumerable<string>> GetUserRoles(int idUser)
         {
-            UserModel? user = await _context.Users.FindAsync(id_user);
+            UserModel? user = await _context.Users.FindAsync(idUser);
             return [];
-        }
-        public IEnumerable<object> GetActions()
-        {
-            List<object> actions = new List<object>();
-
-            foreach (var controller in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
-            {
-                if (!controller.IsDefined(typeof(AllowAnonymousAttribute), inherit: true))
-                {
-                    List<object> children = new List<object>();
-
-                    foreach (var parameter in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
-                    {
-                        children.Add(new { key = $"{controller.Name}", label = $"{controller.Name.Replace("Controller", "")}" });
-                    }
-
-                    foreach (var method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-                    {
-                        if (method.DeclaringType == controller)
-                        {
-                            actions.Add(new { key = $"{controller.Name}.{method.Name}", label = $"{controller.Name.Replace("Controller", "")} {method.Name}", children });
-                        }
-                    }
-                }
-            }
-            return actions;
         }
         public async Task Register(UserModel registration)
         {
             try
             {
-                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexEmailValidationString"] ?? "")) return;
+                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? "")) return;
                 if (registration.Username == null || registration.Username.Length < 6) return;
                 if (registration.Password == null || registration.Password.Length < 6) return;
 
@@ -118,7 +88,7 @@ namespace Setia.Services
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, _config["RegexEmailValidationString"] ?? "")) return;
+                if (email == null || !Regex.IsMatch(email, _config["RegexValidator:Email"] ?? "")) return;
                 if (username == null || username.Length < 6) return;
                 if (currentPassword == null || currentPassword.Length < 6) return;
                 if (newPassword == null || newPassword.Length < 6) return;
@@ -141,44 +111,44 @@ namespace Setia.Services
                 return;
             }
         }
-        public async Task AssignRoleToUser(int id_claim, int id_user)
+        public async Task AssignRoleToUser(int idClaim, int idUser)
         {
             try
             {
-                await _context.Users.FindAsync(id_user);
+                await _context.Users.FindAsync(idUser);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
             }
         }
-        public async Task RemoveRoleFromUser(int id_claim, int id_user)
+        public async Task RemoveRoleFromUser(int idClaim, int idUser)
         {
             try
             {
-                await _context.Users.FindAsync(id_user);
+                await _context.Users.FindAsync(idUser);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
             }
         }
-        public async Task AssignClaimToUser(int id_claim, int id_user)
+        public async Task AssignClaimToUser(int idClaim, int idUser)
         {
             try
             {
-                await _context.Users.FindAsync(id_user);
+                await _context.Users.FindAsync(idUser);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
             }
         }
-        public async Task RemoveClaimFromUser(int id_claim, int id_user)
+        public async Task RemoveClaimFromUser(int idClaim, int idUser)
         {
             try
             {
-                await _context.Users.FindAsync(id_user);
+                await _context.Users.FindAsync(idUser);
             }
             catch (Exception ex)
             {

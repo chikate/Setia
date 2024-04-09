@@ -1,4 +1,4 @@
-using Setia.Data;
+using Base;
 using Setia.Models;
 using Setia.Services.Interfaces;
 using System.Reflection;
@@ -31,7 +31,7 @@ namespace Setia.Services
                 AuditModel auditModel = new AuditModel
                 {
                     AuthorId = _auth.GetCurrentUser().Id,
-                    Entity = typeof(T).FullName,
+                    Entity = typeof(T).FullName ?? "",
                     EntityId = GetEntityId(model),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
                 };
@@ -89,8 +89,8 @@ namespace Setia.Services
 
             foreach (PropertyInfo property in typeof(T).GetProperties())
             {
-                string? existingValue = property.GetValue(oldModel)?.ToString();
-                string? updatedValue = property.GetValue(newModel)?.ToString();
+                string existingValue = property.GetValue(oldModel)?.ToString() ?? "";
+                string updatedValue = property.GetValue(newModel)?.ToString() ?? "";
 
                 if (existingValue != updatedValue)
                 {

@@ -1,9 +1,9 @@
+using Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Setia.Controllers;
-using Setia.Data;
 using Setia.Models;
 using Setia.Services;
 using Setia.Services.Interfaces;

@@ -7,10 +7,10 @@ namespace Setia.Models
     {
         [Key]
         public int Id { get; set; } = 0;
-        public string? Description { get; set; }
-        public string? Details { get; set; }
-        public string? Entity { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
+        public string Entity { get; set; } = string.Empty;
         public int? EntityId { get; set; }
-        public string? Payload { get; set; }
+        public string Payload { get; set; } = string.Empty;
     }
 }
