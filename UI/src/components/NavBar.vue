@@ -67,7 +67,7 @@
 
       <i
         v-badge="temp_notifications.length"
-        v-if="useAuthStore().getToken()"
+        v-if="useAuthStore().token"
         v-tooltip.left="{
           value: `Notifications`,
           showDelay: 700,
@@ -92,19 +92,16 @@
       <div @click="accountOverlay.toggle($event)" class="cursor-pointer">
         <i class="pi pi-user">
           <OverlayPanel ref="accountOverlay" class="p-0 m-0">
-            <LoginComponent
-              v-if="!useAuthStore().getToken()"
-              @close="accountOverlay.hide($event)"
-            />
+            <LoginComponent v-if="!useAuthStore().token" @close="accountOverlay.hide($event)" />
             <div v-else class="flex flex-column gap-3">
               <Button label="Profile" @click="$router.push('/profile')" />
               <Button label="Administration" @click="$router.push('/adm')" />
-              <Button label="LogOut" @click="useAuthStore().LogOut()" />
+              <Button label="logOut" @click="useAuthStore().logOut()" />
             </div>
           </OverlayPanel>
         </i>
         <a>
-          {{ useAuthStore().userData?.email ?? 'Account' }}
+          {{ useAuthStore().userData?.name ?? 'Account' }}
         </a>
       </div>
     </div>

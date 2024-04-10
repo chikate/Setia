@@ -42,6 +42,7 @@ builder.Services.AddTransient<ISender, SenderService>();
 builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel>>();
 builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel>>();
 builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel>>();
+builder.Services.AddScoped<ICRUD<UserTagModel>, CRUDService<UserTagModel>>();
 
 // Controllers
 builder.Services.AddControllers();

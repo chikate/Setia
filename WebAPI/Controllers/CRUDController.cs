@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Setia.Services.Interfaces;
 
-namespace Setia.Controllers.CRUDS
+namespace Base.Controllers
 {
     [ApiController]
     [Authorize]

@@ -7,29 +7,32 @@ namespace Setia.Services
     public class SenderService : ISender
     {
         private readonly ILogger<SenderService> _logger;
+        private readonly IConfiguration _config;
 
         public SenderService
         (
-            ILogger<SenderService> logger
+            ILogger<SenderService> logger,
+            IConfiguration config
         )
         {
             _logger = logger;
+            _config = config;
         }
 
-        public Task Send(string to, string subject, string message)
+        public Task SendMail(string to, string subject, string message)
         {
             try
             {
-                string mail = "";
                 new SmtpClient("", 3)
                 {
                     EnableSsl = true,
-                    Credentials = new NetworkCredential(mail, "")
+                    Credentials = new NetworkCredential(_config["Email:User"], _config["Email:Password"])
                 }.SendMailAsync(new MailMessage(
-                   from: mail,
+                   from: _config["Email:User"] ?? "",
                    to,
                    subject,
-                   message));
+                   message
+                 ));
             }
             catch (Exception ex)
             {

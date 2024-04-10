@@ -31,9 +31,8 @@ namespace Setia.Services
             _config = config;
         }
 
-        public async Task<UserModel> GetCurrentUser()
+        public UserModel GetCurrentUser()
         {
-            UserModel? user = null;
             if (_httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
             {
                 IEnumerable<Claim> userClaims = identity.Claims;
@@ -41,20 +40,19 @@ namespace Setia.Services
                 string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value ?? "";
                 string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
 
-                user = await _context.Users
-                    .Where(u => u.Email == email && u.Username == username)
-                    .SingleOrDefaultAsync();
+                UserModel? user = _context.Users.Where(u => u.Email == email && u.Username == username).SingleOrDefault();
+                return user ?? new UserModel();
             }
-            return user ?? new UserModel();
+            return new UserModel();
         }
-        public async Task<IEnumerable<string>> GetUserRights(int idUser)
+        public async Task<IEnumerable<string>> GetUserRights(string username)
         {
-            UserModel? user = await _context.Users.FindAsync(idUser);
+            UserModel? user = await _context.Users.FindAsync(username);
             return [];
         }
-        public async Task<IEnumerable<string>> GetUserRoles(int idUser)
+        public async Task<IEnumerable<string>> GetUserRoles(string username)
         {
-            UserModel? user = await _context.Users.FindAsync(idUser);
+            UserModel? user = await _context.Users.FindAsync(username);
             return [];
         }
         public async Task Register(UserModel registration)
@@ -66,17 +64,13 @@ namespace Setia.Services
                 if (registration.Password == null || registration.Password.Length < 6) return;
 
                 await _context.Users
-                    .Where(u => u.Username == registration.Username)
+                    .Where(u => u.Username != registration.Username)
                     .SingleOrDefaultAsync();
 
-                registration.Id = 0;
                 _context.Users.Add(registration);
-
                 await _context.SaveChangesAsync();
-
-                await _sender.Send(registration.Email, "Account registration / mail validation", "");
-
-                return;
+                string link = "https://www.google.ro";
+                await _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {link}");
             }
             catch (Exception ex)
             {
@@ -100,7 +94,8 @@ namespace Setia.Services
                 {
                     user.Password = newPassword;
                     await _context.SaveChangesAsync();
-                    await _sender.Send(email, "Account registration / mail validation", $"You just changed your password for {username}");
+                    string recoveryLink = "https://www.google.com";
+                    await _sender.SendMail(email, "Password changed", $"You just changed your password for {username}. If it was ot you access this link {recoveryLink}");
                     return;
                 }
                 return;
@@ -111,44 +106,35 @@ namespace Setia.Services
                 return;
             }
         }
-        public async Task AssignRoleToUser(int idClaim, int idUser)
+        public async Task GiveUserTag(Guid tag, string username)
         {
             try
             {
-                await _context.Users.FindAsync(idUser);
+                await _context.UserTags.AddAsync(new UserTagModel() { User = username, Tag = tag });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
             }
         }
-        public async Task RemoveRoleFromUser(int idClaim, int idUser)
+        public async Task RemoveUserTag(Guid Tag, string username)
         {
             try
             {
-                await _context.Users.FindAsync(idUser);
+                UserTagModel? userTag = await _context.UserTags.Where(t => t.User == username).FirstOrDefaultAsync();
+                if (userTag != null) _context.UserTags.Remove(userTag);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
             }
         }
-        public async Task AssignClaimToUser(int idClaim, int idUser)
+        public async Task GetUserTags(Guid Tag, string username)
         {
             try
             {
-                await _context.Users.FindAsync(idUser);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-            }
-        }
-        public async Task RemoveClaimFromUser(int idClaim, int idUser)
-        {
-            try
-            {
-                await _context.Users.FindAsync(idUser);
+                UserTagModel? userTag = await _context.UserTags.Where(t => t.User == username).FirstOrDefaultAsync();
+                if (userTag != null) _context.UserTags.Remove(userTag);
             }
             catch (Exception ex)
             {

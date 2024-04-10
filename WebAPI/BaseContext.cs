@@ -6,36 +6,40 @@ using System.Reflection;
 
 namespace Base;
 
-public partial class BaseContext : DbContext
+public partial class BaseContext(DbContextOptions<BaseContext> options) : DbContext(options)
 {
-    public BaseContext(DbContextOptions<BaseContext> options) : base(options) { }
-
     public DbSet<PontajModel> Pontaj { get; set; }
     public DbSet<AuditModel> Audit { get; set; }
     public DbSet<UserModel> Users { get; set; }
     public DbSet<TagModel> Tags { get; set; }
+    public DbSet<UserTagModel> UserTags { get; set; }
 
-    protected override async void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         //modelBuilder.HasDefaultSchema("base");
 
-        Guid SetTag(string name, Guid? parentGuid = null)
+        modelBuilder.Entity<UserModel>().HasData(
+            new UserModel() { Username = "testUsername", Password = "testPassword", Name = "Test Name" }
+        );
+
+        // Tags
+        Guid SetTag(string name, Guid? parentTagGuid = null)
         {
-            Guid myGuid = Guid.NewGuid();
+            Guid tagGuid = Guid.NewGuid();
             modelBuilder.Entity<TagModel>().HasData(
-                new TagModel() { ParentTagGuid = parentGuid, Guid = myGuid, Name = name }
+                new TagModel() { ParentTagId = parentTagGuid, Id = tagGuid, Name = name }
             );
-            return myGuid;
+            return tagGuid;
         }
 
         foreach (var controller in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
         {
             if (!controller.IsDefined(typeof(AllowAnonymousAttribute), inherit: true))
             {
-                Guid controllerGuid = SetTag(controller.Name.Replace("Controller", ""));
+                Guid controllerTagId = SetTag(controller.Name.Replace("Controller", ""));
                 foreach (var method in controller.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 {
-                    if (method.DeclaringType == controller) SetTag(method.Name, controllerGuid);
+                    if (method.DeclaringType == controller) SetTag(method.Name, controllerTagId);
                 }
             }
         }

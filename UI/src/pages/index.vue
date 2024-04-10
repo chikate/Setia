@@ -8,7 +8,7 @@
     >
       <main style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))">
         <a class="text-8xl text-center font-bold">
-          Hello {{ useAuthStore()?.getToken() ? 'Dragos' : 'there' }}
+          Hello {{ useAuthStore()?.userData?.name ?? 'there' }}
         </a>
         <a class="text-3xl text-center font-bold">We are happy that you are here!</a>
       </main>

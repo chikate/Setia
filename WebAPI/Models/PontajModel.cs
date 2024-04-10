@@ -10,7 +10,7 @@ namespace Setia.Models
         public int Id { get; set; } = 0;
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
         public UserModel? User { get; set; }
 
         public DateTime BeginTime { get; set; } = DateTime.Now;

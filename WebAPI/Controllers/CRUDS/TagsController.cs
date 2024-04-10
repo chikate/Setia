@@ -7,5 +7,5 @@ namespace Setia.Controllers.CRUDS
 {
     [ApiController]
     [Route("/api/[controller]/[action]")]
-    public class PontajController(ICRUD<PontajModel> CRUD) : CRUDController<PontajModel>(CRUD) { }
+    public class TagsController(ICRUD<TagModel> CRUD) : CRUDController<TagModel>(CRUD) { }
 }

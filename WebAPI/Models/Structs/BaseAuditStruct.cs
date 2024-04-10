@@ -7,7 +7,7 @@ namespace Setia.Models.Structs
         public DateTime ExecutionDate { get; set; } = DateTime.Now;
 
         [ForeignKey("Author")]
-        public int? AuthorId { get; set; } = null;
+        public string? AuthorId { get; set; } = null;
         public UserModel? Author { get; set; }
     }
 }

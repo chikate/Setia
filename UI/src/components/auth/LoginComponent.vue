@@ -28,17 +28,17 @@
       <label>Stay signed in</label>
     </div>
 
-    <Button label="Login" @click="submitLogin" :disabled="showLoginSpinner">
-      <ProgressSpinner v-if="showLoginSpinner" style="width: 20px; height: 20px" strokeWidth="8" />
-    </Button>
-
-    <!-- <div class="text-xs font-semibold text-white-alpha-600 text-center">
+    <div class="text-xs font-semibold text-white-alpha-600 text-center">
       By continuing you accept the
       <RouterLink to="/terms-of-service" class="font-medium">Terms of Service</RouterLink>,
       <RouterLink to="/privacy-policy" class="font-medium"
         >Privacy Policy and Cookie Policy</RouterLink
       >.
-    </div> -->
+    </div>
+
+    <Button label="Login" @click="submitLogin" :disabled="showLoginSpinner">
+      <ProgressSpinner v-if="showLoginSpinner" style="width: 20px; height: 20px" strokeWidth="8" />
+    </Button>
 
     <div class="flex flex-row justify-content-around" @click="$emit('close')">
       <RouterLink to="/recovery">Can't sign in?</RouterLink>
@@ -49,7 +49,6 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/AuthStore'
-
 import { ref } from 'vue'
 
 const showLoginSpinner = ref<boolean>(false)
@@ -71,7 +70,7 @@ function submitLogin() {
     .then((success) => {
       showLoginSpinner.value = false
       if (success) {
-        window.location.reload()
+        // window.location.reload()
       }
     })
 }

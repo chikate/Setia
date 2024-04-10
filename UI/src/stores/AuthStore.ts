@@ -4,40 +4,40 @@ import type { User } from '@/interfaces'
 
 export const useAuthStore = defineStore('Auth', {
   state: (): {
+    token?: string
     userData?: User
   } => {
     return {}
   },
   actions: {
     async tryLogin(username: string, password: string): Promise<boolean> {
-      return await makeApiRequest(`Auth/Login`, 'post', { username, password }).then(
+      return await makeApiRequest(`${this.$id}/Login`, 'post', { username, password }).then(
         (loginResult) => {
-          console.log(loginResult)
-          if (loginResult.token.length > 50) {
-            localStorage.setItem('token', loginResult.token)
-          }
+          this.token = loginResult.token
           this.userData = loginResult.user
-          console.log(this.userData)
           return Boolean(loginResult)
         }
       )
     },
-    async LogOut() {
-      localStorage.setItem('token', '')
+    async logOut() {
+      this.token = undefined
+      this.userData = undefined
       return window.location.reload()
     },
-    getToken(): string | null {
-      return localStorage.getItem('token')
+    hasRight(right: string): boolean {
+      return true
     },
     async tryRegister(email: string, username: string, password: string): Promise<boolean> {
-      return await makeApiRequest(`Auth/Register`, 'post', { email, username, password }).then(
-        (successful: boolean) => {
-          if (successful) {
-            window.location.assign('/')
-          }
-          return successful
+      return await makeApiRequest(`${this.$id}/Register`, 'post', {
+        email,
+        username,
+        password
+      }).then((successful: boolean) => {
+        if (successful) {
+          window.location.assign('/')
         }
-      )
+        return successful
+      })
     }
   },
   persist: true

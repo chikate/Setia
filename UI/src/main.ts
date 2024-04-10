@@ -13,8 +13,10 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 
 const app = createApp(App)
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
-app.use(createPinia().use(piniaPluginPersistedstate))
+app.use(pinia)
 app.use(router)
 app.use(PrimeVue)
 app.directive('tooltip', Tooltip)

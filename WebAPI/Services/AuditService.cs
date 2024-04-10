@@ -30,13 +30,16 @@ namespace Setia.Services
             {
                 AuditModel auditModel = new AuditModel
                 {
-                    AuthorId = _auth.GetCurrentUser().Id,
+                    AuthorId = _auth.GetCurrentUser().Username,
+                    Author = _auth.GetCurrentUser(),
                     Entity = typeof(T).FullName ?? "",
                     EntityId = GetEntityId(model),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
                 };
 
                 await _context.Audit.AddAsync(auditModel);
+                await _context.SaveChangesAsync();
+
             }
             catch (Exception ex)
             {

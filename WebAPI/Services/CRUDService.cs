@@ -45,17 +45,17 @@ namespace Setia.Controllers
         {
             try
             {
-                model.GetType().GetProperty("AuthorId")?.SetValue(model, _auth.GetCurrentUser().Id);
+                PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
+                if (AuthorProperty != null) AuthorProperty.SetValue(model, _auth.GetCurrentUser());
+
+                PropertyInfo? UserProperty = model.GetType().GetProperty("UserId");
+                if (UserProperty != null) UserProperty.SetValue(model, _auth.GetCurrentUser().Username);
 
                 // check rights
 
-                model.GetType().GetProperty("Id")?.SetValue(model, 0);
-
                 await _dbTable.AddAsync(model);
                 await _context.SaveChangesAsync();
-
                 await _audit.LogAuditTrail<T>(model);
-
                 return true;
             }
             catch (Exception ex)
@@ -69,9 +69,9 @@ namespace Setia.Controllers
         {
             try
             {
-                // Set the AuthorId property of the model
-                PropertyInfo? authorIdProperty = model.GetType().GetProperty("AuthorId");
-                if (authorIdProperty != null) authorIdProperty.SetValue(model, _auth.GetCurrentUser().Id);
+                // Set the Author property of the model
+                PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
+                if (AuthorProperty != null) AuthorProperty.SetValue(model, _auth.GetCurrentUser());
 
                 // Find the old model in the database
                 PropertyInfo? idProperty = model.GetType().GetProperty("Id");
@@ -84,19 +84,17 @@ namespace Setia.Controllers
 
                 if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the database.");
 
-                // Update the context with the new model
+
                 _dbTable.Entry(oldModel).CurrentValues.SetValues(model);
                 await _context.SaveChangesAsync();
-
-                // Log audit trail
                 await _audit.LogAuditTrail<T>(model, oldModel);
 
-                return true; // Operation succeeded
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return false; // Operation failed
+                return false;
             }
         }
 

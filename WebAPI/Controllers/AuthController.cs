@@ -84,13 +84,7 @@ namespace Setia.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Invalid inputs");
-                }
-
                 await _auth.Register(registration);
-
                 return Ok("Account created");
             }
             catch (Exception ex)

@@ -1,11 +1,12 @@
 import { API_URL } from '@/constants'
+import { useAuthStore } from './stores/AuthStore'
 
 export async function makeApiRequest(path: string, method: string, body?: any): Promise<any> {
   const customHeader = new Headers()
   if (!(body instanceof FormData)) {
     customHeader.append('Content-Type', `application/${body ? 'json' : 'x-www-form-urlencoded'}`)
   }
-  customHeader.append('Authorization', `Bearer ${localStorage.getItem('token')}`)
+  customHeader.append('Authorization', `Bearer ${useAuthStore().token ?? ''}`)
 
   const response = await fetch(API_URL + path, {
     method: method.toUpperCase(),

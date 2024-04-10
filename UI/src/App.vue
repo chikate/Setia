@@ -1,12 +1,16 @@
+<script setup lang="ts">
+import { useAuthStore } from './stores/AuthStore'
+</script>
+
 <template>
   <NavBar />
   <main>
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component }" v-if="useAuthStore().hasRight('')">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
-    <PageNotFound v-if="false" />
+    <PageNotFound v-else />
   </main>
   <FooterBar />
   <main class="fixed vignette pointer-events-none" />

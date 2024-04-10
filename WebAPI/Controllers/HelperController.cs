@@ -1,6 +1,7 @@
 using Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Setia.Services.Interfaces;
 
 namespace Setia.Controllers
@@ -37,14 +38,11 @@ namespace Setia.Controllers
         {
             try
             {
-                int authorId = _auth.GetCurrentUser().Id;
-                if (authorId <= 0) return BadRequest("Invalid author ID");
+                string Author = _auth.GetCurrentUser().Username;
+                if (Author.IsNullOrEmpty()) return BadRequest("Invalid author ID");
 
-                string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, authorId.ToString());
-                if (!Directory.Exists(userDirectory))
-                {
-                    Directory.CreateDirectory(userDirectory);
-                }
+                string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, Author);
+                if (!Directory.Exists(userDirectory)) Directory.CreateDirectory(userDirectory);
 
                 foreach (IFormFile file in files)
                 {
