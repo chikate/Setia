@@ -1,9 +1,10 @@
 # Base WebAPP
 
 Right click on **Base** project > select **"Manage User Secrets"** and paste this code in there but dont forget to set your
+
 - **Connection Strings**,
-- **Audience** link, 
-- **Issuer** link, 
+- **Audience** link,
+- **Issuer** link,
 - **Key** code,
 - **Origin** link
 
@@ -34,14 +35,17 @@ Right click on **Base** project > select **"Manage User Secrets"** and paste thi
 }
 ```
 
-### new Migrations
+# new Migrations
 
 To create a new migration:
+
 ```bash
 Add-Migration SetiaGov[Comment] -Context GovContext
 ```
+
 if there is no migration in **Migrations** folder
 then update the database with the migration
+
 ```bash
 Update-Database -Context GovContext
 ```
@@ -51,17 +55,21 @@ Add-Migration SetiaBase[Comment] -Context GovContext
 Update-Database -Context GovContext
 ```
 
-### new CRUDs
+# new CRUDs
 
 Create a new model in the **Models** folder
 Then go to **Program.cs** and to //CRUDs section (you can ctrl + f search for //CRUDs)
 add this scope and adjust it properly
+
 ```csharp
 builder.Services.AddScoped<ICRUD</*ModelName*/>, CRUDService</*ModelName*/, /*DbContext*/>>();
 ```
-then in the **Gateway** folder in **CRUDsController.cs** 
+
+then in the **Gateway** folder in **CRUDsController.cs**
 add this new class and adjust it properly
+
 ```csharp
 public class /*CRUDName*/Controller(ICRUD</*CRUDModel*/> CRUD) : CRUDController</*CRUDModel*/>(CRUD);
 ```
+
 and you are done :)
