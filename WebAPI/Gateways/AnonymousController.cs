@@ -1,9 +1,9 @@
-using Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Setia.Models;
+using Setia.Contexts.Base;
+using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -47,7 +47,7 @@ namespace Setia.Controllers
                     .FirstOrDefaultAsync();
                 if (user != null)
                 {
-                    List<Claim> claims = new List<Claim>
+                    IEnumerable<Claim> claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Name),
                         new Claim(ClaimTypes.Email, user.Email),
@@ -59,13 +59,13 @@ namespace Setia.Controllers
                         issuer: _config["JWT:Issuer"],
                         audience: _config["JWT:Audience"],
                         claims,
-                        expires: DateTime.Now.AddDays(1),
+                        expires: DateTime.SpecifyKind((DateTime)DateTime.Now.AddDays(1)!, DateTimeKind.Utc),
                         signingCredentials: new SigningCredentials(
                             new SymmetricSecurityKey(
                                 Encoding.UTF8.GetBytes(_config["JWT:Key"] ?? "")),
                                 SecurityAlgorithms.HmacSha256)));
 
-                    return Ok(new LoginResultDto { Token = token, User = user });
+                    return Ok(new { Token = token, User = user });
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex);
             }
         }
     }

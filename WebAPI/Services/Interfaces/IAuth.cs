@@ -1,15 +1,11 @@
-using Setia.Models;
+using Setia.Models.Base;
 
 namespace Setia.Services.Interfaces
 {
     public interface IAuth
     {
         UserModel GetCurrentUser();
-        Task<IEnumerable<string>> GetUserRights(string username);
-        Task<IEnumerable<string>> GetUserRoles(string username);
+        Task<IEnumerable<string>> GetUserTags(string? username = null, string? specific = null);
         Task Register(UserModel registration);
-        Task GiveUserTag(Guid tag, string username);
-        Task RemoveUserTag(Guid tag, string username);
-        Task GetUserTags(Guid tag, string username);
     }
 }

@@ -22,9 +22,11 @@ export interface Pontaj extends Definition {
   endTime: string | null
   description: string
 }
-export interface Role extends Definition {
-  id?: number
+export interface Tag extends Definition {
+  id?: string
   name: string
+  parentTagId: string | undefined
+  parentTag: Tag | undefined
 }
 export interface Right extends Definition {
   id?: number

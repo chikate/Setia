@@ -10,19 +10,55 @@ Right click on **Base** project > select **"Manage User Secrets"** and paste thi
 ```json
 {
   "ConnectionStrings": {
-    "Setia": "Server=DRAGOS;Database=Setia;Trusted_Connection=True;TrustServerCertificate=True;"
+    "MsSql": {
+      "Setia": "Server=Server;Database=Setia;Trusted_Connection=True;TrustServerCertificate=True;"
+    },
+    "PostgreSql": {
+      "Setia": "User ID=postgres;Password=Password;Host=localhost;Port=5432;Database=Setia;"
+    }
   },
   "Email": {
-    "Password": "",
-    "User": ""
+    "User": "",
+    "Password": ""
   },
   "JWT": {
-    "Audience": "http://localhost:CLIENT_PORT",
-    "Issuer": "https://localhost:SERVER_PORT",
-    "Key": "Generate a key and insert it here"
+    "Audience": "https://localhost:PORT",
+    "Issuer": "https://localhost:PORT",
+    "Key": "LbV39BSC079qcfUCG0Wwusl31S8Uu0Qo"
   },
-  "Origin": "http://localhost:CLIENT_PORT"
+  "Origin": "http://localhost:OTHER_PORT",
+  "SA": {
+    "Username": "",
+    "Password": ""
+  }
 }
 ```
 
+To create a new migration:
+```bash
+Add-Migration SetiaGov[Comment] -Context GovContext
+```
+if there is no migration in **Migrations** folder
+then update the database with the migration
+```bash
+Update-Database -Context GovContext
+```
+
+```bash
+Add-Migration SetiaBase[Comment] -Context GovContext
+Update-Database -Context GovContext
+```
+
 For adding aditional CRUD functionalities: 
+Create a new model in the **Models** folder
+Then go to **Program.cs** and to //CRUDs section (you can ctrl + f search for //CRUDs)
+add this scope and adjust it properly
+```c#
+builder.Services.AddScoped<ICRUD</*ModelName*/>, CRUDService</*ModelName*/, /*DbContext*/>>();
+```
+then in the **Gateway** folder in **CRUDsController.cs** 
+add this new class and adjust it properly
+```c#
+public class /*CRUDName*/Controller(ICRUD</*CRUDModel*/> CRUD) : CRUDController</*CRUDModel*/>(CRUD);
+```
+and you are done :)

@@ -2,17 +2,29 @@ import { API_URL } from '@/constants'
 import { useAuthStore } from './stores/AuthStore'
 
 export async function makeApiRequest(path: string, method: string, body?: any): Promise<any> {
-  const customHeader = new Headers()
+  // Manage headers
+  const headers = new Headers()
   if (!(body instanceof FormData)) {
-    customHeader.append('Content-Type', `application/${body ? 'json' : 'x-www-form-urlencoded'}`)
+    headers.append('Content-Type', `application/${body ? 'json' : 'x-www-form-urlencoded'}`)
   }
-  customHeader.append('Authorization', `Bearer ${useAuthStore().token ?? ''}`)
+  headers.append('Authorization', `Bearer ${useAuthStore().token ?? ''}`)
 
-  const response = await fetch(API_URL + path, {
-    method: method.toUpperCase(),
-    headers: customHeader,
-    body: body instanceof FormData ? body : JSON.stringify(body)
-  })
+  // Fetch function
+  const response = await fetch(
+    API_URL +
+      path +
+      // Auto append parameters for [FromQuerry]
+      (body && method.toLowerCase() == 'get'
+        ? `?${Object.keys(body)
+            .map((elem) => `${elem}=${Object.values(elem)}`)
+            .join('&')}`
+        : ''),
+    {
+      method,
+      headers,
+      body: body instanceof FormData ? body : JSON.stringify(body)
+    }
+  )
 
   if (response.status === 200) {
     if (response.headers.get('Content-Type')?.includes('application/json')) {
@@ -25,7 +37,7 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
     }
   }
 
-  return false
+  return response.status
 }
 
 export function capitalizeString(input: string): string {

@@ -1,10 +1,10 @@
 namespace Setia.Services.Interfaces
 {
-    public interface ICRUD<T>
+    public interface ICRUD<TModel>
     {
-        Task<bool> Add(T model);        // C
-        IEnumerable<T> Get(T? filter);  // R
-        Task<bool> Update(T model);     // U
-        Task<bool> Delete(int id);      // D
+        Task Add(TModel model);
+        Task<IEnumerable<TModel>> Get(TModel? filter = default, string? user = null, string? specific = null);
+        Task Update(TModel model);
+        Task Delete(int id);
     }
 }

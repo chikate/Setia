@@ -1,7 +1,7 @@
 ﻿using Setia.Models.Structs;
 using System.ComponentModel.DataAnnotations;
 
-namespace Setia.Models
+namespace Setia.Models.Base
 {
     public class AuditModel : BaseAuditStruct
     {

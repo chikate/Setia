@@ -1,71 +1,97 @@
-using Base;
 using Microsoft.EntityFrameworkCore;
+using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.Reflection;
 
 namespace Setia.Controllers
 {
-    public class CRUDService<T> : ICRUD<T> where T : class
+    public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : class where TContext : DbContext
     {
-        private readonly BaseContext _context;
-        private readonly DbSet<T> _dbTable;
-        private readonly ILogger<CRUDService<T>> _logger;
+        private readonly TContext _context;
+        private readonly DbSet<TModel> _contextTable;
+        private readonly ILogger<CRUDService<TModel, TContext>> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
 
         public CRUDService
         (
-            BaseContext context,
-            ILogger<CRUDService<T>> logger,
+            TContext context,
+            ILogger<CRUDService<TModel, TContext>> logger,
             IAudit audit,
             IAuth auth
         )
         {
             _context = context;
-            _dbTable = context.Set<T>();
+            _contextTable = context.Set<TModel>();
             _logger = logger;
             _audit = audit;
             _auth = auth;
         }
 
-        public IEnumerable<T> Get(T? filter)
+        public async Task<IEnumerable<TModel>> Get(TModel? filter = null, string? user = null, string? specific = null)
         {
             try
             {
-                return ApplyFilter(_dbTable.AsQueryable(), filter);
+                if (filter != null)
+                {
+                }
+                IQueryable<TModel> query = _contextTable.AsNoTracking().AsQueryable();
+                switch (typeof(TModel).Name)
+                {
+                    case nameof(TagModel):
+                        if (specific != null) query = query.Where(t => ((TagModel)(object)t).Tag.MatchesLQuery(specific));
+                        break;
+                    case nameof(UserTagModel):
+                        if (specific != null) query = query.Where(ut => ((UserTagModel)(object)ut).Tag.MatchesLQuery(specific));
+                        if (user != null) query = query.Where(ut => ((UserTagModel)(object)ut).User.Contains(user));
+                        break;
+                    case nameof(UserModel):
+                        if (user != null) query = query.Where(u => ((UserModel)(object)u).Username.Contains(user));
+                        break;
+                    default:
+                        break;
+                }
+                //if (filter != null)
+                //{
+                //    foreach (PropertyInfo property in typeof(T).GetProperties())
+                //    {
+                //        query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
+                //    }
+                //}
+                return await query.ToListAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return [];
+                throw new Exception();
             }
         }
 
-        async Task<bool> ICRUD<T>.Add(T model)
+        async Task ICRUD<TModel>.Add(TModel model)
         {
             try
             {
-                PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
-                if (AuthorProperty != null) AuthorProperty.SetValue(model, _auth.GetCurrentUser());
+                //UserModel user = _auth.GetCurrentUser();
+                //PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
+                //AuthorProperty?.SetValue(model, user.Username);
 
-                PropertyInfo? UserProperty = model.GetType().GetProperty("UserId");
-                if (UserProperty != null) UserProperty.SetValue(model, _auth.GetCurrentUser().Username);
+                //PropertyInfo? UserProperty = model.GetType().GetProperty("User");
+                //UserProperty?.SetValue(model, user.Username);
 
                 // check rights
 
-                await _dbTable.AddAsync(model);
+                await _contextTable.AddAsync(model);
                 await _context.SaveChangesAsync();
-                await _audit.LogAuditTrail<T>(model);
-                return true;
+                await _audit.LogAuditTrail<TModel>(model);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return false;
+                throw new Exception();
             }
         }
 
-        async Task<bool> ICRUD<T>.Update(T model)
+        async Task ICRUD<TModel>.Update(TModel model)
         {
             try
             {
@@ -73,62 +99,47 @@ namespace Setia.Controllers
                 PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
                 if (AuthorProperty != null) AuthorProperty.SetValue(model, _auth.GetCurrentUser());
 
-                // Find the old model in the database
+                // Find the old model in the dataSetia
                 PropertyInfo? idProperty = model.GetType().GetProperty("Id");
                 if (idProperty == null) throw new InvalidOperationException("Model does not have an Id property.");
 
                 object? idValue = idProperty.GetValue(model);
                 if (idValue == null) throw new ArgumentException("Id value cannot be null.");
 
-                T? oldModel = await _dbTable.FindAsync(idValue);
+                TModel? oldModel = await _contextTable.FindAsync(idValue);
 
-                if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the database.");
+                if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the dataSetia.");
 
 
-                _dbTable.Entry(oldModel).CurrentValues.SetValues(model);
+                _contextTable.Entry(oldModel).CurrentValues.SetValues(model);
                 await _context.SaveChangesAsync();
-                await _audit.LogAuditTrail<T>(model, oldModel);
-
-                return true;
+                await _audit.LogAuditTrail<TModel>(model, oldModel);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return false;
+                throw new Exception();
             }
         }
 
-        async Task<bool> ICRUD<T>.Delete(int id)
+        async Task ICRUD<TModel>.Delete(int id)
         {
             try
             {
-                T? itemToDelete = await _dbTable.FindAsync(id);
+                TModel? itemToDelete = await _contextTable.FindAsync(id);
 
-                if (itemToDelete == null) return false;
+                if (itemToDelete == null) throw new Exception();
 
-                _dbTable.Remove(itemToDelete);
+                _contextTable.Remove(itemToDelete);
                 await _context.SaveChangesAsync();
 
-                await _audit.LogAuditTrail<T>(itemToDelete);
-
-                return true;
+                await _audit.LogAuditTrail<TModel>(itemToDelete);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return false;
+                throw new Exception();
             }
-        }
-        private IQueryable<T> ApplyFilter(IQueryable<T> query, T? filter)
-        {
-            if (filter != null)
-            {
-                foreach (PropertyInfo property in typeof(T).GetProperties())
-                {
-                    query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
-                }
-            }
-            return query;
         }
     }
 }

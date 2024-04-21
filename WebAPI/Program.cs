@@ -1,10 +1,12 @@
-using Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Setia.Contexts.Base;
+using Setia.Contexts.Gov;
 using Setia.Controllers;
-using Setia.Models;
+using Setia.Models.Base;
+using Setia.Models.Gov;
 using Setia.Services;
 using Setia.Services.Interfaces;
 using System.Text;
@@ -28,21 +30,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 // DbContexts
-builder.Services.AddDbContext<BaseContext>(options =>
-{
-    options.UseSqlServer(config["ConnectionStrings:Setia"]);
-    //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-});
+//builder.Services.AddDbContext<BaseContext>(options => options.UseSqlServer(config["ConnectionStrings:MsSql:Setia"]));
+//builder.Services.AddDbContext<GovContext>(options => options.UseSqlServer(config["ConnectionStrings:MsSql:Setia"]));
+builder.Services.AddDbContext<BaseContext>(options => options.UseNpgsql(config["ConnectionStrings:PostgreSql:Setia"]));
+builder.Services.AddDbContext<GovContext>(options => options.UseNpgsql(config["ConnectionStrings:PostgreSql:Setia"]));
 
 // Services
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IAudit, AuditService>();
 builder.Services.AddTransient<ISender, SenderService>();
 // CRUDs
-builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel>>();
-builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel>>();
-builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel>>();
-builder.Services.AddScoped<ICRUD<UserTagModel>, CRUDService<UserTagModel>>();
+builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel, BaseContext>>();
+builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel, BaseContext>>();
+builder.Services.AddScoped<ICRUD<UserTagModel>, CRUDService<UserTagModel, BaseContext>>();
+builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<VoteModel>, CRUDService<VoteModel, GovContext>>();
 
 // Controllers
 builder.Services.AddControllers();
@@ -51,7 +53,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,

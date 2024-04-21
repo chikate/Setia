@@ -1,7 +1,7 @@
-using Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Setia.Contexts.Base;
 using Setia.Services.Interfaces;
 
 namespace Setia.Controllers
@@ -34,7 +34,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(List<IFormFile> files)
+        public async Task<IActionResult> Upload(IEnumerable<IFormFile> files)
         {
             try
             {
@@ -62,6 +62,19 @@ namespace Setia.Controllers
             {
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest("An error occurred while uploading files.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserTags(string? username = null, string? specific = null)
+        {
+            try
+            {
+                return Ok(await _auth.GetUserTags(username, specific));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -49,9 +49,9 @@ const filters = ref({
 
 <template>
   <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
-  <div class="flex justify-content-center" v-if="useAuthStore().getToken()">
+  <div class="flex justify-content-center" v-if="useAuthStore().token">
     <DataTable
-      @vue:before-mount="store.getAll()"
+      @vue:before-mount="async () => await store.getAll()"
       :value="store.allLoadedItems"
       @row-dblclick="(store.selectedItem = $event.data), (showDialog = !showDialog)"
       size="small"

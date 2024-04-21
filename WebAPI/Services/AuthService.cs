@@ -1,6 +1,6 @@
-using Base;
 using Microsoft.EntityFrameworkCore;
-using Setia.Models;
+using Setia.Contexts.Base;
+using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -45,23 +45,30 @@ namespace Setia.Services
             }
             return new UserModel();
         }
-        public async Task<IEnumerable<string>> GetUserRights(string username)
+
+        public async Task<IEnumerable<string>> GetUserTags(string? username = null, string? specific = null)
         {
-            UserModel? user = await _context.Users.FindAsync(username);
-            return [];
-        }
-        public async Task<IEnumerable<string>> GetUserRoles(string username)
-        {
-            UserModel? user = await _context.Users.FindAsync(username);
-            return [];
+            try
+            {
+                if (username == null) throw new Exception();
+
+                IEnumerable<UserTagModel> userTags = await _context.UserTags.Where(p => p.User == username).ToListAsync();
+                if (specific != null) return userTags.Where(t => t.Tag.ToString().Contains(specific)).Select(p => p.Tag.ToString());
+                else return userTags.Select(p => p.Tag.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                throw new Exception();
+            }
         }
         public async Task Register(UserModel registration)
         {
             try
             {
-                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? "")) return;
-                if (registration.Username == null || registration.Username.Length < 6) return;
-                if (registration.Password == null || registration.Password.Length < 6) return;
+                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? "")) throw new Exception();
+                if (registration.Username == null || registration.Username.Length < 6) throw new Exception();
+                if (registration.Password == null || registration.Password.Length < 6) throw new Exception();
 
                 await _context.Users
                     .Where(u => u.Username != registration.Username)
@@ -75,17 +82,17 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return;
+                throw new Exception();
             }
         }
         public async Task ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, _config["RegexValidator:Email"] ?? "")) return;
-                if (username == null || username.Length < 6) return;
-                if (currentPassword == null || currentPassword.Length < 6) return;
-                if (newPassword == null || newPassword.Length < 6) return;
+                if (email == null || !Regex.IsMatch(email, _config["RegexValidator:Email"] ?? "")) throw new Exception();
+                if (username == null || username.Length < 6) throw new Exception();
+                if (currentPassword == null || currentPassword.Length < 6) throw new Exception();
+                if (newPassword == null || newPassword.Length < 6) throw new Exception();
 
                 UserModel? user = await _context.Users
                     .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)
@@ -103,42 +110,7 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return;
-            }
-        }
-        public async Task GiveUserTag(Guid tag, string username)
-        {
-            try
-            {
-                await _context.UserTags.AddAsync(new UserTagModel() { User = username, Tag = tag });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-            }
-        }
-        public async Task RemoveUserTag(Guid Tag, string username)
-        {
-            try
-            {
-                UserTagModel? userTag = await _context.UserTags.Where(t => t.User == username).FirstOrDefaultAsync();
-                if (userTag != null) _context.UserTags.Remove(userTag);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-            }
-        }
-        public async Task GetUserTags(Guid Tag, string username)
-        {
-            try
-            {
-                UserTagModel? userTag = await _context.UserTags.Where(t => t.User == username).FirstOrDefaultAsync();
-                if (userTag != null) _context.UserTags.Remove(userTag);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
+                throw new Exception();
             }
         }
     }

@@ -37,6 +37,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SplitButton: typeof import('primevue/splitbutton')['default']
     TreeSelect: typeof import('primevue/treeselect')['default']
+    TreeTable: typeof import('primevue/treetable')['default']
     TriStateCheckbox: typeof import('primevue/tristatecheckbox')['default']
     UsernameRecoveryComponent: typeof import('./src/components/auth/recovery/UsernameRecoveryComponent.vue')['default']
   }
