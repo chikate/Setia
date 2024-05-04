@@ -24,8 +24,12 @@ export const useAuthStore = defineStore('Auth', {
       this.userData = undefined
       return window.location.reload()
     },
-    hasRight(right: string): boolean {
-      return true
+    async hasUserTag(tag?: string): Promise<boolean> {
+      const tags = await makeApiRequest(`Helper/GetUserTags`, 'get', {
+        username: this.userData?.username,
+        specific: tag
+      })
+      return Boolean(tags[0])
     },
     async tryRegister(email: string, username: string, password: string): Promise<boolean> {
       return await makeApiRequest(`${this.$id}/Register`, 'post', {

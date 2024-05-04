@@ -134,13 +134,13 @@ const filters = ref({
         style="width: 1%"
         key="select"
       />
-      <Column
+      <!-- <Column
         v-if="!(selectedColumns.length == exposedData?.length) && $slots.expansion"
         expander
         class="pr-0"
         style="width: 1%"
         key="expander"
-      />
+      /> -->
 
       <Column
         v-if="!(selectedColumns.length == exposedData?.length)"

@@ -12,7 +12,7 @@ using Setia.Contexts.Base;
 namespace Base.Migrations
 {
     [DbContext(typeof(BaseContext))]
-    [Migration("20240421123523_SetiaBase")]
+    [Migration("20240502091616_SetiaBase")]
     partial class SetiaBase
     {
         /// <inheritdoc />
@@ -96,58 +96,58 @@ namespace Base.Migrations
                     b.HasData(
                         new
                         {
-                            Tag = "Tags.Role.Admin",
+                            Tag = "Role.Admin",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5726)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6969)
                         },
                         new
                         {
-                            Tag = "Tags.CRUD1.Get",
+                            Tag = "CRUD1.Get",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6479)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(7754)
                         },
                         new
                         {
-                            Tag = "Tags.CRUD1.Add",
+                            Tag = "CRUD1.Add",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6530)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(7792)
                         },
                         new
                         {
-                            Tag = "Tags.CRUD1.Update",
+                            Tag = "CRUD1.Update",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6578)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8146)
                         },
                         new
                         {
-                            Tag = "Tags.CRUD1.Delete",
+                            Tag = "CRUD1.Delete",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6604)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8260)
                         },
                         new
                         {
-                            Tag = "Tags.Helper.Upload",
+                            Tag = "Helper.Upload",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(7007)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8759)
                         },
                         new
                         {
-                            Tag = "Tags.Helper.GetUserTags",
+                            Tag = "Helper.GetUserTags",
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(7032)
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8781)
                         });
                 });
 
             modelBuilder.Entity("Setia.Models.Base.UserModel", b =>
                 {
-                    b.Property<string>("Username")
+                    b.Property<string>("Email")
                         .HasColumnType("text");
 
                     b.Property<bool>("Active")
@@ -158,10 +158,6 @@ namespace Base.Migrations
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTime?>("EmailVerifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -177,7 +173,11 @@ namespace Base.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Username");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Email");
 
                     b.HasIndex("AuthorId");
 
@@ -186,13 +186,13 @@ namespace Base.Migrations
                     b.HasData(
                         new
                         {
-                            Username = "testUser",
+                            Email = "",
                             Active = true,
                             Deleted = false,
-                            Email = "",
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5537),
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6350),
                             Name = "Test Name",
-                            Password = "testPassword"
+                            Password = "FD5CB51BAFD60F6FDBEDDE6E62C473DA6F247DB271633E15919BAB78A02EE9EB",
+                            Username = "testUser"
                         });
                 });
 
@@ -231,19 +231,19 @@ namespace Base.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e6bc5ebb-58dc-42f4-959c-42c2481632b0"),
+                            Id = new Guid("07190912-34dd-462f-853e-6671f6c3992a"),
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5705),
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6943),
                             Tag = "Role.Admin",
                             User = "testUser"
                         },
                         new
                         {
-                            Id = new Guid("daf97eb0-47dd-4afa-b7ff-bd2d203bf034"),
+                            Id = new Guid("f29afff1-488b-4612-a3c2-1ca8e34e6e2c"),
                             Active = true,
                             Deleted = false,
-                            ExecutionDate = new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5715),
+                            ExecutionDate = new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6958),
                             Tag = "Dragos",
                             User = "testUser"
                         });

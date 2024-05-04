@@ -5,7 +5,10 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
   // Manage headers
   const headers = new Headers()
   if (!(body instanceof FormData)) {
-    headers.append('Content-Type', `application/${body ? 'json' : 'x-www-form-urlencoded'}`)
+    headers.append(
+      'Content-Type',
+      `application/${method == 'get' && body ? 'x-www-form-urlencoded' : body ? 'json' : 'x-www-form-urlencoded'}`
+    )
   }
   headers.append('Authorization', `Bearer ${useAuthStore().token ?? ''}`)
 
@@ -16,13 +19,13 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
       // Auto append parameters for [FromQuerry]
       (body && method.toLowerCase() == 'get'
         ? `?${Object.keys(body)
-            .map((elem) => `${elem}=${Object.values(elem)}`)
+            .map((elem) => `${elem}=${body[elem]}`)
             .join('&')}`
         : ''),
     {
       method,
       headers,
-      body: body instanceof FormData ? body : JSON.stringify(body)
+      body: method != 'get' ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined
     }
   )
 

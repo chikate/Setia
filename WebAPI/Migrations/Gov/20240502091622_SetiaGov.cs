@@ -19,9 +19,9 @@ namespace Base.Migrations.Gov
                 schema: "gov",
                 columns: table => new
                 {
+                    Email = table.Column<string>(type: "text", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     EmailVerifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -31,13 +31,13 @@ namespace Base.Migrations.Gov
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserModel", x => x.Username);
+                    table.PrimaryKey("PK_UserModel", x => x.Email);
                     table.ForeignKey(
                         name: "FK_UserModel_UserModel_AuthorId",
                         column: x => x.AuthorId,
                         principalSchema: "gov",
                         principalTable: "UserModel",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateTable(
@@ -47,7 +47,7 @@ namespace Base.Migrations.Gov
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     User = table.Column<string>(type: "text", nullable: true),
-                    UserDataUsername = table.Column<string>(type: "text", nullable: true),
+                    UserDataEmail = table.Column<string>(type: "text", nullable: true),
                     BeginTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: false),
@@ -64,13 +64,13 @@ namespace Base.Migrations.Gov
                         column: x => x.AuthorId,
                         principalSchema: "gov",
                         principalTable: "UserModel",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                     table.ForeignKey(
-                        name: "FK_Pontaj_UserModel_UserDataUsername",
-                        column: x => x.UserDataUsername,
+                        name: "FK_Pontaj_UserModel_UserDataEmail",
+                        column: x => x.UserDataEmail,
                         principalSchema: "gov",
                         principalTable: "UserModel",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +96,7 @@ namespace Base.Migrations.Gov
                         column: x => x.AuthorId,
                         principalSchema: "gov",
                         principalTable: "UserModel",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateIndex(
@@ -106,10 +106,10 @@ namespace Base.Migrations.Gov
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Pontaj_UserDataUsername",
+                name: "IX_Pontaj_UserDataEmail",
                 schema: "gov",
                 table: "Pontaj",
-                column: "UserDataUsername");
+                column: "UserDataEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserModel_AuthorId",

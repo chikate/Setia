@@ -25,9 +25,9 @@ namespace Base.Migrations
                 schema: "base",
                 columns: table => new
                 {
+                    Email = table.Column<string>(type: "text", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     EmailVerifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -37,13 +37,13 @@ namespace Base.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Username);
+                    table.PrimaryKey("PK_Users", x => x.Email);
                     table.ForeignKey(
                         name: "FK_Users_Users_AuthorId",
                         column: x => x.AuthorId,
                         principalSchema: "base",
                         principalTable: "Users",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateTable(
@@ -69,7 +69,7 @@ namespace Base.Migrations
                         column: x => x.AuthorId,
                         principalSchema: "base",
                         principalTable: "Users",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateTable(
@@ -92,7 +92,7 @@ namespace Base.Migrations
                         column: x => x.AuthorId,
                         principalSchema: "base",
                         principalTable: "Users",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.CreateTable(
@@ -116,7 +116,7 @@ namespace Base.Migrations
                         column: x => x.AuthorId,
                         principalSchema: "base",
                         principalTable: "Users",
-                        principalColumn: "Username");
+                        principalColumn: "Email");
                 });
 
             migrationBuilder.InsertData(
@@ -125,13 +125,13 @@ namespace Base.Migrations
                 columns: new[] { "Tag", "Active", "AuthorId", "Comments", "Deleted", "ExecutionDate" },
                 values: new object[,]
                 {
-                    { "Tags.CRUD1.Add", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6530) },
-                    { "Tags.CRUD1.Delete", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6604) },
-                    { "Tags.CRUD1.Get", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6479) },
-                    { "Tags.CRUD1.Update", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(6578) },
-                    { "Tags.Helper.GetUserTags", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(7032) },
-                    { "Tags.Helper.Upload", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(7007) },
-                    { "Tags.Role.Admin", true, null, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5726) }
+                    { "CRUD1.Add", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(7792) },
+                    { "CRUD1.Delete", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8260) },
+                    { "CRUD1.Get", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(7754) },
+                    { "CRUD1.Update", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8146) },
+                    { "Helper.GetUserTags", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8781) },
+                    { "Helper.Upload", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(8759) },
+                    { "Role.Admin", true, null, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6969) }
                 });
 
             migrationBuilder.InsertData(
@@ -140,15 +140,15 @@ namespace Base.Migrations
                 columns: new[] { "Id", "Active", "AuthorId", "Deleted", "ExecutionDate", "Tag", "User" },
                 values: new object[,]
                 {
-                    { new Guid("daf97eb0-47dd-4afa-b7ff-bd2d203bf034"), true, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5715), "Dragos", "testUser" },
-                    { new Guid("e6bc5ebb-58dc-42f4-959c-42c2481632b0"), true, null, false, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5705), "Role.Admin", "testUser" }
+                    { new Guid("07190912-34dd-462f-853e-6671f6c3992a"), true, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6943), "Role.Admin", "testUser" },
+                    { new Guid("f29afff1-488b-4612-a3c2-1ca8e34e6e2c"), true, null, false, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6958), "Dragos", "testUser" }
                 });
 
             migrationBuilder.InsertData(
                 schema: "base",
                 table: "Users",
-                columns: new[] { "Username", "Active", "AuthorId", "Deleted", "Email", "EmailVerifiedDate", "ExecutionDate", "Name", "Password" },
-                values: new object[] { "testUser", true, null, false, "", null, new DateTime(2024, 4, 21, 15, 35, 23, 353, DateTimeKind.Utc).AddTicks(5537), "Test Name", "testPassword" });
+                columns: new[] { "Email", "Active", "AuthorId", "Deleted", "EmailVerifiedDate", "ExecutionDate", "Name", "Password", "Username" },
+                values: new object[] { "", true, null, false, null, new DateTime(2024, 5, 2, 12, 16, 16, 263, DateTimeKind.Utc).AddTicks(6350), "Test Name", "FD5CB51BAFD60F6FDBEDDE6E62C473DA6F247DB271633E15919BAB78A02EE9EB", "testUser" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Audit_AuthorId",

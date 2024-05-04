@@ -1,8 +1,7 @@
 <template>
-  <main>
-    <h1>Adm</h1>
+  <main v-if="async () => await useAuthStore().hasUserTag('Role.Admin')">
     <div class="flex flex-column py-8 w-full">
-      <!-- <CRUDT :store="usePontajCRUDStore()" class="py-8 my-8" />
+      <CRUDT :store="usePontajCRUDStore()" class="py-8 my-8" />
       <CRUDT :store="useUserCRUDStore()" class="py-8 my-8">
         <template #expansion>
           <div class="flex flex-row gap-2 align-items-center">
@@ -63,17 +62,7 @@
             />
           </div>
         </template>
-      </CRUDT> -->
-      <DataTable
-        @vue:before-mount="useTagsCRUDStore().getAll()"
-        class="p-treetable-sm justify-self-center"
-        :value="useTagsCRUDStore().allLoadedItems"
-      >
-        <Column expander />
-        <Column field="name" header="Name" />
-        <Column field="deleted" header="deleted" />
-      </DataTable>
-      {{ useTagsCRUDStore().allLoadedItems }}
+      </CRUDT>
       <!-- <Calendar
         class="align-self-center flex flex-wrap"
         inline
@@ -88,14 +77,14 @@
         v-model="freeDays"
         :numberOfMonths="6"
       /> -->
-      <StoryChapter />
     </div>
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePontajCRUDStore } from '@/stores/cruds/PontajCRUDStore'
 import { useUserCRUDStore } from '@/stores/cruds/UsersCRUDStore'
 import { useTagsCRUDStore } from '@/stores/cruds/TagsCRUDStore'
 import { useHelperStore } from '@/stores/HelperStore'
+import { useAuthStore } from '@/stores/AuthStore'
 </script>

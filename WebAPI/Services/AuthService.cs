@@ -3,6 +3,8 @@ using Setia.Contexts.Base;
 using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Setia.Services
@@ -45,7 +47,6 @@ namespace Setia.Services
             }
             return new UserModel();
         }
-
         public async Task<IEnumerable<string>> GetUserTags(string? username = null, string? specific = null)
         {
             try
@@ -70,10 +71,8 @@ namespace Setia.Services
                 if (registration.Username == null || registration.Username.Length < 6) throw new Exception();
                 if (registration.Password == null || registration.Password.Length < 6) throw new Exception();
 
-                await _context.Users
-                    .Where(u => u.Username != registration.Username)
-                    .SingleOrDefaultAsync();
-
+                _context.Users.Any(u => u.Username != registration.Username);
+                registration.Password = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(registration.Password)));
                 _context.Users.Add(registration);
                 await _context.SaveChangesAsync();
                 string link = "https://www.google.ro";

@@ -1,14 +1,13 @@
 export interface BaseAudit {
-  creationDate: string
-  creator_Id: number | null
-  creator: User | null
+  executionDate: string
+  authorId: string | null
+  author: User | null
 }
 export interface Definition extends BaseAudit {
   active: boolean
   deleted?: boolean
 }
 export interface User extends Definition {
-  id?: number
   email: string
   username: string
   password: string
@@ -23,14 +22,6 @@ export interface Pontaj extends Definition {
   description: string
 }
 export interface Tag extends Definition {
-  id?: string
-  name: string
-  parentTagId: string | undefined
-  parentTag: Tag | undefined
-}
-export interface Right extends Definition {
-  id?: number
-  name: string
-  action_id: number | null
-  filter: string | null
+  tag: string
+  comments: string
 }

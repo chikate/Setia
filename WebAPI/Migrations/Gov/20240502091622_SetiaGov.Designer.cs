@@ -12,7 +12,7 @@ using Setia.Contexts.Gov;
 namespace Base.Migrations.Gov
 {
     [DbContext(typeof(GovContext))]
-    [Migration("20240421123529_SetiaGov")]
+    [Migration("20240502091622_SetiaGov")]
     partial class SetiaGov
     {
         /// <inheritdoc />
@@ -28,7 +28,7 @@ namespace Base.Migrations.Gov
 
             modelBuilder.Entity("Setia.Models.Base.UserModel", b =>
                 {
-                    b.Property<string>("Username")
+                    b.Property<string>("Email")
                         .HasColumnType("text");
 
                     b.Property<bool>("Active")
@@ -39,10 +39,6 @@ namespace Base.Migrations.Gov
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTime?>("EmailVerifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -58,7 +54,11 @@ namespace Base.Migrations.Gov
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Username");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Email");
 
                     b.HasIndex("AuthorId");
 
@@ -96,14 +96,14 @@ namespace Base.Migrations.Gov
                     b.Property<string>("User")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserDataUsername")
+                    b.Property<string>("UserDataEmail")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("UserDataUsername");
+                    b.HasIndex("UserDataEmail");
 
                     b.ToTable("Pontaj", "gov");
                 });
@@ -164,7 +164,7 @@ namespace Base.Migrations.Gov
 
                     b.HasOne("Setia.Models.Base.UserModel", "UserData")
                         .WithMany()
-                        .HasForeignKey("UserDataUsername");
+                        .HasForeignKey("UserDataEmail");
 
                     b.Navigation("Author");
 

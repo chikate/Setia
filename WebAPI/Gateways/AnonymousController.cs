@@ -7,6 +7,7 @@ using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Setia.Controllers
@@ -43,8 +44,10 @@ namespace Setia.Controllers
                 if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) return BadRequest("Invalid password (too short)");
 
                 UserModel? user = await _context.Users
-                    .Where(u => u.Username == loginCredentials.Username && u.Password == loginCredentials.Password)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(u =>
+                    u.Username == loginCredentials.Username &&
+                    u.Password == Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(loginCredentials.Password))));
+
                 if (user != null)
                 {
                     IEnumerable<Claim> claims = new List<Claim>

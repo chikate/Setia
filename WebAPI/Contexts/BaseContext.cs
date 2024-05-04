@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Models.Base;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Setia.Contexts.Base;
@@ -19,7 +21,7 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
         modelBuilder.HasDefaultSchema("base");
 
         #region Default Users
-        UserModel defaultUser = new UserModel { Username = "testUser", Password = "testPassword", Name = "Test Name" };
+        UserModel defaultUser = new UserModel { Username = "testUser", Password = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes("testPassword"))), Name = "Test Name" };
 
         modelBuilder.Entity<UserModel>().HasData(defaultUser);
 
