@@ -22,6 +22,7 @@ declare module 'vue' {
     FooterBar: typeof import('./src/components/FooterBar.vue')['default']
     InlineMessage: typeof import('primevue/inlinemessage')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
+    InputSwitch: typeof import('primevue/inputswitch')['default']
     InputText: typeof import('primevue/inputtext')['default']
     LoginComponent: typeof import('./src/components/auth/LoginComponent.vue')['default']
     Menu: typeof import('primevue/menu')['default']

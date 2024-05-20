@@ -14,22 +14,12 @@ export const useAuthStore = defineStore('Auth', {
       return await makeApiRequest(`${this.$id}/Login`, 'post', { username, password }).then(
         (loginResult) => {
           this.token = loginResult.token
+          localStorage.setItem('token', this.token ?? '')
           this.userData = loginResult.user
+          localStorage.setItem('user', JSON.stringify(this.userData))
           return Boolean(loginResult)
         }
       )
-    },
-    async logOut() {
-      this.token = undefined
-      this.userData = undefined
-      return window.location.reload()
-    },
-    async hasUserTag(tag?: string): Promise<boolean> {
-      const tags = await makeApiRequest(`Helper/GetUserTags`, 'get', {
-        username: this.userData?.username,
-        specific: tag
-      })
-      return Boolean(tags[0])
     },
     async tryRegister(email: string, username: string, password: string): Promise<boolean> {
       return await makeApiRequest(`${this.$id}/Register`, 'post', {
@@ -42,6 +32,19 @@ export const useAuthStore = defineStore('Auth', {
         }
         return successful
       })
+    },
+    getToken() {
+      return localStorage.getItem('token')
+    },
+    async logOut() {
+      this.token = undefined
+      this.userData = undefined
+      localStorage.setItem('token', '')
+      localStorage.setItem('user', '')
+      return window.location.reload()
+    },
+    async checkUserTags(tags?: string[]): Promise<string[]> {
+      return tags
     }
   },
   persist: true

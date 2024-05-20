@@ -31,9 +31,9 @@ namespace Setia.Services
                 AuditModel auditModel = new AuditModel
                 {
                     AuthorId = _auth.GetCurrentUser().Username,
-                    Author = _auth.GetCurrentUser(),
+                    AuthorData = _auth.GetCurrentUser(),
                     Entity = typeof(T).FullName ?? "",
-                    EntityId = GetEntityId(model),
+                    EntityId = typeof(T).GetProperties().FirstOrDefault()?.GetValue(model)?.ToString(),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
                 };
 
@@ -66,24 +66,6 @@ namespace Setia.Services
             }
 
             return differences.ToString() ?? "";
-        }
-
-        private int GetEntityId<T>(T model)
-        {
-            // Assuming the entity has a property named "Id"
-            PropertyInfo? property = typeof(T).GetProperty("Id");
-            if (property != null)
-            {
-                // Extract the value of the "Id" property
-                object? value = property.GetValue(model);
-                if (value != null && int.TryParse(value.ToString(), out int id))
-                {
-                    return id;
-                }
-            }
-
-            // Default return value if the ID couldn't be retrieved
-            return -1;
         }
 
         private IDictionary<string, Dictionary<string, string>> CompareModels<T>(T oldModel, T newModel)

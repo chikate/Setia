@@ -1,90 +1,16 @@
 <template>
-  <main v-if="async () => await useAuthStore().hasUserTag('Role.Admin')">
-    <div class="flex flex-column py-8 w-full">
-      <CRUDT :store="usePontajCRUDStore()" class="py-8 my-8" />
-      <CRUDT :store="useUserCRUDStore()" class="py-8 my-8">
-        <template #expansion>
-          <div class="flex flex-row gap-2 align-items-center">
-            <Avatar image="https://localhost:44381/1/path36.png" size="xlarge" shape="circle" />
-            <MultiSelect
-              @before-show="useRoleCRUDStore().getAll()"
-              :options="useRoleCRUDStore().allLoadedItems"
-              option-label="name"
-              option-value="id"
-              display="chip"
-              placeholder="Roles"
-            />
-            <TreeSelect
-              v-model="useHelperStore().focusedActions"
-              @before-show="useHelperStore().getAllActions()"
-              :options="useHelperStore().allLoadedActions"
-              @update:model-value="
-                console.log(useHelperStore().focusedActions.split('Controller.')[0])
-              "
-              selectionMode="checkbox"
-              filter
-              display="chip"
-              placeholder="Custom rights"
-            />
-          </div>
-        </template>
-      </CRUDT>
-      <CRUDT :store="useTagsCRUDStore()" class="py-8 my-8">
-        <template #expansion>
-          <div class="flex flex-row gap-2 align-items-center">
-            <MultiSelect
-              :options="useRoleCRUDStore().allLoadedItems"
-              option-label="name"
-              option-value="id"
-              display="chip"
-              placeholder="Inherited roles"
-              class="align-self-start"
-            />
-            <TreeSelect
-              v-model="useHelperStore().focusedActions"
-              @before-show="useHelperStore().getAllActions()"
-              :options="useHelperStore().allLoadedActions"
-              @update:model-value="
-                console.log(useHelperStore().focusedActions.split('Controller.')[0])
-              "
-              selectionMode="checkbox"
-              filter
-              display="chip"
-              placeholder="Rights"
-            />
-            <MultiSelect
-              @before-show="useUserCRUDStore().getAll()"
-              :options="useUserCRUDStore().allLoadedItems"
-              option-label="email"
-              option-value="id"
-              display="chip"
-              placeholder="Assigned to"
-            />
-          </div>
-        </template>
-      </CRUDT>
-      <!-- <Calendar
-        class="align-self-center flex flex-wrap"
-        inline
-        selectionMode="multiple"
-        v-model="freeDays"
-        :numberOfMonths="6"
-      />
-      <Calendar
-        class="align-self-center flex flex-wrap"
-        inline
-        selectionMode="multiple"
-        v-model="freeDays"
-        :numberOfMonths="6"
-      /> -->
+  <main v-if="async () => await useAuthStore().checkUserTags(['Role.Admin'])">
+    <div class="flex flex-wrap gap-8 justify-content-start">
+      <CRUDT :store="usePontajCRUDStore()" />
+      <CRUDT :store="useUsersCRUDStore()" />
+      <CRUDT :store="useTagsCRUDStore()" />
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { usePontajCRUDStore } from '@/stores/cruds/PontajCRUDStore'
-import { useUserCRUDStore } from '@/stores/cruds/UsersCRUDStore'
+import { useUsersCRUDStore } from '@/stores/cruds/UsersCRUDStore'
 import { useTagsCRUDStore } from '@/stores/cruds/TagsCRUDStore'
-import { useHelperStore } from '@/stores/HelperStore'
 import { useAuthStore } from '@/stores/AuthStore'
 </script>

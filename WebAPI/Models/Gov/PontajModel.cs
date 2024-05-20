@@ -11,11 +11,11 @@ namespace Setia.Models.Gov
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("User")]
-        public string? User { get; set; }
+        public string? Username { get; set; }
         public UserModel? UserData { get; set; }
 
         public DateTime BeginTime { get; set; } = DateTime.SpecifyKind(DateTime.Now!, DateTimeKind.Utc);
         public DateTime? EndTime { get; set; } = DateTime.SpecifyKind(DateTime.Now.AddDays(8)!, DateTimeKind.Utc);
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
     }
 }

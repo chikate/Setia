@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Setia.Models.Base;
+using Setia.Models.Gov;
 using Setia.Services.Interfaces;
 using System.Reflection;
 
@@ -28,7 +29,7 @@ namespace Setia.Controllers
             _auth = auth;
         }
 
-        public async Task<IEnumerable<TModel>> Get(TModel? filter = null, string? user = null, string? specific = null)
+        public async Task<IEnumerable<TModel>> Get(TModel? filter = null)
         {
             try
             {
@@ -38,26 +39,29 @@ namespace Setia.Controllers
                 IQueryable<TModel> query = _contextTable.AsNoTracking().AsQueryable();
                 switch (typeof(TModel).Name)
                 {
-                    case nameof(TagModel):
-                        if (specific != null) query = query.Where(t => ((TagModel)(object)t).Tag.MatchesLQuery(specific));
-                        break;
-                    case nameof(UserTagModel):
-                        if (specific != null) query = query.Where(ut => ((UserTagModel)(object)ut).Tag.MatchesLQuery(specific));
-                        if (user != null) query = query.Where(ut => ((UserTagModel)(object)ut).User.Contains(user));
-                        break;
-                    case nameof(UserModel):
-                        if (user != null) query = query.Where(u => ((UserModel)(object)u).Username.Contains(user));
+                    //case nameof(TagModel):
+                    //    query = query.Where(t => ((TagModel)(object)t).Tag.MatchesLQuery(specific));
+                    //    break;
+                    //case nameof(UserTagModel):
+                    //    query = query.Where(ut => ((UserTagModel)(object)ut).Tag.MatchesLQuery(specific));
+                    //    if (user != null) query = query.Where(ut => ((UserTagModel)(object)ut).User.Contains(user));
+                    //    break;
+                    //case nameof(UserModel):
+                    //    if (user != null) query = query.Where(u => ((UserModel)(object)u).Username.Contains(user));
+                    //    break;
+                    case nameof(QuestionAnswerModel):
+                        query.Include("QuestionData");
                         break;
                     default:
                         break;
                 }
-                //if (filter != null)
-                //{
-                //    foreach (PropertyInfo property in typeof(T).GetProperties())
-                //    {
-                //        query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
-                //    }
-                //}
+                if (filter != null)
+                {
+                    foreach (PropertyInfo property in typeof(TModel).GetProperties())
+                    {
+                        query = query.Where(item => property.GetValue(item).Equals(property.GetValue(filter)));
+                    }
+                }
                 return await query.ToListAsync();
             }
             catch (Exception ex)
@@ -67,16 +71,15 @@ namespace Setia.Controllers
             }
         }
 
-        async Task ICRUD<TModel>.Add(TModel model)
+        public async Task Add(TModel model)
         {
             try
             {
-                //UserModel user = _auth.GetCurrentUser();
-                //PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
-                //AuthorProperty?.SetValue(model, user.Username);
+                PropertyInfo? authorIdProperty = model.GetType().GetProperty("AuthorId");
+                authorIdProperty?.SetValue(model, _auth.GetCurrentUser().Username);
 
-                //PropertyInfo? UserProperty = model.GetType().GetProperty("User");
-                //UserProperty?.SetValue(model, user.Username);
+                PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
+                passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
 
                 // check rights
 
@@ -91,13 +94,12 @@ namespace Setia.Controllers
             }
         }
 
-        async Task ICRUD<TModel>.Update(TModel model)
+        public async Task Update(TModel model)
         {
             try
             {
-                // Set the Author property of the model
-                PropertyInfo? AuthorProperty = model.GetType().GetProperty("Author");
-                if (AuthorProperty != null) AuthorProperty.SetValue(model, _auth.GetCurrentUser());
+                PropertyInfo? authorIdProperty = model.GetType().GetProperty("AuthorId");
+                authorIdProperty?.SetValue(model, _auth.GetCurrentUser().Username);
 
                 // Find the old model in the dataSetia
                 PropertyInfo? idProperty = model.GetType().GetProperty("Id");
@@ -122,7 +124,7 @@ namespace Setia.Controllers
             }
         }
 
-        async Task ICRUD<TModel>.Delete(int id)
+        public async Task Delete(string id)
         {
             try
             {

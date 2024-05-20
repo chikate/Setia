@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Setia.Models.Structs;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models.Base
 {
@@ -8,7 +9,13 @@ namespace Setia.Models.Base
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public required LTree Tag { get; set; }
-        public required string User { get; set; }
+
+        [ForeignKey("Tag")]
+        public required LTree TagId { get; set; }
+        public TagModel? TagData { get; set; }
+
+        [ForeignKey("User")]
+        public string? Username { get; set; }
+        public UserModel? UserData { get; set; }
     }
 }

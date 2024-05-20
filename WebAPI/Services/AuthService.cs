@@ -33,7 +33,7 @@ namespace Setia.Services
             _config = config;
         }
 
-        public UserModel GetCurrentUser()
+        public UserModel? GetCurrentUser()
         {
             if (_httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
             {
@@ -43,9 +43,9 @@ namespace Setia.Services
                 string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
 
                 UserModel? user = _context.Users.Where(u => u.Email == email && u.Username == username).SingleOrDefault();
-                return user ?? new UserModel();
+                return user;
             }
-            return new UserModel();
+            return null;
         }
         public async Task<IEnumerable<string>> GetUserTags(string? username = null, string? specific = null)
         {
@@ -53,9 +53,9 @@ namespace Setia.Services
             {
                 if (username == null) throw new Exception();
 
-                IEnumerable<UserTagModel> userTags = await _context.UserTags.Where(p => p.User == username).ToListAsync();
-                if (specific != null) return userTags.Where(t => t.Tag.ToString().Contains(specific)).Select(p => p.Tag.ToString());
-                else return userTags.Select(p => p.Tag.ToString());
+                IEnumerable<UserTagModel> userTags = await _context.UserTags.Where(p => p.Username == username).ToListAsync();
+                if (specific != null) return userTags.Where(t => t.TagId.ToString().Contains(specific)).Select(p => p.TagId.ToString());
+                else return userTags.Select(p => p.TagId.ToString());
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace Setia.Services
                 if (registration.Password == null || registration.Password.Length < 6) throw new Exception();
 
                 _context.Users.Any(u => u.Username != registration.Username);
-                registration.Password = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(registration.Password)));
+                registration.Password = CriptPassword(registration.Password);
                 _context.Users.Add(registration);
                 await _context.SaveChangesAsync();
                 string link = "https://www.google.ro";
@@ -112,5 +112,8 @@ namespace Setia.Services
                 throw new Exception();
             }
         }
+
+        public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(password)));
+
     }
 }

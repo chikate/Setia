@@ -4,10 +4,12 @@ import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
 import { capitalizeString } from '@/helpers'
 import { ref } from 'vue'
+import { Definition } from '@/interfaces'
 
 const props = defineProps(['store'])
 
 const showDialog = ref<boolean>()
+const addOrEdit = ref<boolean>(Boolean(Object.values(props.store?.selectedItem)[0]))
 const showMultipleDelete = ref<boolean>(false)
 const showFilters = ref<boolean>(false)
 const selectedProduct = ref()
@@ -24,7 +26,7 @@ const exposedData = ref(
         param != 'password' &&
         param != 'updatedBy'
     )
-    .map((elem) => ({
+    .map((elem: string) => ({
       field: elem,
       header: elem
     }))
@@ -49,11 +51,12 @@ const filters = ref({
 
 <template>
   <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
-  <div class="flex justify-content-center" v-if="useAuthStore().token">
+  <div class="flex justify-content-center">
     <DataTable
-      @vue:before-mount="async () => await store.getAll()"
+      @vue:before-mount="store.getAll()"
       :value="store.allLoadedItems"
-      @row-dblclick="(store.selectedItem = $event.data), (showDialog = !showDialog)"
+      @row-dblclick="showDialog = !showDialog"
+      @row-click="(store.selectedItem = $event.data), $emit('rowClick', $event)"
       size="small"
       stripedRows
       scrollable
@@ -64,18 +67,17 @@ const filters = ref({
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
-      :globalFilterFields="exposedData.field"
+      :globalFilterFields="exposedData[0].field"
       paginator
       :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
-      :totalRecords="store.allLoadedItems.length"
+      :totalRecords="store.allLoadedItems?.length ?? 0"
       style="max-height: 80vh"
-      class="flex-grow-1 px-8"
       reorderableColumns
     >
       <template #header>
-        <div class="flex flex-row gap-2 align-items-center">
-          <h4 class="m-0 w-full">{{ store.$id }}</h4>
+        <div class="flex flex-row gap-2 align-items-end">
+          <h1 class="w-full font-bold">{{ store.$id }}</h1>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
@@ -90,7 +92,9 @@ const filters = ref({
           </div>
           <SplitButton
             @click="
-              showMultipleDelete ? '' : (showDialog = !showDialog), store.setSelectionToDefaults()
+              showMultipleDelete ? '' : $emit('addClick', $event),
+                (showDialog = !showDialog),
+                store.resetToDefaults()
             "
             :model="[
               {
@@ -146,6 +150,7 @@ const filters = ref({
         v-if="!(selectedColumns.length == exposedData?.length)"
         style="width: 3rem"
         key="index"
+        class="text-center"
       >
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
@@ -154,10 +159,10 @@ const filters = ref({
 
       <Column
         v-for="(col, index) in exposedData?.filter((item: any) => !selectedColumns.includes(item))"
-        :key="col.field + '_' + index"
-        :header="col.header"
-        :field="col.field"
-        :filterField="col.field"
+        :key="capitalizeString(col.field) + '_' + index"
+        :header="capitalizeString(col.header)"
+        :field="capitalizeString(col.field)"
+        :filterField="capitalizeString(col.field)"
         :show-clear-button="false"
       >
         <template #filter="{ filterModel, filterCallback }">
@@ -172,10 +177,10 @@ const filters = ref({
       </Column>
 
       <Column
-        v-if="!(selectedColumns.length == exposedData?.length)"
+        v-if="!(selectedColumns.length == exposedData?.length) && store.allLoadedItems[0]?.Active"
         header="Active"
-        field="active"
-        filterField="active"
+        field="Active"
+        filterField="Active"
         dataType="boolean"
         class="text-center"
         headerClass="column-text-center"
@@ -183,7 +188,7 @@ const filters = ref({
         :show-clear-button="false"
       >
         <template #body="slotProps">
-          <div class="pi" :class="slotProps.data.active ? 'pi-verified' : 'pi-circle'" />
+          <div class="pi" :class="slotProps.data.Active ? 'pi-verified' : 'pi-circle'" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <TriStateCheckbox v-model="filterModel.value" @change="filterCallback()" />
@@ -195,7 +200,7 @@ const filters = ref({
       position="top"
       v-model:visible="showDialog"
       :header="
-        (store.selectedItem.id ?? 0 <= 0 ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase()
+        (store.selectedItem[0] ?? 0 <= 0 ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase()
       "
       modal
       closable
@@ -252,11 +257,7 @@ const filters = ref({
               @vue:beforeMount="
                 store.selectedItem[field] = new Date(store.selectedItem[field]).toLocaleString()
               "
-              @update:modelValue="
-                store.selectedItem[field] = $event
-                  ? useDateFormat($event, DD - MM - YYYY).value
-                  : undefined
-              "
+              @update:modelValue="store.selectedItem[field] = $event ? $event : undefined"
               v-model="store.selectedItem[field]"
               showTime
               hourFormat="24"
@@ -273,13 +274,11 @@ const filters = ref({
           <Button class="flex-grow-1 bg-primary-reverse" label="Back" @click="showDialog = false" />
           <Button
             class="flex-grow-1"
-            :label="store.selectedItem.id ?? 0 > 0 ? 'Save' : 'Add'"
-            @click="
-              (showDialog = false), store.selectedItem.id ?? 0 > 0 ? store.update() : store.add()
-            "
+            :label="addOrEdit ? 'Save' : 'Add'"
+            @click="(showDialog = false), addOrEdit ? store.update() : store.add()"
           />
           <Button
-            v-if="store.selectedItem.id ?? 0 > 0"
+            v-if="addOrEdit"
             class="flex-grow-1 bg-red-500 text-white"
             label="Delete"
             @click="(showDialog = false), store.delete()"

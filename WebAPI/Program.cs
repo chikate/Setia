@@ -44,7 +44,8 @@ builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel, BaseContext>
 builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel, BaseContext>>();
 builder.Services.AddScoped<ICRUD<UserTagModel>, CRUDService<UserTagModel, BaseContext>>();
 builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel, GovContext>>();
-builder.Services.AddScoped<ICRUD<VoteModel>, CRUDService<VoteModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<QuestionModel>, CRUDService<QuestionModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<QuestionAnswerModel>, CRUDService<QuestionAnswerModel, GovContext>>();
 
 // Controllers
 builder.Services.AddControllers();

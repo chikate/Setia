@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Setia.Models.Base;
 using Setia.Services.Interfaces;
-using System.Runtime.Serialization;
+using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Setia.Controllers
 {
@@ -17,18 +15,16 @@ namespace Setia.Controllers
         public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TModel>>> Get(TModel? filter = default, string? user = null, string? specific = null)
+        public async Task<ActionResult<IEnumerable<TModel>>> Get(/*[FromQuery] TModel? filter = default*/)
         {
             try
             {
-                IEnumerable<TModel> result = await _CRUD.Get(filter, user, specific);
-                if (typeof(TModel) == typeof(TagModel))
-                {
-                    JsonSerializerOptions lTreeDataConverter = new() { WriteIndented = true };
-                    lTreeDataConverter.Converters.Add(new LTreeDataConverter());
-                    return Ok(JsonSerializer.Serialize(result, lTreeDataConverter));
-                }
-                return Ok(result);
+                return Ok(JsonSerializer.Serialize(await _CRUD.Get(default),
+                    new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        Converters = { new LTreeConverter() }
+                    }));
             }
             catch (Exception ex)
             {
@@ -41,6 +37,10 @@ namespace Setia.Controllers
         {
             try
             {
+                //PropertyInfo? list = model?.GetType().GetProperties().Where(p => p.Name.Contains("List")).FirstOrDefault();
+                //PropertyInfo? listData = model?.GetType().GetProperties().Where(p => p.Name.Contains(list?.Name.Replace("List", ""))).FirstOrDefault();
+                //listData?.SetValue(model, string.Join(",", (List<string>)list?.GetValue(model)));
+
                 await _CRUD.Add(model);
                 return Ok("Added");
             }
@@ -65,7 +65,7 @@ namespace Setia.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             try
             {

@@ -26,11 +26,11 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
         modelBuilder.Entity<UserModel>().HasData(defaultUser);
 
         modelBuilder.Entity<UserTagModel>().HasData(
-            new UserTagModel { User = defaultUser.Username, Tag = "Role.Admin" }
+            new UserTagModel { Username = defaultUser.Username, TagId = "Role.Admin" }
         );
 
         modelBuilder.Entity<UserTagModel>().HasData(
-            new UserTagModel { User = defaultUser.Username, Tag = "Dragos" }
+            new UserTagModel { Username = defaultUser.Username, TagId = "Dragos" }
         );
         #endregion
 

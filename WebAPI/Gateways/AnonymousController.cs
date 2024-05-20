@@ -7,7 +7,6 @@ using Setia.Models.Base;
 using Setia.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Setia.Controllers
@@ -46,7 +45,7 @@ namespace Setia.Controllers
                 UserModel? user = await _context.Users
                     .FirstOrDefaultAsync(u =>
                     u.Username == loginCredentials.Username &&
-                    u.Password == Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(loginCredentials.Password))));
+                    u.Password == _auth.CriptPassword(loginCredentials.Password));
 
                 if (user != null)
                 {
