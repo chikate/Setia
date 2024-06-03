@@ -10,11 +10,11 @@ namespace Setia.Models.Base
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("User")]
-        public string? Username { get; set; }
+        public required string User { get; set; }
         public UserModel? UserData { get; set; }
 
-        public string? Avatar { get; set; }
-        public string? Signiture { get; set; }
-        public string? Name { get; set; }
+        public string? Avatar { get; set; } = null;
+        public string? Signiture { get; set; } = null;
+        public string? Name { get; set; } = null;
     }
 }

@@ -3,7 +3,7 @@
     <div
       class="bg-cover bg-center"
       style="
-        background-image: url('https://www.riotgames.com/darkroom/2000/6a2fc4addd2ad4793a915202395c8410:a762ac65c1b95d37880e5e267029cc38/son-riot-website.png');
+        background-image: url('https://www.ukri.org/wp-content/uploads/2021/10/STFC-041021-EuropeFromSpace-GettyImages-1284041267.jpg');
       "
     >
       <main style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))">
@@ -30,7 +30,3 @@
   padding: 0.25rem;
 }
 </style>
-
-<script setup lang="ts">
-import { useAuthStore } from '@/stores/AuthStore'
-</script>

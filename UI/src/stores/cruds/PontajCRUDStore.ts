@@ -3,7 +3,7 @@ import { useCRUDStore } from '../CRUDStore'
 
 export const usePontajCRUDStore = useCRUDStore('Pontaj', {
   beginTime: new Date().toISOString(),
-  endTime: null,
+  endTime: '',
   description: '',
   active: true
 } as Pontaj)

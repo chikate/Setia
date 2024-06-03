@@ -11,11 +11,11 @@ namespace Setia.Models.Base
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("Tag")]
-        public required LTree TagId { get; set; }
+        public required LTree Tag { get; set; }
         public TagModel? TagData { get; set; }
 
         [ForeignKey("User")]
-        public string? Username { get; set; }
+        public required string User { get; set; }
         public UserModel? UserData { get; set; }
     }
 }

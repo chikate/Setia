@@ -9,6 +9,7 @@
   </main>
   <FooterBar />
   <main class="fixed vignette pointer-events-none" />
+  <Toast group="main" />
 </template>
 
 <style>

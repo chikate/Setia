@@ -3,5 +3,7 @@ import { useCRUDStore } from '../CRUDStore'
 
 export const useQuestionsCRUDStore = useCRUDStore('Questions', {
   title: 'Title',
-  Options: ['']
+  options: [''],
+  selection: [''],
+  author: undefined
 } as Question)

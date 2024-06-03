@@ -18,7 +18,3 @@
     </div>
   </main>
 </template>
-
-<script setup lang="ts">
-import { useHelperStore } from '@/stores/HelperStore'
-</script>

@@ -17,16 +17,17 @@
       <RouterLink to="/about"> {{ 'Our Mission' }} </RouterLink>
       <RouterLink to="/career"> {{ 'Join us' }} </RouterLink>
       <RouterLink to="/news"> {{ 'News' }} </RouterLink>
+      <RouterLink to="/posts"> {{ 'Posts' }} </RouterLink>
     </div>
     <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
         v-tooltip.left="{
-          value: `Switch to ${useSettingsStore().useDarkMode ? 'light' : 'dark'} mode`,
+          value: `Switch to ${useSettingsStore().theme.includes('dark') ? 'light' : 'dark'} mode`,
           showDelay: 700,
           hideDelay: 100
         }"
         class="pi cursor-pointer"
-        :class="useSettingsStore().useDarkMode ? 'pi-moon' : 'pi-sun'"
+        :class="useSettingsStore().theme.includes('dark') ? 'pi-moon' : 'pi-sun'"
         @click="useSettingsStore().toggleDarkMode()"
       />
 
@@ -66,8 +67,7 @@
       </div>
 
       <i
-        v-badge="temp_notifications.length"
-        v-if="async () => await useAuthStore().getToken()"
+        v-badge="useNotificationsCRUDStore().allLoadedItems?.length"
         v-tooltip.left="{
           value: `Notifications`,
           showDelay: 700,
@@ -78,13 +78,16 @@
       >
         <OverlayPanel ref="notificationsOverlay" class="p-0 m-0">
           <div class="flex flex-column">
-            <Button
-              v-for="notification in temp_notifications"
+            <NotificationComponent
+              v-for="notification in useNotificationsCRUDStore().allLoadedItems"
               :key="notification"
-              :label="notification"
-              class="p-1"
-              text
+              :title="notification.title"
+              :text="notification.comment"
+              @clickMain="$router.push('/')"
+              @clickCancel="$router.push('/')"
+              @clickAccept="$router.push('/')"
             />
+            <NotificationComponent title="notification.title" text="notification.comment" />
           </div>
         </OverlayPanel>
       </i>
@@ -100,6 +103,7 @@
               <Button label="Profile" @click="$router.push('/profile')" />
               <Button label="Administration" @click="$router.push('/adm')" />
               <Button label="Quizz" @click="$router.push('/quizz-creator')" />
+              <Button label="Messanger" @click="$router.push('/messanger')" />
               <Button label="Logout" @click="useAuthStore().logOut()" />
             </div>
           </OverlayPanel>
@@ -113,15 +117,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/AuthStore'
-import { useSettingsStore } from '@/stores/SettingsStore'
-import { ref } from 'vue'
-
 const accountOverlay = ref()
 const notificationsOverlay = ref()
 const languageOverlay = ref()
-
-const temp_notifications = ref(['Notification1', 'Notification2', 'Notification3'])
 
 const scrollPosition = ref<number>(0)
 const scrollThresHold = ref<number>(200)

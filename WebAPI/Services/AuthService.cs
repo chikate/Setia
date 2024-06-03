@@ -47,15 +47,12 @@ namespace Setia.Services
             }
             return null;
         }
-        public async Task<IEnumerable<string>> GetUserTags(string? username = null, string? specific = null)
+        public async Task<IEnumerable<string>> GetUserTags(string specific, string? username = null)
         {
             try
             {
-                if (username == null) throw new Exception();
-
-                IEnumerable<UserTagModel> userTags = await _context.UserTags.Where(p => p.Username == username).ToListAsync();
-                if (specific != null) return userTags.Where(t => t.TagId.ToString().Contains(specific)).Select(p => p.TagId.ToString());
-                else return userTags.Select(p => p.TagId.ToString());
+                if (username == null) username = GetCurrentUser()?.Username;
+                return (await _context.UserTags.Where(p => p.User == username && p.Tag.MatchesLQuery(specific)).ToListAsync()).Select(p => p.Tag.ToString());
             }
             catch (Exception ex)
             {
@@ -112,8 +109,30 @@ namespace Setia.Services
                 throw new Exception();
             }
         }
-
         public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(password)));
+        public async Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, string? user = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(user)) user = GetCurrentUser()?.Username;
+
+                IEnumerable<UserTagModel> userTags = await _context.UserTags.Where(p => p.User == user).ToListAsync();
+                List<string> userRights = new List<string>();
+                foreach (string rightToCheck in rightsToCeck)
+                {
+                    if (userTags.Any(t => t.Tag.ToString().Contains(rightToCheck))) userRights.Add(rightToCheck);
+                }
+
+                return userRights;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                throw new Exception();
+            }
+        }
+
+
 
     }
 }

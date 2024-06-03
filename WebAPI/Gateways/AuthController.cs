@@ -12,7 +12,7 @@ using System.Text;
 namespace Setia.Controllers
 {
     [ApiController]
-    [AllowAnonymous]
+    [Authorize]
     [Route("/api/[controller]/[action]")]
     public class AuthController : ControllerBase
     {
@@ -36,6 +36,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserModel loginCredentials)
         {
             try
@@ -82,6 +83,7 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserModel registration)
         {
             try
@@ -93,6 +95,19 @@ namespace Setia.Controllers
             {
                 _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckUserRights([FromQuery] IEnumerable<string> rightsToCeck, string? user = null)
+        {
+            try
+            {
+                return Ok(await _auth.CheckUserRights(rightsToCeck, user));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

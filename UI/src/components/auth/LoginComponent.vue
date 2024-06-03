@@ -48,9 +48,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/AuthStore'
-import { ref } from 'vue'
-
 const showLoginSpinner = ref<boolean>(false)
 
 const inputUsername = ref<string>('')
@@ -58,20 +55,8 @@ const inputPassword = ref<string>('')
 const staySignedIn = ref<boolean>(false)
 
 function submitLogin() {
-  if (inputUsername.value.length < 6) {
-    return
-  }
-  if (inputPassword.value.length < 6) {
-    return
-  }
+  if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
   showLoginSpinner.value = true
-  return useAuthStore()
-    .tryLogin(inputUsername.value, inputPassword.value)
-    .then((success) => {
-      showLoginSpinner.value = false
-      if (success) {
-        // window.location.reload()
-      }
-    })
+  return useAuthStore().login(inputUsername.value, inputPassword.value)
 }
 </script>

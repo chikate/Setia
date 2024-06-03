@@ -1,36 +1,62 @@
 <script setup lang="ts">
 import { DEFAULT_ROWS_OPTIONS, DEFAULT_ROWS_INDEX } from '@/constants'
-import { useAuthStore } from '@/stores/AuthStore'
 import { FilterMatchMode } from 'primevue/api'
-import { capitalizeString } from '@/helpers'
-import { ref } from 'vue'
-import { Definition } from '@/interfaces'
 
-const props = defineProps(['store'])
+const props = defineProps({
+  store: { type: Object, required: true },
+  readonly: { type: Boolean, required: false }
+})
 
 const showDialog = ref<boolean>()
-const addOrEdit = ref<boolean>(Boolean(Object.values(props.store?.selectedItem)[0]))
 const showMultipleDelete = ref<boolean>(false)
 const showFilters = ref<boolean>(false)
-const selectedProduct = ref()
 const expandedRows = ref()
-const selectedColumns = ref<{ field: string; header: string }[]>([])
+const editOrAdd = ref<boolean>(false)
+const selectedColumns = ref<{ field: string; header: string; type: string }[]>([])
+
+const keys = ref(Object.keys(props.store.getDefaults()))
+const values = ref(keys.value.map((key) => props.store.getDefaults()[key]))
+
 const exposedData = ref(
-  Object.getOwnPropertyNames(props.store.getDefaults())
+  keys.value
     .filter(
-      (param: string) =>
-        param != 'active' &&
-        param != 'deleted' &&
-        param != 'createdBy' &&
-        param != 'id_createdBy' &&
-        param != 'password' &&
-        param != 'updatedBy'
+      (param: string) => param.toLowerCase() != 'deleted' && param.toLowerCase() != 'password'
+      // && param.toLowerCase() != 'author' &&
+      // param.toLowerCase() != 'executiondate'
     )
-    .map((elem: string) => ({
+    .map((elem: string, i) => ({
       field: elem,
-      header: elem
+      header:
+        elem[0].toUpperCase() +
+        elem
+          .substring(1)
+          .replaceAll(/([A-Z])/g, ' $1')
+          .toLowerCase()
+          .replaceAll(' data', ''),
+      type: values.value[i]
     }))
 )
+
+onBeforeMount(async () => {
+  exposedData.value.forEach(async (elem, index) => {
+    if (typeof elem.type == typeof Object() && !Array.isArray(elem.type)) {
+      exposedData.value.splice(index, 1)
+      Object.keys(props.store.getDefaults()[elem.field]).forEach(async (e) => {
+        exposedData.value.push({
+          field: elem.field + '.' + e,
+          header:
+            e[0].toUpperCase() +
+            e
+              .substring(1)
+              .replaceAll(/([A-Z])/g, ' $1')
+              .toLowerCase()
+              .replaceAll(' data', ''),
+          type: props.store.getDefaults()[elem.field][e]
+        })
+      })
+    }
+  })
+})
 
 // add column filters here otherwhise it will brake, we need to make this runtime depending push values
 const filters = ref({
@@ -50,34 +76,45 @@ const filters = ref({
 </script>
 
 <template>
-  <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
-  <div class="flex justify-content-center">
+  <div :id="store.$id" class="flex justify-content-center h-full w-full">
     <DataTable
-      @vue:before-mount="store.getAll()"
+      @vue:before-mount="store.get()"
       :value="store.allLoadedItems"
-      @row-dblclick="showDialog = !showDialog"
-      @row-click="(store.selectedItem = $event.data), $emit('rowClick', $event)"
-      size="small"
+      :loading="!store.allLoadedItems"
       stripedRows
+      rowHover
       scrollable
       scrollHeight="flex"
-      rowHover
-      dataKey="id"
-      v-model:selection="selectedProduct"
+      size="small"
+      class="flex-grow-1 border-round p-2"
+      style="height: 80vh"
+      v-model:selection="(store as any).selectedItems"
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
-      :globalFilterFields="exposedData[0].field"
-      paginator
+      :globalFilterFields="[exposedData[0].field]"
+      :paginator="store.allLoadedItems?.length > DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
       :totalRecords="store.allLoadedItems?.length ?? 0"
-      style="max-height: 80vh"
       reorderableColumns
+      @row-dblclick="showDialog = !showDialog && !readonly"
+      @row-click="
+        ((store as any).editItem = $event.data), (editOrAdd = true), $emit('rowClick', $event)
+      "
     >
+      <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
       <template #header>
-        <div class="flex flex-row gap-2 align-items-end">
-          <h1 class="w-full font-bold">{{ store.$id }}</h1>
+        <div class="flex flex-row gap-2 align-items-center px-2">
+          <h2 class="w-full m-0 p-0 font-bold">
+            {{
+              store.$id[0].toUpperCase() +
+              store.$id
+                .substring(1)
+                .replaceAll(/([A-Z])/g, ' $1')
+                .toLowerCase()
+            }}
+          </h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
@@ -91,17 +128,21 @@ const filters = ref({
             <InputText v-model="filters['global'].value" placeholder="Search..." />
           </div>
           <SplitButton
+            v-if="!readonly"
             @click="
-              showMultipleDelete ? '' : $emit('addClick', $event),
-                (showDialog = !showDialog),
-                store.resetToDefaults()
+              showMultipleDelete
+                ? (store.delete(), $emit('deleteClick', $event))
+                : (store.resetToDefaults(),
+                  (editOrAdd = false),
+                  $emit('addClick', $event),
+                  (showDialog = !showDialog))
             "
             :model="[
               {
                 label: showMultipleDelete ? 'Cancel multiple select' : 'Multiple select',
                 icon: 'pi pi-th-large',
                 command: () => {
-                  ;(showMultipleDelete = !showMultipleDelete), (selectedProduct = [])
+                  ;(showMultipleDelete = !showMultipleDelete), props.store?.resetToDefaults
                 }
               },
               {
@@ -125,46 +166,69 @@ const filters = ref({
         </div>
       </template>
       <template #empty>
-        <div class="flex-grow-1 text-center">No {{ store.$id.toLowerCase() }}</div>
+        <div class="flex-grow-1 text-center">
+          Empty
+          {{ store.$id.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }}
+        </div>
       </template>
       <template #expansion>
         <slot name="expansion" />
       </template>
-
       <Column
-        v-if="showMultipleDelete && !(selectedColumns.length == exposedData?.length)"
+        v-if="showMultipleDelete && !(selectedColumns?.length == exposedData?.length)"
         selectionMode="multiple"
         class="pr-0 pt-0"
-        style="width: 1%"
+        style="width: 1px"
         key="select"
       />
       <!-- <Column
         v-if="!(selectedColumns.length == exposedData?.length) && $slots.expansion"
         expander
         class="pr-0"
-        style="width: 1%"
+        style="width: 1px"
         key="expander"
       /> -->
 
       <Column
-        v-if="!(selectedColumns.length == exposedData?.length)"
-        style="width: 3rem"
-        key="index"
+        v-if="!(selectedColumns?.length == exposedData?.length)"
+        style="width: 1px"
+        header="#"
+        headerClass="column-text-center"
         class="text-center"
+        key="index"
       >
-        <template #body="slotProps">
-          {{ slotProps.index + 1 }}
+        <template #body="{ index }">
+          {{ index + 1 }}
         </template>
       </Column>
 
       <Column
         v-for="(col, index) in exposedData?.filter((item: any) => !selectedColumns.includes(item))"
-        :key="capitalizeString(col.field) + '_' + index"
-        :header="capitalizeString(col.header)"
-        :field="capitalizeString(col.field)"
-        :filterField="capitalizeString(col.field)"
+        :key="col.field + '_' + index"
+        :header="col.header"
+        :field="col.field"
+        :filterField="col.field"
         :show-clear-button="false"
+        :class="typeof col.type == typeof Boolean() ? 'text-center' : ''"
+        :style="typeof col.type == typeof Boolean() ? 'width: 5rem' : ''"
+        :headerClass="typeof col.type == typeof Boolean() ? 'column-text-center' : ''"
       >
+        <template #body="{ data, field }">
+          <i
+            v-if="Boolean(typeof data[field] == typeof Boolean())"
+            :class="`pi ${data[field] ? 'pi-verified' : 'pi-circle'}`"
+          />
+          <div v-else>
+            {{
+              (() => {
+                const value = field.split('.').reduce((acc, part) => acc && acc[part], data)
+                return value?.toString().split('T')[1]?.endsWith('Z')
+                  ? new Date(value)?.toLocaleString()
+                  : value?.toString()
+              })()
+            }}
+          </div>
+        </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
             v-model="filterModel.value"
@@ -176,8 +240,12 @@ const filters = ref({
         </template>
       </Column>
 
-      <Column
-        v-if="!(selectedColumns.length == exposedData?.length) && store.allLoadedItems[0]?.Active"
+      <!-- <Column
+        v-if="
+          !(selectedColumns.length == exposedData?.length) && store.allLoadedItems
+            ? store.allLoadedItems[0]?.active
+            : false
+        "
         header="Active"
         field="Active"
         filterField="Active"
@@ -188,34 +256,33 @@ const filters = ref({
         :show-clear-button="false"
       >
         <template #body="slotProps">
-          <div class="pi" :class="slotProps.data.Active ? 'pi-verified' : 'pi-circle'" />
+          <div class="pi" :class="slotProps.data.active ? 'pi-verified' : 'pi-circle'" />
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <TriStateCheckbox v-model="filterModel.value" @change="filterCallback()" />
         </template>
-      </Column>
+      </Column> -->
     </DataTable>
     <Dialog
       class="p-fluid"
       position="top"
       v-model:visible="showDialog"
-      :header="
-        (store.selectedItem[0] ?? 0 <= 0 ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase()
-      "
+      :header="(editOrAdd ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase()"
       modal
       closable
       :draggable="false"
     >
       <div class="flex flex-column gap-4">
-        <div v-for="field in Object.getOwnPropertyNames(store.getDefaults())" :key="field">
+        <div v-for="key in exposedData" :key="key.field">
           <InputGroup>
-            <InputGroupAddon class="py-0" style="min-width: 7rem">
-              {{ capitalizeString(field).replaceAll('_id', '') }}
+            <InputGroupAddon class="py-0 text-left" style="min-width: 7rem">
+              {{ key.header }}
             </InputGroupAddon>
-            <Dropdown
-              v-if="typeof store.selectedItem[field] == 'object' && field.includes('_id')"
-              v-model="store.selectedItem[field]"
-              :placeholder="capitalizeString(field).replaceAll('_id', '')"
+
+            <!-- <Dropdown
+              v-else-if="typeof store.editItem[field] == 'object' && field.includes('Data')"
+              v-model="(store as any).editItem[field]"
+              :placeholder="field"
               filter
               :options="[
                 { name: 'asd', id: 0 },
@@ -223,11 +290,11 @@ const filters = ref({
               ]"
               option-label="name"
               option-value="id"
-            />
-            <AutoComplete
-              v-else-if="typeof store.selectedItem[field] == 'object'"
-              v-model="store.selectedItem[field]"
-              :placeholder="capitalizeString(field)"
+            /> -->
+            <!-- <AutoComplete
+              v-else-if="typeof store.editItem[field] == 'object'"
+              v-model="(store as any).editItem[field]"
+              :placeholder="field)"
               filter
               :options="[
                 { name: 'asd', id: 0 },
@@ -235,38 +302,53 @@ const filters = ref({
               ]"
               option-label="name"
               option-value="id"
-            />
-            <InputNumber
-              v-else-if="typeof store.selectedItem[field] == 'number'"
-              v-model="store.selectedItem[field]"
-              :placeholder="capitalizeString(field)"
+            /> -->
+            <!-- <InputNumber
+              v-if="typeof store.editItem[field] == typeof Number"
+              v-model="(store as any).editItem[field]"
+              :placeholder="field"
+            /> -->
+            <Password
+              v-if="key.field.toLowerCase() == 'password'"
+              v-model="(store as any).editItem[key.field]"
+              :placeholder="key.header"
             />
             <Button
-              v-else-if="typeof store.selectedItem[field] == 'boolean'"
-              class="p-0 bg-gray-900 border-gray-700 w-full"
+              v-else-if="Boolean(key.type == typeof Boolean())"
+              class="p-0 surface-hover border-gray-700 w-full"
             >
               <Checkbox
-                class="p-2 w-full h-full justify-content-end"
-                v-model="store.selectedItem[field]"
-                :placeholder="capitalizeString(field)"
+                class="p-2 w-full h-full justify-content-end align-items-center"
+                v-model="(store as any).editItem[key.field]"
+                :placeholder="key.header"
                 binary
               />
             </Button>
-            <Calendar
-              v-else-if="!isNaN(new Date(store.selectedItem[field]).getTime())"
-              @vue:beforeMount="
-                store.selectedItem[field] = new Date(store.selectedItem[field]).toLocaleString()
+            <InputText
+              v-else
+              v-model="(store as any).editItem[key.field]"
+              :placeholder="key.header"
+            />
+            <!-- <Calendar
+              v-else-if="
+                new RegExp(
+                  '\d{1,4}[-./]\d{1,2}[-./]\d{2,4}(?:\.\d+)?Z?',
+                  store.editItem[field]
+                )
               "
-              @update:modelValue="store.selectedItem[field] = $event ? $event : undefined"
-              v-model="store.selectedItem[field]"
+              @vue:beforeMount="
+                (store as any).editItem[field] = new Date(
+                  store.editItem[field]
+                ).toLocaleString()
+              "
+              @update:modelValue="
+                (store as any).editItem[field] = $event ? $event : undefined
+              "
+              v-model="(store as any).editItem[field]"
               showTime
               hourFormat="24"
-            />
-            <InputText
-              v-else-if="typeof store.selectedItem[field] == 'string'"
-              v-model="store.selectedItem[field]"
-              :placeholder="capitalizeString(field)"
-            />
+              :placeholder="field"
+            /> -->
           </InputGroup>
         </div>
 
@@ -274,11 +356,11 @@ const filters = ref({
           <Button class="flex-grow-1 bg-primary-reverse" label="Back" @click="showDialog = false" />
           <Button
             class="flex-grow-1"
-            :label="addOrEdit ? 'Save' : 'Add'"
-            @click="(showDialog = false), addOrEdit ? store.update() : store.add()"
+            :label="editOrAdd ? 'Save' : 'Add'"
+            @click="(showDialog = false), editOrAdd ? store.update() : store.add()"
           />
           <Button
-            v-if="addOrEdit"
+            v-if="editOrAdd"
             class="flex-grow-1 bg-red-500 text-white"
             label="Delete"
             @click="(showDialog = false), store.delete()"

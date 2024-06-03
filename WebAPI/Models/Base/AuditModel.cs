@@ -7,6 +7,7 @@ namespace Setia.Models.Base
     {
         [Key]
         public int Id { get; set; } = 0;
+
         public string? Description { get; set; }
         public string? Details { get; set; }
         public string? Entity { get; set; }

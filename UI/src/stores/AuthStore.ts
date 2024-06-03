@@ -10,29 +10,41 @@ export const useAuthStore = defineStore('Auth', {
     return {}
   },
   actions: {
-    async tryLogin(username: string, password: string): Promise<boolean> {
+    // APIs
+    async login(username: string, password: string) {
       return await makeApiRequest(`${this.$id}/Login`, 'post', { username, password }).then(
-        (loginResult) => {
-          this.token = loginResult.token
-          localStorage.setItem('token', this.token ?? '')
-          this.userData = loginResult.user
-          localStorage.setItem('user', JSON.stringify(this.userData))
-          return Boolean(loginResult)
+        async (loginResponse: Response) => {
+          const loginResult = await loginResponse.json()
+          if (loginResult) {
+            this.token = loginResult.token
+            localStorage.setItem('token', this.token ?? '')
+
+            this.userData = loginResult.user
+            localStorage.setItem('user', JSON.stringify(this.userData))
+
+            useUserTagsCRUDStore().get()
+            return //window.location.reload()
+          }
         }
       )
     },
-    async tryRegister(email: string, username: string, password: string): Promise<boolean> {
+    async register(email: string, username: string, password: string): Promise<boolean> {
       return await makeApiRequest(`${this.$id}/Register`, 'post', {
         email,
         username,
         password
-      }).then((successful: boolean) => {
-        if (successful) {
-          window.location.assign('/')
-        }
-        return successful
+      }).then((registerResponse: Response) => {
+        return registerResponse.status == 200
       })
     },
+    async checkUserRights(tags?: string | string[]): Promise<boolean | string[]> {
+      return Boolean(
+        useUserTagsCRUDStore().allLoadedItems?.filter((value: string) => tags?.includes(value)) &&
+          localStorage.getItem('token')
+      )
+    },
+
+    // client functions
     getToken() {
       return localStorage.getItem('token')
     },
@@ -42,9 +54,6 @@ export const useAuthStore = defineStore('Auth', {
       localStorage.setItem('token', '')
       localStorage.setItem('user', '')
       return window.location.reload()
-    },
-    async checkUserTags(tags?: string[]): Promise<string[]> {
-      return tags
     }
   },
   persist: true

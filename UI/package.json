@@ -11,12 +11,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@intlify/unplugin-vue-i18n": "^4.0.0",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
     "primevue": "^3.50.0",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "unplugin-auto-import": "^0.17.6",
+    "unplugin-vue-components": "^0.26.0",
+    "unplugin-vue-router": "^0.8.5"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
@@ -28,14 +31,11 @@
     "@vue/tsconfig": "^0.5.1",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
-    "npm-run-all2": "^6.1.2",
-    "pinia-plugin-persistedstate": "^3.2.1",
     "prettier": "^3.2.5",
     "typescript": "^5.4.3",
-    "unplugin-auto-import": "^0.17.5",
-    "unplugin-vue-components": "^0.26.0",
-    "unplugin-vue-router": "^0.8.5",
-    "vite": "^5.2.2",
+    "vite": "^5.2.12",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2",
     "vue-tsc": "^2.0.7"
   }
 }

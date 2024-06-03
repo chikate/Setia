@@ -10,10 +10,10 @@ namespace Setia.Models.Gov
 
         [Required]
         public required string Title { get; set; }
-        public string? Comment { get; set; }
-        public List<string>? Options { get; set; }
-        public List<string>? Selection { get; set; }
-        public string? EndOption { get; set; }
-        public DateTime? Expires { get; set; }
+        public string? Comment { get; set; } = null;
+        public List<string>? Options { get; set; } = null;
+        public List<string>? Selection { get; set; } = null;
+        public string? EndOption { get; set; } = null;
+        public DateTime? Expires { get; set; } = null;
     }
 }

@@ -7,9 +7,10 @@ namespace Setia.Models.Base
     {
         [Key]
         public required string Username { get; set; }
-        public string Password { get; set; } = string.Empty;
+
+        public string Password { get; set; } = Guid.NewGuid().ToString("d").Substring(1, 8);
         public string Email { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public DateTime? EmailVerifiedDate { get; set; }
+        public DateTime? EmailVerifiedDate { get; set; } = null;
     }
 }

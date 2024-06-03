@@ -21,9 +21,6 @@ export const useHelperStore = defineStore('Helper', {
         })
       }
       await makeApiRequest(`${this.$id}/Upload`, 'post', formData)
-    },
-    async getAllActions(): Promise<object[]> {
-      return (this.allLoadedActions = await makeApiRequest(`${this.$id}/GetAllActions`, 'get'))
     }
   }
 })

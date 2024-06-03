@@ -4,7 +4,7 @@ using Setia.Services.Interfaces;
 using System.Reflection;
 using System.Text.Json;
 
-namespace Setia.Controllers
+namespace Base.Gateways.Controllers
 {
     [Authorize]
     [ApiController]
@@ -15,16 +15,11 @@ namespace Setia.Controllers
         public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TModel>>> Get(/*[FromQuery] TModel? filter = default*/)
+        public async Task<ActionResult<IEnumerable<TModel>>> Get(/*[FromQuery] List<TModel>? filters = default*/)
         {
             try
             {
-                return Ok(JsonSerializer.Serialize(await _CRUD.Get(default),
-                    new JsonSerializerOptions
-                    {
-                        WriteIndented = true,
-                        Converters = { new LTreeConverter() }
-                    }));
+                return Ok(await _CRUD.Get());
             }
             catch (Exception ex)
             {
@@ -33,15 +28,11 @@ namespace Setia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] TModel model)
+        public async Task<IActionResult> Add([FromBody] List<TModel> models)
         {
             try
             {
-                //PropertyInfo? list = model?.GetType().GetProperties().Where(p => p.Name.Contains("List")).FirstOrDefault();
-                //PropertyInfo? listData = model?.GetType().GetProperties().Where(p => p.Name.Contains(list?.Name.Replace("List", ""))).FirstOrDefault();
-                //listData?.SetValue(model, string.Join(",", (List<string>)list?.GetValue(model)));
-
-                await _CRUD.Add(model);
+                await _CRUD.Add(models);
                 return Ok("Added");
             }
             catch (Exception ex)
@@ -51,11 +42,11 @@ namespace Setia.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] TModel model)
+        public async Task<IActionResult> Update([FromBody] List<TModel> models)
         {
             try
             {
-                await _CRUD.Update(model);
+                await _CRUD.Update(models);
                 return Ok("Updated");
             }
             catch (Exception ex)
@@ -65,12 +56,12 @@ namespace Setia.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(List<string> ids)
         {
             try
             {
-                await _CRUD.Delete(id);
-                return Ok("Permanently deleted");
+                await _CRUD.Delete(ids);
+                return Ok($"[{ids}] were permanently deleted");
             }
             catch (Exception ex)
             {

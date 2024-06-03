@@ -30,8 +30,7 @@ namespace Setia.Services
             {
                 AuditModel auditModel = new AuditModel
                 {
-                    AuthorId = _auth.GetCurrentUser().Username,
-                    AuthorData = _auth.GetCurrentUser(),
+                    Author = _auth.GetCurrentUser()?.Username,
                     Entity = typeof(T).FullName ?? "",
                     EntityId = typeof(T).GetProperties().FirstOrDefault()?.GetValue(model)?.ToString(),
                     Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))

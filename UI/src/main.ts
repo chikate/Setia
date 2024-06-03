@@ -16,6 +16,7 @@ const app = createApp(App)
 app.use(createPinia().use(piniaPluginPersistedstate))
 app.use(router)
 app.use(PrimeVue)
+
 app.directive('tooltip', Tooltip)
 app.directive('badge', BadgeDirective)
 app.component('InputGroup', InputGroup)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Setia.Models.Base;
+using Setia.Models.Gov;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,6 +16,7 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
     public DbSet<UserModel> Users { get; set; }
     public DbSet<TagModel> Tags { get; set; }
     public DbSet<UserTagModel> UserTags { get; set; }
+    public DbSet<NotificationModel> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,16 +28,17 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
         modelBuilder.Entity<UserModel>().HasData(defaultUser);
 
         modelBuilder.Entity<UserTagModel>().HasData(
-            new UserTagModel { Username = defaultUser.Username, TagId = "Role.Admin" }
+            new UserTagModel { User = defaultUser.Username, Tag = "Role.Admin" }
         );
 
         modelBuilder.Entity<UserTagModel>().HasData(
-            new UserTagModel { Username = defaultUser.Username, TagId = "Dragos" }
+            new UserTagModel { User = defaultUser.Username, Tag = "Dragos" }
         );
         #endregion
 
         #region Default Tags
         modelBuilder.Entity<TagModel>().HasData(new TagModel { Tag = $"Role.Admin" });
+
         foreach (var controller in Assembly.GetExecutingAssembly().GetTypes().Where(type => typeof(ControllerBase).IsAssignableFrom(type)))
         {
             if (!controller.IsDefined(typeof(AllowAnonymousAttribute), inherit: true))
@@ -46,7 +49,7 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
                     if (method.DeclaringType == controller)
                     {
                         modelBuilder.Entity<TagModel>().HasData(
-                            new TagModel { Tag = $"{controllerName}.{new Regex("[^a-zA-Z0-9 -]").Replace(method.Name, "")}" }
+                            new TagModel { Tag = $"Controller.{controllerName}.{new Regex("[^a-zA-Z0-9 -]").Replace(method.Name, "")}" }
                         );
                     }
                 }

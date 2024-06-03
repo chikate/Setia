@@ -1,5 +1,5 @@
 export const API_URL: string = import.meta.env.VITE_API_URL
-export const DEFAULT_ROWS_OPTIONS: number[] = [5, 10, 20, 30]
+export const DEFAULT_ROWS_OPTIONS: number[] = [15, 30, 60, 100]
 export const DEFAULT_ROWS_INDEX: number = 1
 export const FREE_DAYS = [
   new Date('1/1/' + new Date().getFullYear()),

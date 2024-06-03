@@ -77,10 +77,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/AuthStore'
-
-import { ref } from 'vue'
-
 const inputEmail = ref<string>('')
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
@@ -91,6 +87,6 @@ async function registerClickedHandler() {
   if (inputUsername.value.length < 6) return
   if (inputPassword.value.length < 6) return
   if (inputPassword.value !== inputRepeatPassword.value) return
-  await useAuthStore().tryRegister(inputEmail.value, inputUsername.value, inputPassword.value)
+  await useAuthStore().register(inputEmail.value, inputUsername.value, inputPassword.value)
 }
 </script>

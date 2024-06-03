@@ -11,8 +11,8 @@ namespace Setia.Models.Gov
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("User")]
-        public string? Username { get; set; }
-        public UserModel? UserData { get; set; }
+        public string? User { get; set; } = null;
+        public UserModel? UserData { get; set; } = null;
 
         public DateTime BeginTime { get; set; } = DateTime.SpecifyKind(DateTime.Now!, DateTimeKind.Utc);
         public DateTime? EndTime { get; set; } = DateTime.SpecifyKind(DateTime.Now.AddDays(8)!, DateTimeKind.Utc);
