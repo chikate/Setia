@@ -92,7 +92,7 @@ const filters = ref({
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
-      :globalFilterFields="[exposedData[0].field]"
+      :globalFilterFields="[exposedData[0]?.field]"
       :paginator="store.allLoadedItems?.length > DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
@@ -105,7 +105,7 @@ const filters = ref({
     >
       <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
       <template #header>
-        <div class="flex flex-row gap-2 align-items-center px-2">
+        <div class="flex flex-row gap-2 align-items-end px-2">
           <h2 class="w-full m-0 p-0 font-bold">
             {{
               store.$id[0].toUpperCase() +
@@ -273,63 +273,65 @@ const filters = ref({
       :draggable="false"
     >
       <div class="flex flex-column gap-4">
-        <div v-for="key in exposedData" :key="key.field">
-          <InputGroup>
-            <InputGroupAddon class="py-0 text-left" style="min-width: 7rem">
-              {{ key.header }}
-            </InputGroupAddon>
+        <InputGroup v-for="key in exposedData" :key="key.field">
+          <InputGroupAddon class="py-0 text-left" style="min-width: 7rem">
+            {{ key.header }}
+          </InputGroupAddon>
 
-            <!-- <Dropdown
-              v-else-if="typeof store.editItem[field] == 'object' && field.includes('Data')"
-              v-model="(store as any).editItem[field]"
-              :placeholder="field"
-              filter
-              :options="[
-                { name: 'asd', id: 0 },
-                { name: 'asdas', id: 1 }
-              ]"
-              option-label="name"
-              option-value="id"
-            /> -->
-            <!-- <AutoComplete
-              v-else-if="typeof store.editItem[field] == 'object'"
-              v-model="(store as any).editItem[field]"
-              :placeholder="field)"
-              filter
-              :options="[
-                { name: 'asd', id: 0 },
-                { name: 'asdas', id: 1 }
-              ]"
-              option-label="name"
-              option-value="id"
-            /> -->
-            <!-- <InputNumber
-              v-if="typeof store.editItem[field] == typeof Number"
-              v-model="(store as any).editItem[field]"
-              :placeholder="field"
-            /> -->
-            <Password
-              v-if="key.field.toLowerCase() == 'password'"
+          <CascadeSelect
+            v-if="key.field.toLowerCase().includes('tag')"
+            :placeholder="`Select a ${key.header}`"
+            v-model="(store as any).editItem[key.field]"
+            :options="useTagsCRUDStore().allLoadedItems"
+            :optionGroupChildren="[]"
+            optionLabel="tag"
+            optionGroupLabel="tag"
+            optionValue="tag"
+            filter
+            editable
+          />
+
+          <Dropdown
+            v-else-if="key.field.toLowerCase() == 'user'"
+            :placeholder="`Select a ${key.header}`"
+            v-model="(store as any).editItem[key.field]"
+            :options="useUsersCRUDStore().allLoadedItems"
+            optionLabel="username"
+            optionValue="username"
+            filter
+          />
+
+          <InputNumber
+            v-else-if="Boolean(typeof key.type == typeof Number())"
+            v-model="(store as any).editItem[key.field]"
+            :placeholder="key.header"
+          />
+
+          <Password
+            v-else-if="key.field.toLowerCase() == 'password'"
+            v-model="(store as any).editItem[key.field]"
+            :placeholder="key.header"
+          />
+
+          <Button
+            v-else-if="Boolean(typeof key.type == typeof Boolean())"
+            class="p-0 surface-hover border-gray-700 w-full"
+          >
+            <Checkbox
+              class="p-2 w-full h-full justify-content-end align-items-center"
               v-model="(store as any).editItem[key.field]"
               :placeholder="key.header"
+              binary
             />
-            <Button
-              v-else-if="Boolean(key.type == typeof Boolean())"
-              class="p-0 surface-hover border-gray-700 w-full"
-            >
-              <Checkbox
-                class="p-2 w-full h-full justify-content-end align-items-center"
-                v-model="(store as any).editItem[key.field]"
-                :placeholder="key.header"
-                binary
-              />
-            </Button>
-            <InputText
-              v-else
-              v-model="(store as any).editItem[key.field]"
-              :placeholder="key.header"
-            />
-            <!-- <Calendar
+          </Button>
+
+          <InputText
+            v-else
+            v-model="(store as any).editItem[key.field]"
+            :placeholder="key.header"
+          />
+
+          <!-- <Calendar
               v-else-if="
                 new RegExp(
                   '\d{1,4}[-./]\d{1,2}[-./]\d{2,4}(?:\.\d+)?Z?',
@@ -349,11 +351,14 @@ const filters = ref({
               hourFormat="24"
               :placeholder="field"
             /> -->
-          </InputGroup>
-        </div>
+        </InputGroup>
 
         <div class="flex flex-row gap-3 font-bold">
-          <Button class="flex-grow-1 bg-primary-reverse" label="Back" @click="showDialog = false" />
+          <Button
+            class="flex-grow-1 bg-primary-reverse"
+            label="Back"
+            @click="(showDialog = false), editOrAdd ? store.get() : ''"
+          />
           <Button
             class="flex-grow-1"
             :label="editOrAdd ? 'Save' : 'Add'"

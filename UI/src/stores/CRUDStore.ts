@@ -21,21 +21,13 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
         ).json())
       },
       async add(customAdds?: (typeof defaultValues)[]) {
-        await makeApiRequest(`${storeName}/Add`, 'post', customAdds ?? [this.editItem]).then(
-          (response: Response) => {
-            console.log(response)
-            console.log(response.status)
-            if (response.status == 200) this.get()
-          }
+        await makeApiRequest(`${storeName}/Add`, 'post', customAdds ?? [this.editItem]).then(() =>
+          this.get()
         )
       },
       async update(customUpdates?: (typeof defaultValues)[]) {
         await makeApiRequest(`${storeName}/Update`, 'put', customUpdates ?? [this.editItem]).then(
-          (response: Response) => {
-            console.log(response)
-            console.log(response.status)
-            if (response.status == 200) this.get()
-          }
+          () => this.get()
         )
       },
       async delete(customDelete?: (typeof defaultValues)[]) {
@@ -45,24 +37,12 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
           toDelete?.forEach((element: typeof defaultValues) => {
             element.deleted = true
           })
-          await makeApiRequest(`${storeName}/Update`, 'put', toDelete).then(
-            (response: Response) => {
-              console.log(response)
-              console.log(response.status)
-              if (response.status == 200) this.get()
-            }
-          )
+          await makeApiRequest(`${storeName}/Update`, 'put', toDelete).then(() => this.get())
         } else {
           const idsToDelete = toDelete?.map(
             (elem: typeof defaultValues) => elem[Object.keys(elem)[0]]
           )
-          await makeApiRequest(`${storeName}/Delete`, 'delete', idsToDelete).then(
-            (response: Response) => {
-              console.log(response)
-              console.log(response.status)
-              if (response.status == 200) this.get()
-            }
-          )
+          await makeApiRequest(`${storeName}/Delete`, 'delete', idsToDelete).then(() => this.get())
         }
       },
       getDefaults() {

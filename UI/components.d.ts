@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
+    CascadeSelect: typeof import('primevue/cascadeselect')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Column: typeof import('primevue/column')['default']
     copy: typeof import('./src/components/NavBar copy.vue')['default']
@@ -15,9 +16,11 @@ declare module 'vue' {
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
     Divider: typeof import('primevue/divider')['default']
+    Dropdown: typeof import('primevue/dropdown')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     FooterBar: typeof import('./src/components/FooterBar.vue')['default']
     InlineMessage: typeof import('primevue/inlinemessage')['default']
+    InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     LoginComponent: typeof import('./src/components/auth/LoginComponent.vue')['default']
     Menu: typeof import('primevue/menu')['default']

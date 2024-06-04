@@ -148,7 +148,7 @@ window.addEventListener('scroll', function () {
 
 <style scoped>
 a {
-  color: white;
+  color: var(--primary);
   text-shadow: rgba(12, 12, 12, 0.2) 0 0 25px;
   font-weight: 500;
 }

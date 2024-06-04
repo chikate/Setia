@@ -19,5 +19,6 @@ export const useSettingsStore = defineStore('Settings', {
       }
       // document.querySelector('app')?.classList.toggle('dark-theme', this.useDarkMode)
     }
-  }
+  },
+  persist: true
 })

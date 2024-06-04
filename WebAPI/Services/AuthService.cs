@@ -131,8 +131,5 @@ namespace Setia.Services
                 throw new Exception();
             }
         }
-
-
-
     }
 }

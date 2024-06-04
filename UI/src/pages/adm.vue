@@ -18,6 +18,11 @@
           command: () => scrollTo('Users')
         },
         {
+          label: 'User Tags',
+          icon: 'pi pi-plus',
+          command: () => scrollTo('UserTags')
+        },
+        {
           label: 'Tags',
           icon: 'pi pi-plus',
           command: () => scrollTo('Tags')
@@ -43,6 +48,7 @@
     >
       <CRUDT :store="usePontajCRUDStore()" />
       <CRUDT :store="useUsersCRUDStore()" />
+      <CRUDT :store="useUserTagsCRUDStore()" />
       <CRUDT :store="useTagsCRUDStore()" />
     </div>
   </main>

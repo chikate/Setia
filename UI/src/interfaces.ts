@@ -42,8 +42,8 @@ export interface QuestionAnswer extends Definition {
 }
 export interface UserTag extends Definition {
   id?: string
-  tag: string
   user: string
+  tag: string
 }
 export interface INotification {
   id?: number
