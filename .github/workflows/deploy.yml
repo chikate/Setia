@@ -10,36 +10,34 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  Build-FE:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Init Node
+      run: |
+        cd UI
+        npm install
+        npm run build
+
+  Build-BE:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-        
-    - name: Restore NPM
-      run: |
-        cd UI
-        npm install
-      
     - name: Restore .NET
-      run: dotnet restore
-      
-    - name: Build .NET
-      run: dotnet build --no-restore
-
-    - name: Build NPM
-      run: npm run build
-      
-    - name: Test .NET
-      run: dotnet test --no-build --verbosity normal
+      run: |
+        dotnet restore
+        dotnet build --no-restore
+        dotnet test --no-build --verbosity normal
