@@ -4,5 +4,5 @@ import { useCRUDStore } from '../CRUDStore'
 export const useQuestionAnswersCRUDStore = useCRUDStore('QuestionAnswers', {
   author: '',
   questionData: { title: '' },
-  answer: []
+  answer: ['']
 } as QuestionAnswer)

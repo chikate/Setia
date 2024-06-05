@@ -11,7 +11,6 @@ declare module 'vue' {
     CascadeSelect: typeof import('primevue/cascadeselect')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Column: typeof import('primevue/column')['default']
-    copy: typeof import('./src/components/NavBar copy.vue')['default']
     CRUDT: typeof import('./src/components/CRUDT.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
