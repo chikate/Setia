@@ -28,7 +28,9 @@ jobs:
         node-version: '18.x'
         
     - name: Restore NPM
-      run: npm install
+      run: |
+        cd UI
+        npm install
       
     - name: Restore .NET
       run: dotnet restore
