@@ -7,16 +7,12 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AutoComplete: typeof import('primevue/autocomplete')['default']
     Avatar: typeof import('primevue/avatar')['default']
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
-    CascadeSelect: typeof import('primevue/cascadeselect')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Chips: typeof import('primevue/chips')['default']
     Column: typeof import('primevue/column')['default']
-    Components: typeof import('./src/components/index.vue')['default']
-    copy: typeof import('./src/components/QuestionComponent copy.vue')['default']
     CountButon: typeof import('./src/components/CountButon.vue')['default']
     CRUDT: typeof import('./src/components/CRUDT.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
@@ -24,7 +20,6 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
     Editor: typeof import('primevue/editor')['default']
-    FileUpload: typeof import('primevue/fileupload')['default']
     FooterBar: typeof import('./src/components/FooterBar.vue')['default']
     Image: typeof import('primevue/image')['default']
     InlineMessage: typeof import('primevue/inlinemessage')['default']
@@ -47,9 +42,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SplitButton: typeof import('primevue/splitbutton')['default']
-    Textarea: typeof import('primevue/textarea')['default']
     UsernameRecoveryComponent: typeof import('./src/components/auth/recovery/UsernameRecoveryComponent.vue')['default']
-    UserProfile: typeof import('./src/components/UserProfile.vue')['default']
     UserProfileComponent: typeof import('./src/components/UserProfileComponent.vue')['default']
   }
 }
