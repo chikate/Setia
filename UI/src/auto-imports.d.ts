@@ -81,7 +81,7 @@ declare global {
   const useSettingsStore: typeof import('./stores/SettingsStore')['useSettingsStore']
   const useSlots: typeof import('vue')['useSlots']
   const useTagsCRUDStore: typeof import('./stores/cruds/TagsCRUDStore')['useTagsCRUDStore']
-  const useUserTagsCRUDStore: typeof import('./stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']
+  const useUserTagsCRUDStore: typeof import('./stores/cruds/UserTagsCRUDStore')['useUserTagsCRUDStore']
   const useUsersCRUDStore: typeof import('./stores/cruds/UsersCRUDStore')['useUsersCRUDStore']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
@@ -162,7 +162,7 @@ declare module 'vue' {
     readonly useSettingsStore: UnwrapRef<typeof import('./stores/SettingsStore')['useSettingsStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/TagsCRUDStore')['useTagsCRUDStore']>
-    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']>
+    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/UserTagsCRUDStore')['useUserTagsCRUDStore']>
     readonly useUsersCRUDStore: UnwrapRef<typeof import('./stores/cruds/UsersCRUDStore')['useUsersCRUDStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
@@ -236,7 +236,7 @@ declare module '@vue/runtime-core' {
     readonly useSettingsStore: UnwrapRef<typeof import('./stores/SettingsStore')['useSettingsStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/TagsCRUDStore')['useTagsCRUDStore']>
-    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']>
+    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./stores/cruds/UserTagsCRUDStore')['useUserTagsCRUDStore']>
     readonly useUsersCRUDStore: UnwrapRef<typeof import('./stores/cruds/UsersCRUDStore')['useUsersCRUDStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>

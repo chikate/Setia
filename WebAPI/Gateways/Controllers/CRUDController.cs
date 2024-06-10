@@ -30,29 +30,15 @@ namespace Base.Gateways.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] List<TModel> models)
         {
-            try
-            {
-                await _CRUD.Add(models);
-                return Ok("Added");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Error message: " + ex.Message);
-            }
+            try { return Ok(await _CRUD.Add(models)); }
+            catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] List<TModel> models)
         {
-            try
-            {
-                await _CRUD.Update(models);
-                return Ok("Updated");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Error message: " + ex.Message);
-            }
+            try { return Ok(await _CRUD.Update(models)); }
+            catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
         }
 
         [HttpDelete]

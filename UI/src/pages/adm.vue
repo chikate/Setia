@@ -1,11 +1,8 @@
 <template>
-  <main
-    v-if="async () => await useAuthStore().checkUserRights('Role.Admin')"
-    class="flex flex-row p-8 gap-8"
-  >
+  <main class="flex flex-row p-8 gap-8">
+    <!-- @vue:beforeMount="async () => await useTagsCRUDStore().get()" -->
     <Menu
       class="fixed top-0 left-0 m-8"
-      @vue:beforeMount="useTagsCRUDStore().get()"
       :model="[
         {
           label: 'Pontaj',
@@ -18,14 +15,14 @@
           command: () => scrollTo('Users')
         },
         {
-          label: 'User Tags',
-          icon: 'pi pi-plus',
-          command: () => scrollTo('UserTags')
-        },
-        {
           label: 'Tags',
           icon: 'pi pi-plus',
           command: () => scrollTo('Tags')
+        },
+        {
+          label: 'Organizational Chart',
+          icon: 'pi pi-plus',
+          command: () => scrollTo('OrganizationalChart')
         }
         // useTagsCRUDStore()
         //   .allLoadedItems?.filter((elem: Taging) => elem.tag?.includes('Controller'))
@@ -48,8 +45,8 @@
     >
       <CRUDT :store="usePontajCRUDStore()" />
       <CRUDT :store="useUsersCRUDStore()" />
-      <CRUDT :store="useUserTagsCRUDStore()" />
       <CRUDT :store="useTagsCRUDStore()" />
+      <!-- <CRUDT :store="useTagsCRUDStore()" /> -->
     </div>
   </main>
 </template>

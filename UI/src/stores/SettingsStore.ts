@@ -14,13 +14,17 @@ export const useSettingsStore = defineStore('Settings', {
     async toggleDarkMode() {
       const linkElement = document.getElementById('theme-link')
       if (linkElement) {
-        ;(linkElement as HTMLAnchorElement).href.includes('dark')
-          ? (this.theme = 'light')
-          : (this.theme = 'dark')
+        localStorage.setItem(
+          'theme',
+          (linkElement as HTMLAnchorElement).href.includes('dark') ? 'light' : 'dark'
+        )
         ;(linkElement as HTMLAnchorElement).href =
-          `/node_modules/primevue/resources/themes/aura-${this.theme}-noir/theme.css`
+          `/node_modules/primevue/resources/themes/aura-${localStorage.getItem('theme')}-noir/theme.css`
       }
     }
+  },
+  getters: {
+    theme: () => localStorage.getItem('theme') ?? 'dark'
   },
   persist: true
 })

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models.Gov
 {
-    public class QuestionAnswerModel : DefinitionStruct
+    public class QuestionAnswerModel : BaseModel
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -12,7 +12,7 @@ namespace Setia.Models.Gov
         public required List<string> Answer { get; set; }
 
         [ForeignKey("Question")]
-        public required Guid Question { get; set; }
+        public required Guid QuestionId { get; set; }
         public QuestionModel? QuestionData { get; set; }
     }
 }

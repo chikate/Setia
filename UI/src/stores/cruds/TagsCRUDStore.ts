@@ -3,6 +3,5 @@ import { useCRUDStore } from '../CRUDStore'
 
 export const useTagsCRUDStore = useCRUDStore('Tags', {
   tag: '',
-  comments: '',
-  active: true
+  comments: ''
 } as Taging)

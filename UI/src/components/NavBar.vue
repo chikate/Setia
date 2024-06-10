@@ -17,7 +17,6 @@
       <RouterLink to="/about"> {{ 'Our Mission' }} </RouterLink>
       <RouterLink to="/career"> {{ 'Join us' }} </RouterLink>
       <RouterLink to="/news"> {{ 'News' }} </RouterLink>
-      <RouterLink to="/posts"> {{ 'Posts' }} </RouterLink>
     </div>
     <div class="flex flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
@@ -95,21 +94,26 @@
       <div @click="accountOverlay.toggle($event)" class="cursor-pointer">
         <i class="pi pi-user">
           <OverlayPanel ref="accountOverlay" class="p-0 m-0">
-            <LoginComponent
-              v-if="!useAuthStore().getToken()"
-              @close="accountOverlay.hide($event)"
-            />
+            <LoginComponent v-if="!useAuthStore().token" @close="accountOverlay.hide($event)" />
             <div v-else class="flex flex-column gap-3">
-              <Button label="Profile" @click="$router.push('/profile')" />
-              <Button label="Administration" @click="$router.push('/adm')" />
-              <Button label="Quizz" @click="$router.push('/quizz-creator')" />
+              <Button
+                label="Profile"
+                @click="$router.push(`/profile/${useAuthStore().userData?.username}`)"
+              />
+              <Button label="Collection" @click="$router.push(`/collection`)" />
+              <Button
+                v-if="useAuthStore().checkUserRight('Admin')"
+                label="Administration"
+                @click="$router.push('/adm')"
+              />
+              <Button label="Vote / Questions" @click="$router.push('/vote-creator')" />
               <Button label="Messanger" @click="$router.push('/messanger')" />
               <Button label="Logout" @click="useAuthStore().logOut()" />
             </div>
           </OverlayPanel>
         </i>
         <a>
-          {{ useAuthStore().getToken() ? 'Dragos' : 'Account' }}
+          {{ useAuthStore().userData?.username ?? 'Account' }}
         </a>
       </div>
     </div>

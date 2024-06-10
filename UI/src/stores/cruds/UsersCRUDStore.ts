@@ -5,5 +5,5 @@ export const useUsersCRUDStore = useCRUDStore('Users', {
   username: '',
   email: '',
   name: '',
-  active: true
+  tags: ['']
 } as User)

@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Setia.Contexts.Base;
 using Setia.Models.Base;
 using Setia.Services.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Setia.Controllers
 {
@@ -39,46 +34,11 @@ namespace Setia.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserModel loginCredentials)
         {
-            try
-            {
-                if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) return BadRequest("Invalid password (too short)");
-
-                UserModel? user = await _context.Users
-                    .FirstOrDefaultAsync(u =>
-                    u.Username == loginCredentials.Username &&
-                    u.Password == _auth.CriptPassword(loginCredentials.Password));
-
-                if (user != null)
-                {
-                    IEnumerable<Claim> claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.NameIdentifier, user.Username),
-                        new Claim(ClaimTypes.Role, "Default"),
-                    };
-
-                    string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                        issuer: _config["JWT:Issuer"],
-                        audience: _config["JWT:Audience"],
-                        claims,
-                        expires: DateTime.SpecifyKind((DateTime)DateTime.Now.AddDays(1)!, DateTimeKind.Utc),
-                        signingCredentials: new SigningCredentials(
-                            new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(_config["JWT:Key"] ?? "")),
-                                SecurityAlgorithms.HmacSha256)));
-
-                    return Ok(new { Token = token, User = user });
-                }
-                else
-                {
-                    return NotFound("Invalid credentials / User not found");
-                }
-            }
+            try { return Ok(await _auth.Login(loginCredentials)); }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return Unauthorized(ex);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -94,19 +54,17 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> CheckUserRights([FromQuery] IEnumerable<string> rightsToCeck, string? user = null)
+        public async Task<IActionResult> CheckUserRights([FromQuery] IEnumerable<string> rightsToCeck, Guid? user = null)
         {
-            try
-            {
-                return Ok(await _auth.CheckUserRights(rightsToCeck, user));
-            }
+            try { return Ok(await _auth.CheckUserRights(rightsToCeck, user)); }
             catch (Exception ex)
             {
+                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }

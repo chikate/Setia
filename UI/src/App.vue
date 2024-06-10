@@ -9,8 +9,12 @@
   </main>
   <FooterBar />
   <main class="fixed vignette pointer-events-none" />
-  <Toast group="main" />
+  <Toast position="bottom-right" group="main" />
 </template>
+
+<script setup lang="ts">
+import Toast from 'primevue/toast'
+</script>
 
 <style>
 .fade-leave-to,
@@ -23,6 +27,6 @@
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
 }
 </style>

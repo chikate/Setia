@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models.Gov
 {
-    public class PontajModel : DefinitionStruct
+    public class PontajModel : BaseModel
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("User")]
-        public string? User { get; set; } = null;
+        public Guid? UserId { get; set; } = null;
         public UserModel? UserData { get; set; } = null;
 
         public DateTime BeginTime { get; set; } = DateTime.SpecifyKind(DateTime.Now!, DateTimeKind.Utc);

@@ -4,13 +4,23 @@ export interface BaseAudit {
   authorData?: User
 }
 export interface Definition extends BaseAudit {
-  active: boolean
+  tags: string[]
 }
 export interface User extends Definition {
+  id?: string
   username: string
   password: string
   email: string
   name: string
+  avatar: string
+}
+export interface Post extends Definition {
+  id?: string
+  message?: string
+  questionId?: string
+  questionData?: Question
+  toPostId?: string
+  toPostData?: Post
 }
 export interface Pontaj extends Definition {
   id?: number
@@ -36,7 +46,7 @@ export interface QuestionAnswer extends Definition {
   id?: string
   user: string
   userData: User
-  question: string
+  questionId: string
   questionData: Question
   answer: string[]
 }
@@ -45,8 +55,13 @@ export interface UserTag extends Definition {
   user: string
   tag: string
 }
+export interface UserCollection extends Definition {
+  id?: string
+  postId: string
+  postData: Post
+}
 export interface INotification {
-  id?: number
+  id?: string
   icon: string
   title: string
   comment: string

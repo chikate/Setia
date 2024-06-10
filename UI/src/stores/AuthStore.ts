@@ -11,20 +11,18 @@ export const useAuthStore = defineStore('Auth', {
   },
   actions: {
     // APIs
-    async login(username: string, password: string) {
+    async login(username: string, password: string): Promise<Boolean> {
       return await makeApiRequest(`${this.$id}/Login`, 'post', { username, password }).then(
         async (loginResponse: Response) => {
-          const loginResult = await loginResponse.json()
-          if (loginResult) {
-            this.token = loginResult.token
-            localStorage.setItem('token', this.token ?? '')
-
-            this.userData = loginResult.user
-            localStorage.setItem('user', JSON.stringify(this.userData))
-
-            useUserTagsCRUDStore().get()
-            return //window.location.reload()
+          if (loginResponse.status == 200) {
+            const loginResult = await loginResponse.json()
+            // this.token = loginResult.token
+            localStorage.setItem('token', loginResult.token)
+            // this.userData = loginResult.user
+            localStorage.setItem('user', JSON.stringify(loginResult.user))
+            window.location.reload()
           }
+          return loginResponse.status == 200
         }
       )
     },
@@ -37,24 +35,28 @@ export const useAuthStore = defineStore('Auth', {
         return registerResponse.status == 200
       })
     },
-    async checkUserRights(tags?: string | string[]): Promise<boolean | string[]> {
-      return Boolean(
-        useUserTagsCRUDStore().allLoadedItems?.filter((value: string) => tags?.includes(value)) &&
-          localStorage.getItem('token')
-      )
+    checkUserRight(tag: string): boolean {
+      console.log(this.userData?.tags?.indexOf(tag))
+      return Boolean((this.userData?.tags?.indexOf(tag) ?? -1) > -1)
     },
-
-    // client functions
-    getToken() {
-      return localStorage.getItem('token')
+    checkUserRights(tag?: string | string[]): boolean {
+      // return Boolean((this.userData?.tags?.indexOf(tag) ?? -1) > 0)
+      return false
     },
     async logOut() {
-      this.token = undefined
-      this.userData = undefined
+      // this.token = undefined
+      // this.userData = undefined
       localStorage.setItem('token', '')
       localStorage.setItem('user', '')
-      return window.location.reload()
+      return window.location.replace('/')
     }
+  },
+  getters: {
+    userData: () =>
+      localStorage.getItem('user')
+        ? (JSON.parse(String(localStorage.getItem('user'))) as User)
+        : undefined,
+    token: () => (localStorage.getItem('token') ? localStorage.getItem('token') : undefined)
   },
   persist: true
 })

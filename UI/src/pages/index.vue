@@ -1,14 +1,18 @@
+<script setup lang="ts">
+import { LIGHT_THEME_BACKGROUND_IMAGE, DARK_THEME_BACKGROUND_IMAGE } from '@/constants'
+const backgroundLink = computed(() =>
+  localStorage.getItem('theme') == 'dark'
+    ? DARK_THEME_BACKGROUND_IMAGE
+    : LIGHT_THEME_BACKGROUND_IMAGE
+)
+</script>
+
 <template>
   <main>
-    <div
-      class="bg-cover bg-center"
-      style="
-        background-image: url('https://www.ukri.org/wp-content/uploads/2021/10/STFC-041021-EuropeFromSpace-GettyImages-1284041267.jpg');
-      "
-    >
+    <div class="bg-cover bg-center" :style="`background-image: url(${backgroundLink})`">
       <main style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))">
         <a class="text-8xl text-center font-bold">
-          Hello {{ useAuthStore()?.userData?.name ?? 'there' }}
+          Hello {{ useAuthStore()?.userData?.username ?? 'there' }}
         </a>
         <a class="text-3xl text-center font-bold">We are happy that you are here!</a>
       </main>

@@ -12,5 +12,3 @@ defineProps({
   text: { type: String, required: true }
 })
 </script>
-
-<style scoped></style>

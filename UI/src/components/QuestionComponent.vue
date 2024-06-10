@@ -1,12 +1,10 @@
 <template>
   <div
-    class="flex flex-column gap-2 surface-hover border-round p-2"
+    class="flex flex-column gap-2 surface-hover border-round p-2 shadow-1"
     :class="answerMode ? 'align-items-start' : 'align-items-center'"
     style="min-width: 20rem"
     v-if="answerMode ? true : useAuthStore().checkUserRights(`${useQuestionsCRUDStore().$id}.Add`)"
   >
-    {{ answerMode ? 'Answer' : '' }}
-
     <div class="text-xl" v-if="answerMode">
       {{ useQuestionsCRUDStore().editItem.title }}
     </div>
@@ -55,12 +53,12 @@
       />
     </div>
 
-    <div class="flex flex-wrap justify-content-center gap-2 w-full">
+    <div class="flex flex-wrap justify-content-center align-items-center gap-2 w-full">
       <Button
         v-if="!answerMode"
         icon="pi pi-plus"
         label="Add option"
-        class="flex-grow-1"
+        class="flex-grow-1 shadow-1"
         @click="
           useQuestionsCRUDStore().editItem.options?.push('') ??
             (useQuestionsCRUDStore().editItem.options = [''])
@@ -70,33 +68,39 @@
         v-if="answerMode && !customAnswere"
         icon="pi pi-pencil"
         label="Custom"
-        class="flex-grow-1"
-        @click="customAnswere = 'Type here...'"
+        class="flex-grow-1 shadow-1"
+        @click="customAnswere = 'My answere'"
       />
       <div v-else-if="customAnswere">Remove everything to return to options</div>
       <Button
-        v-if="
-          answerMode
-            ? () => useAuthStore().checkUserRights(`${useQuestionAnswersCRUDStore().$id}.Add`)
-            : () => useAuthStore().checkUserRights(`${useQuestionsCRUDStore().$id}.Add`)
-        "
+        v-if="answerMode"
+        class="shadow-1"
         icon="pi pi-send"
+        label="Answere"
+        @click="
+          useQuestionAnswersCRUDStore().add([
+            {
+              QuestionId: useQuestionsCRUDStore().editItem.id,
+              Answer: customAnswere
+                ? [customAnswere]
+                : checksList
+                    .map((value, index) => (value ? index.toString() : null))
+                    .filter((index) => index != null)
+            }
+          ])
+        "
+      />
+      <SplitButton
+        v-else
         label="Submit"
         class="flex-grow-1"
-        @click="
-          answerMode
-            ? useQuestionAnswersCRUDStore().add([
-                {
-                  Question: useQuestionsCRUDStore().editItem.id,
-                  Answer: customAnswere
-                    ? [customAnswere]
-                    : checksList
-                        .map((value, index) => (value ? index.toString() : null))
-                        .filter((index) => index != null)
-                }
-              ])
-            : useQuestionsCRUDStore().add()
-        "
+        @click="useQuestionsCRUDStore().add()"
+        :model="[
+          {
+            label: 'Submit with custom option',
+            command: () => useQuestionsCRUDStore().add()
+          }
+        ]"
       />
     </div>
   </div>
@@ -106,4 +110,8 @@
 const answerMode = defineModel('answerMode', { type: Boolean, required: false, default: false })
 const checksList = defineModel('checksList', { type: Array<Boolean>, required: false, default: [] })
 const customAnswere = defineModel('customAnswere', { type: String, required: false, default: '' })
+// const questionData = defineModel('questionData', { type: String, required: false, default: '' })
+defineProps({
+  hideSubmit: { type: Boolean, required: false }
+})
 </script>

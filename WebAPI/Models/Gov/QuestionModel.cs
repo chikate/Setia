@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Setia.Models.Gov
 {
-    public class QuestionModel : DefinitionStruct
+    public class QuestionModel : BaseModel
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();

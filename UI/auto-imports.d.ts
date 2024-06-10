@@ -58,9 +58,11 @@ declare global {
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
   const useHelperStore: typeof import('./src/stores/HelperStore')['useHelperStore']
+  const useI18n: typeof import('vue-i18n')['useI18n']
   const useLink: typeof import('vue-router/auto')['useLink']
   const useNotificationsCRUDStore: typeof import('./src/stores/cruds/NotificationsCRUDStore')['useNotificationsCRUDStore']
   const usePontajCRUDStore: typeof import('./src/stores/cruds/PontajCRUDStore')['usePontajCRUDStore']
+  const usePostsCRUDStore: typeof import('./src/stores/cruds/PostsCRUDStore')['usePostsCRUDStore']
   const useQuestionAnswersCRUDStore: typeof import('./src/stores/cruds/QuestionAnswersCRUDStore')['useQuestionAnswersCRUDStore']
   const useQuestionsCRUDStore: typeof import('./src/stores/cruds/QuestionsCRUDStore')['useQuestionsCRUDStore']
   const useRoute: typeof import('vue-router/auto')['useRoute']
@@ -68,7 +70,8 @@ declare global {
   const useSettingsStore: typeof import('./src/stores/SettingsStore')['useSettingsStore']
   const useSlots: typeof import('vue')['useSlots']
   const useTagsCRUDStore: typeof import('./src/stores/cruds/TagsCRUDStore')['useTagsCRUDStore']
-  const useUserTagsCRUDStore: typeof import('./src/stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']
+  const useUserCollectionCRUDStore: typeof import('./src/stores/cruds/UserCollectionCRUDStore')['useUserCollectionCRUDStore']
+  const useUserTagsCRUDStore: typeof import('./src/stores/cruds/UserTagsCRUDStore')['useUserTagsCRUDStore']
   const useUsersCRUDStore: typeof import('./src/stores/cruds/UsersCRUDStore')['useUsersCRUDStore']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
@@ -142,6 +145,7 @@ declare module 'vue' {
     readonly useLink: UnwrapRef<typeof import('vue-router/auto')['useLink']>
     readonly useNotificationsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/NotificationsCRUDStore')['useNotificationsCRUDStore']>
     readonly usePontajCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PontajCRUDStore')['usePontajCRUDStore']>
+    readonly usePostsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PostsCRUDStore')['usePostsCRUDStore']>
     readonly useQuestionAnswersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionAnswersCRUDStore')['useQuestionAnswersCRUDStore']>
     readonly useQuestionsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionsCRUDStore')['useQuestionsCRUDStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router/auto')['useRoute']>
@@ -149,7 +153,7 @@ declare module 'vue' {
     readonly useSettingsStore: UnwrapRef<typeof import('./src/stores/SettingsStore')['useSettingsStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTagsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/TagsCRUDStore')['useTagsCRUDStore']>
-    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']>
+    readonly useUserCollectionCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UserCollectionCRUDStore')['useUserCollectionCRUDStore']>
     readonly useUsersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UsersCRUDStore')['useUsersCRUDStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
@@ -216,6 +220,7 @@ declare module '@vue/runtime-core' {
     readonly useLink: UnwrapRef<typeof import('vue-router/auto')['useLink']>
     readonly useNotificationsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/NotificationsCRUDStore')['useNotificationsCRUDStore']>
     readonly usePontajCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PontajCRUDStore')['usePontajCRUDStore']>
+    readonly usePostsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PostsCRUDStore')['usePostsCRUDStore']>
     readonly useQuestionAnswersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionAnswersCRUDStore')['useQuestionAnswersCRUDStore']>
     readonly useQuestionsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionsCRUDStore')['useQuestionsCRUDStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router/auto')['useRoute']>
@@ -223,7 +228,7 @@ declare module '@vue/runtime-core' {
     readonly useSettingsStore: UnwrapRef<typeof import('./src/stores/SettingsStore')['useSettingsStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTagsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/TagsCRUDStore')['useTagsCRUDStore']>
-    readonly useUserTagsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UserTagsCRUDStore copy')['useUserTagsCRUDStore']>
+    readonly useUserCollectionCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UserCollectionCRUDStore')['useUserCollectionCRUDStore']>
     readonly useUsersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UsersCRUDStore')['useUsersCRUDStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>

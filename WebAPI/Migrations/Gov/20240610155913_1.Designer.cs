@@ -13,7 +13,7 @@ using Setia.Contexts.Gov;
 namespace Base.Migrations.Gov
 {
     [DbContext(typeof(GovContext))]
-    [Migration("20240601223448_1")]
+    [Migration("20240610155913_1")]
     partial class _1
     {
         /// <inheritdoc />
@@ -29,17 +29,15 @@ namespace Base.Migrations.Gov
 
             modelBuilder.Entity("Setia.Models.Base.UserModel", b =>
                 {
-                    b.Property<string>("Username")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Avatar")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -59,7 +57,17 @@ namespace Base.Migrations.Gov
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Username");
+                    b.Property<string>("Signiture")
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.ToTable("UserModel", "gov");
                 });
@@ -70,17 +78,11 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("BeginTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -91,12 +93,15 @@ namespace Base.Migrations.Gov
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("User")
-                        .HasColumnType("text");
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("User");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Pontaj", "gov");
                 });
@@ -107,30 +112,29 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Author")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("Question")
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("QuestionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.Property<Guid?>("ToPostId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Question");
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("ToPostId");
 
                     b.ToTable("Posts", "gov");
                 });
@@ -141,9 +145,6 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
                     b.Property<List<string>>("Answer")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -151,18 +152,18 @@ namespace Base.Migrations.Gov
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Question")
+                    b.Property<Guid>("QuestionId")
                         .HasColumnType("uuid");
+
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Question");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("QuestionAnswers", "gov");
                 });
@@ -173,17 +174,11 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("EndOption")
                         .HasColumnType("text");
@@ -200,6 +195,9 @@ namespace Base.Migrations.Gov
                     b.Property<List<string>>("Selection")
                         .HasColumnType("text[]");
 
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -209,33 +207,75 @@ namespace Base.Migrations.Gov
                     b.ToTable("Questions", "gov");
                 });
 
+            modelBuilder.Entity("Setia.Models.Gov.UserCollectionModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExecutionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("UsersCollection", "gov");
+                });
+
             modelBuilder.Entity("Setia.Models.Gov.PontajModel", b =>
                 {
                     b.HasOne("Setia.Models.Base.UserModel", "UserData")
                         .WithMany()
-                        .HasForeignKey("User");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("UserData");
                 });
 
             modelBuilder.Entity("Setia.Models.Gov.PostModel", b =>
                 {
-                    b.HasOne("Setia.Models.Gov.QuestionModel", "QuestionData")
+                    b.HasOne("Setia.Models.Base.UserModel", "QuestionData")
                         .WithMany()
-                        .HasForeignKey("Question");
+                        .HasForeignKey("QuestionId");
+
+                    b.HasOne("Setia.Models.Gov.PostModel", "ToPostData")
+                        .WithMany()
+                        .HasForeignKey("ToPostId");
 
                     b.Navigation("QuestionData");
+
+                    b.Navigation("ToPostData");
                 });
 
             modelBuilder.Entity("Setia.Models.Gov.QuestionAnswerModel", b =>
                 {
                     b.HasOne("Setia.Models.Gov.QuestionModel", "QuestionData")
                         .WithMany()
-                        .HasForeignKey("Question")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("QuestionData");
+                });
+
+            modelBuilder.Entity("Setia.Models.Gov.UserCollectionModel", b =>
+                {
+                    b.HasOne("Setia.Models.Gov.PostModel", "PostData")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PostData");
                 });
 #pragma warning restore 612, 618
         }

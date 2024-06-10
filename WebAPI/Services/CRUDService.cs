@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Setia.Contexts.Base;
+using Setia.Models.Base;
 using Setia.Models.Structs;
 using Setia.Services.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +9,7 @@ using System.Reflection;
 namespace Setia.Controllers
 {
     public class CRUDService<TModel, TContext> : ICRUD<TModel>
-        where TModel : DefinitionStruct
+        where TModel : BaseModel
         where TContext : DbContext
     {
         private readonly TContext _context;
@@ -36,15 +38,18 @@ namespace Setia.Controllers
             try
             {
                 IQueryable<TModel> query = _contextTable.AsNoTracking().AsQueryable();
-                query = query.Where(e => !e.Deleted);
+                query = query.Where(e => !e.Tags.Any(t => t.Contains("Deleted")));
 
+                _context.Set<UserModel>().Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Role.Admin")));
                 //foreach (string tag in await _auth.GetUserTags(""))
-                //if (!(await _auth.CheckUserRights(["Dragos"])).Any(c => c == "Dragos"))
                 //{
-                //    query = query.Where(e => e.User == _auth.GetCurrentUser()?.Username);
+                //    if (!(await _auth.CheckUserRights(["Dragos"])).Any(c => c == "Dragos"))
+                //    {
+                //        query = query.Where(e => e.Author == _auth.GetCurrentUser().Username);
+                //    }
                 //}
 
-                #region test
+                #region tests
                 //switch (typeof(TModel).Name)
                 //{
                 //    //case nameof(TagModel):
@@ -68,11 +73,23 @@ namespace Setia.Controllers
                 foreach (PropertyInfo property in typeof(TModel).GetProperties())
                 {
                     if (property.GetCustomAttributes(typeof(ForeignKeyAttribute), false).Any())
-                        query = query.Include(property.Name + "Data");
+                    {
+                        string includeName = "";
+                        if (property.Name.Substring(property.Name.Length - 2) == "Id")
+                        {
+                            includeName = property.Name.Substring(0, property.Name.Length - 2) + "Data";
+                        }
+                        else
+                        {
+                            includeName = property.Name + "Data";
+                        }
+                        query = query.Include(includeName);
+                    }
 
                     //if (filter != null)
                     //    query = query.Where(e => property.GetValue(e).Equals(property.GetValue(filter)));
                 }
+
                 return await query.ToListAsync();
             }
             catch (Exception ex)
@@ -82,11 +99,14 @@ namespace Setia.Controllers
             }
         }
 
-        public async Task Add(List<TModel> models)
+        public async Task<List<TModel>> Add(List<TModel> models)
         {
+            string failMessage = string.Empty;
             try
             {
+                failMessage = "You do not have rights to execute this action";
                 await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Add"]);
+
                 foreach (TModel model in models)
                 {
                     model.GetType().GetProperty("Author")?.SetValue(model, _auth.GetCurrentUser()?.Username);
@@ -98,15 +118,16 @@ namespace Setia.Controllers
                 }
                 await _context.SaveChangesAsync();
                 foreach (TModel model in models) await _audit.LogAuditTrail<TModel>(model);
+                return models;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(failMessage);
             }
         }
 
-        public async Task Update(List<TModel> models)
+        public async Task<List<TModel>> Update(List<TModel> models)
         {
             try
             {
@@ -132,7 +153,9 @@ namespace Setia.Controllers
                     }
                 }
                 await _context.SaveChangesAsync();
-                for (int i = 0; i < models.Count; i++) await _audit.LogAuditTrail(models[i], oldModels[i]);
+                try { for (int i = 0; i < models.Count; i++) await _audit.LogAuditTrail(models[i], oldModels[i]); }
+                catch (Exception ex) { }
+                return models;
             }
             catch (Exception ex)
             {

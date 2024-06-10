@@ -1,4 +1,5 @@
 import { makeApiRequest } from '@/helpers'
+import { Post, User } from '@/interfaces'
 import { defineStore } from 'pinia'
 
 export const useHelperStore = defineStore('Helper', {
@@ -21,6 +22,12 @@ export const useHelperStore = defineStore('Helper', {
         })
       }
       await makeApiRequest(`${this.$id}/Upload`, 'post', formData)
+    },
+    async getUserProfile(username: string): Promise<User> {
+      return (await makeApiRequest(`${this.$id}/GetUserProfile`, 'get', { username })).json()
+    },
+    async setUserAvatar(avatarUrl: string) {
+      await makeApiRequest(`${this.$id}/UpdateCurentUserAvatar`, 'get', { avatarUrl })
     }
   }
 })

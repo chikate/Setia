@@ -5,21 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models.Gov
 {
-    public class PostModel : DefinitionStruct
+    public class PostModel : BaseModel
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [ForeignKey("User")]
-        public required string User { get; set; }
-        public UserModel? UserData { get; set; }
-
-        public string? Comment { get; set; } = null;
+        public string? Message { get; set; } = null;
 
         [ForeignKey("Question")]
-        public Guid? Question { get; set; } = null;
-        public QuestionModel? QuestionData { get; set; } = null;
+        public Guid? QuestionId { get; set; } = null;
+        public UserModel? QuestionData { get; set; } = null;
 
-        public string? Description { get; set; } = null;
+        [ForeignKey("ToPost")]
+        public Guid? ToPostId { get; set; } = null;
+        public PostModel? ToPostData { get; set; } = null;
     }
 }

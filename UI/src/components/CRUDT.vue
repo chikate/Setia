@@ -87,7 +87,7 @@ const filters = ref({
       scrollHeight="flex"
       size="small"
       class="flex-grow-1 border-round p-2"
-      style="height: 80vh"
+      style="height: 80vh; max-width: 70vw"
       v-model:selection="(store as any).selectedItems"
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
@@ -193,9 +193,10 @@ const filters = ref({
         v-if="!(selectedColumns?.length == exposedData?.length)"
         style="width: 1px"
         header="#"
-        headerClass="column-text-center"
+        headerClass="column-text-center "
         class="text-center"
         key="index"
+        frozen
       >
         <template #body="{ index }">
           {{ index + 1 }}
@@ -203,8 +204,8 @@ const filters = ref({
       </Column>
 
       <Column
-        v-for="(col, index) in exposedData?.filter((item: any) => !selectedColumns.includes(item))"
-        :key="col.field + '_' + index"
+        v-for="(col, i) in exposedData?.filter((item: any) => !selectedColumns.includes(item))"
+        :key="col.field + '_' + i"
         :header="col.header"
         :field="col.field"
         :filterField="col.field"
@@ -212,6 +213,7 @@ const filters = ref({
         :class="typeof col.type == typeof Boolean() ? 'text-center' : ''"
         :style="typeof col.type == typeof Boolean() ? 'width: 5rem' : ''"
         :headerClass="typeof col.type == typeof Boolean() ? 'column-text-center' : ''"
+        :frozen="i == 0"
       >
         <template #body="{ data, field }">
           <i
@@ -223,7 +225,7 @@ const filters = ref({
               (() => {
                 const value = field.split('.').reduce((acc, part) => acc && acc[part], data)
                 return value?.toString().split('T')[1]?.endsWith('Z')
-                  ? new Date(value)?.toLocaleString()
+                  ? new Date(value)?.toUTCString()?.replaceAll(' GMT', '') ?? value?.toString()
                   : value?.toString()
               })()
             }}
@@ -233,7 +235,7 @@ const filters = ref({
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback()"
+            @input="filterCallback"
             class="p-column-filter"
             placeholder="Search by country"
           />
@@ -267,29 +269,66 @@ const filters = ref({
       class="p-fluid"
       position="top"
       v-model:visible="showDialog"
-      :header="(editOrAdd ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase()"
       modal
-      closable
       :draggable="false"
+      :closable="false"
+      style="max-width: 50vw"
     >
+      <template #header>
+        <h3 class="flex-grow-1 font-bold m-0 p-0">
+          {{ (!editOrAdd ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase() }}
+        </h3>
+        <div class="flex flex-row gap-3 font-bold">
+          <Button
+            class="bg-primary-reverse"
+            label="Back"
+            @click="(showDialog = false), store.get()"
+          />
+          <SplitButton
+            v-if="editOrAdd"
+            label="Save"
+            @click="store.update().then(() => (showDialog = false))"
+            :model="[
+              {
+                label: 'Delete',
+                icon: 'pi pi-trash',
+                command: () => store.delete().then(() => (showDialog = false))
+              }
+            ]"
+          />
+          <Button
+            v-if="!editOrAdd"
+            label="Add"
+            @click="store.add().then(() => (showDialog = false))"
+          />
+        </div>
+      </template>
       <div class="flex flex-column gap-4">
         <InputGroup v-for="key in exposedData" :key="key.field">
           <InputGroupAddon class="py-0 text-left" style="min-width: 7rem">
             {{ key.header }}
           </InputGroupAddon>
 
-          <CascadeSelect
-            v-if="key.field.toLowerCase().includes('tag')"
-            :placeholder="`Select a ${key.header}`"
-            v-model="(store as any).editItem[key.field]"
-            :options="useTagsCRUDStore().allLoadedItems"
-            :optionGroupChildren="[]"
-            optionLabel="tag"
-            optionGroupLabel="tag"
-            optionValue="tag"
-            filter
-            editable
-          />
+          <div class="flex flex-column" v-if="key.field.toLowerCase().includes('tag')">
+            <Chips
+              :placeholder="key.header"
+              v-model="(store as any).editItem[key.field]"
+              class="w-full"
+              filter
+            />
+            <Listbox
+              :placeholder="`Select ${key.header}`"
+              v-model="(store as any).editItem[key.field]"
+              :options="useTagsCRUDStore().allLoadedItems"
+              option-label="tag"
+              option-value="tag"
+              multiple
+              :filter="(useTagsCRUDStore()?.allLoadedItems?.length ?? 0) > 20"
+              class="w-full"
+              listStyle="height:20.28rem"
+            />
+            <!-- :virtualScrollerOptions="{ itemSize: 38 }" -->
+          </div>
 
           <Dropdown
             v-else-if="key.field.toLowerCase() == 'user'"
@@ -298,6 +337,7 @@ const filters = ref({
             :options="useUsersCRUDStore().allLoadedItems"
             optionLabel="username"
             optionValue="username"
+            editable
             filter
           />
 
@@ -352,25 +392,6 @@ const filters = ref({
               :placeholder="field"
             /> -->
         </InputGroup>
-
-        <div class="flex flex-row gap-3 font-bold">
-          <Button
-            class="flex-grow-1 bg-primary-reverse"
-            label="Back"
-            @click="(showDialog = false), editOrAdd ? store.get() : ''"
-          />
-          <Button
-            class="flex-grow-1"
-            :label="editOrAdd ? 'Save' : 'Add'"
-            @click="(showDialog = false), editOrAdd ? store.update() : store.add()"
-          />
-          <Button
-            v-if="editOrAdd"
-            class="flex-grow-1 bg-red-500 text-white"
-            label="Delete"
-            @click="(showDialog = false), store.delete()"
-          />
-        </div>
       </div>
     </Dialog>
   </div>
@@ -379,5 +400,9 @@ const filters = ref({
 <style scoped>
 ::v-deep(.p-datatable-tbody) {
   cursor: alias;
+}
+
+::v-deep(ul) {
+  flex-wrap: wrap !important;
 }
 </style>

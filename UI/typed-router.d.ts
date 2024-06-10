@@ -19,18 +19,20 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
     '/about': RouteRecordInfo<'/about', '/about', Record<never, never>, Record<never, never>>,
     '/adm': RouteRecordInfo<'/adm', '/adm', Record<never, never>, Record<never, never>>,
     '/career': RouteRecordInfo<'/career', '/career', Record<never, never>, Record<never, never>>,
+    '/collection': RouteRecordInfo<'/collection', '/collection', Record<never, never>, Record<never, never>>,
     '/download': RouteRecordInfo<'/download', '/download', Record<never, never>, Record<never, never>>,
-    '/messanger': RouteRecordInfo<'/messanger', '/messanger', Record<never, never>, Record<never, never>>,
+    '/messanger/': RouteRecordInfo<'/messanger/', '/messanger', Record<never, never>, Record<never, never>>,
     '/news': RouteRecordInfo<'/news', '/news', Record<never, never>, Record<never, never>>,
-    '/posts': RouteRecordInfo<'/posts', '/posts', Record<never, never>, Record<never, never>>,
     '/privacy-policy': RouteRecordInfo<'/privacy-policy', '/privacy-policy', Record<never, never>, Record<never, never>>,
-    '/profile': RouteRecordInfo<'/profile', '/profile', Record<never, never>, Record<never, never>>,
-    '/quizz-creator': RouteRecordInfo<'/quizz-creator', '/quizz-creator', Record<never, never>, Record<never, never>>,
+    '/profile/': RouteRecordInfo<'/profile/', '/profile', Record<never, never>, Record<never, never>>,
+    '/profile/[name]': RouteRecordInfo<'/profile/[name]', '/profile/:name', { name: ParamValue<true> }, { name: ParamValue<false> }>,
     '/recovery': RouteRecordInfo<'/recovery', '/recovery', Record<never, never>, Record<never, never>>,
     '/register': RouteRecordInfo<'/register', '/register', Record<never, never>, Record<never, never>>,
     '/terms-of-service': RouteRecordInfo<'/terms-of-service', '/terms-of-service', Record<never, never>, Record<never, never>>,
+    '/vote-creator': RouteRecordInfo<'/vote-creator', '/vote-creator', Record<never, never>, Record<never, never>>,
   }
 }

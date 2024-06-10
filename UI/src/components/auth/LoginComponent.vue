@@ -48,15 +48,39 @@
 </template>
 
 <script setup lang="ts">
+import { useToast } from 'primevue/usetoast'
+
 const showLoginSpinner = ref<boolean>(false)
 
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 const staySignedIn = ref<boolean>(false)
 
-function submitLogin() {
+const toast = useToast()
+
+async function submitLogin() {
   if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
   showLoginSpinner.value = true
-  return useAuthStore().login(inputUsername.value, inputPassword.value)
+  await useAuthStore()
+    .login(inputUsername.value, inputPassword.value)
+    .then((successful: Boolean) => {
+      console.log(successful)
+      successful
+        ? toast.add({
+            severity: 'success',
+            summary: 'Succesful login',
+            detail: '',
+            life: 3000,
+            group: 'main'
+          })
+        : toast.add({
+            severity: 'error',
+            summary: 'Invalid account',
+            detail: '',
+            life: 3000,
+            group: 'main'
+          })
+    })
+  showLoginSpinner.value = false
 }
 </script>

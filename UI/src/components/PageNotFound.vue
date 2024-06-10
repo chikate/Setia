@@ -1,11 +1,15 @@
+<script setup lang="ts">
+import { LIGHT_THEME_BACKGROUND_IMAGE, DARK_THEME_BACKGROUND_IMAGE } from '@/constants'
+const backgroundLink = computed(() =>
+  localStorage.getItem('theme') == 'dark'
+    ? DARK_THEME_BACKGROUND_IMAGE
+    : LIGHT_THEME_BACKGROUND_IMAGE
+)
+</script>
+
 <template>
   <main>
-    <div
-      class="bg-cover bg-center"
-      style="
-        background-image: url('https://www.riotgames.com/darkroom/2000/6a2fc4addd2ad4793a915202395c8410:a762ac65c1b95d37880e5e267029cc38/son-riot-website.png');
-      "
-    >
+    <div class="bg-cover bg-center" :style="`background-image: url(${backgroundLink})`">
       <main style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))">
         <a class="text-8xl font-bold">404</a>
         <a class="text-7xl font-bold">PAGE NOT FOUND</a>

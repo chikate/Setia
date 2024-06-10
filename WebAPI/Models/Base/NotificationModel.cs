@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Setia.Models.Base
 {
-    public class NotificationModel : DefinitionStruct
+    public class NotificationModel : BaseModel
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("User")]
-        public required string User { get; set; }
+        public Guid? UserId { get; set; }
         public UserModel? UserData { get; set; }
 
         public string? Icon { get; set; }

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Setia.Models.Base
 {
-    public class TagModel : DefinitionStruct
+    public class TagModel : BaseModel
     {
         [Key]
         [JsonConverter(typeof(LTreeJsonConverter))]
