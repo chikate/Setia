@@ -6,59 +6,91 @@ defineProps({
   chat: { type: Boolean, required: false }
 })
 
-const thisPostData = defineModel('postData', { type: Object as PropType<Post>, required: false })
-console.log(thisPostData.value)
+const thisPostData = defineModel('postData', {
+  type: Object as PropType<Post>,
+  required: true,
+  default: {} as Post
+})
 
-const showComments = ref<boolean>(false)
-const showShareList = ref<boolean>(false)
-const showEmojiPicker = ref<boolean>(false)
-const onSelectEmoji = ref<string>()
+const showActions = ref<number>()
 const authorData = ref<User>({} as User)
 const localMessage = ref(thisPostData.value?.message)
-// const localQuestions = ref<Question[]>([props.postData?.questionData] as Question[])
-const localQuestion = ref<Question>()
 const menuRef = ref()
 const inEdit = ref<boolean>(false)
-const route = useRoute()
 
 const icons = ref([
-  { name: 'pi-thumbs-up' },
-  { name: 'pi-thumbs-down' },
+  {
+    name: usePostsCRUDStore().allLoadedItems?.find(
+      (post: Post) =>
+        (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+        post.toPostId == thisPostData.value.id &&
+        post.author == useAuthStore().userData?.username
+    )
+      ? 'pi-thumbs-up-fill'
+      : 'pi-thumbs-up'
+  },
+  {
+    name: usePostsCRUDStore().allLoadedItems?.find(
+      (post: Post) =>
+        (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+        post.toPostId == thisPostData.value.id &&
+        post.author == useAuthStore().userData?.username
+    )
+      ? 'pi-thumbs-down-fill'
+      : 'pi-thumbs-down'
+  },
   { name: 'pi-comments' },
   { name: 'pi-send' },
-  { name: route.name == '/collection' ? 'pi-star-fill' : 'pi-star' }
+  {
+    name: useUserCollectionCRUDStore().allLoadedItems?.find(
+      (elem: UserCollection) => elem.postId == thisPostData.value.id
+    )
+      ? 'pi-star-fill'
+      : 'pi-star'
+  }
 ])
 
 onBeforeMount(async () => {
   if (thisPostData.value?.author)
     authorData.value = await useHelperStore().getUserProfile(String(thisPostData.value?.author))
+
+  useUserCollectionCRUDStore().get()
+  icons.value[4].name = (await useUserCollectionCRUDStore().allLoadedItems?.find(
+    (elem: UserCollection) => elem.postId == thisPostData.value.id
+  ))
+    ? 'pi-star-fill'
+    : 'pi-star'
 })
 
-function hashCode(str: string) {
-  var hash = 0
-  for (var i = 0; i < str.length; i++) {
+function stringToColor(str: string): string {
+  // Create a hash from the string
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return hash
-}
 
-function intToRGBA(i: number, alpha: number) {
-  var r = (i >> 16) & 0xff
-  var g = (i >> 8) & 0xff
-  var b = i & 0xff
-  var a = Math.round(alpha * 255) & 0xff // Ensure alpha is in the range [0, 255]
-  return ((r << 24) | (g << 16) | (b << 8) | a).toString(16).toUpperCase().padStart(8, '0')
+  // Convert the hash to an RGB color
+  const r = (hash >> 16) & 0xff
+  const g = (hash >> 8) & 0xff
+  const b = hash & 0xff
+
+  const alpha = 0.6
+
+  // Return the color in RGBA format
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
 async function post(tag?: string) {
-  let questionsData = undefined
-  if (localQuestion.value) questionsData = (await useQuestionsCRUDStore().add()) as Question[]
+  let questionsData: Question | undefined = undefined
+  if (thisPostData.value?.questionData)
+    questionsData = (
+      await useQuestionsCRUDStore().add([thisPostData.value?.questionData] as Question[])
+    )[0]
   await usePostsCRUDStore()?.add([
     {
       ...usePostsCRUDStore()?.editItem,
       message: localMessage.value,
-      questionData: questionsData ? questionsData[0] : undefined,
-      questionId: questionsData ? questionsData[0].id : undefined,
+      questionId: questionsData?.id,
       // comment
       tags: thisPostData.value?.toPostId ? ['Comment'] : [tag],
       toPostId: thisPostData.value?.toPostId
@@ -67,7 +99,7 @@ async function post(tag?: string) {
 }
 
 async function addLocalQuestion() {
-  localQuestion.value = new Object() as Question
+  thisPostData.value.questionData = new Object() as Question
 }
 </script>
 
@@ -76,9 +108,9 @@ async function addLocalQuestion() {
     :id="$options.__name"
     style="min-width: 45rem"
     class="border-round flex flex-column m-1 align-items-start"
-    :class="thisPostData?.message || chat ? 'shadow-1 p-4 bg-primary-reverse' : 'gap-4'"
+    :class="thisPostData.message || chat ? 'shadow-1 p-4 bg-primary-reverse' : 'gap-4'"
   >
-    <div v-if="thisPostData?.message" class="flex flex-wrap gap-4 align-items-center w-full">
+    <div v-if="thisPostData.message" class="flex flex-wrap gap-4 align-items-center w-full">
       <Avatar
         class="shadow-1"
         v-if="!chat"
@@ -89,17 +121,17 @@ async function addLocalQuestion() {
       <div class="flex-grow-1 flex flex-column justify-content-center">
         <div class="text-lg opacity-90">{{ authorData.username }}</div>
         <div class="text-xs opacity-40">
-          {{ new Date(String(thisPostData?.executionDate)).toUTCString().replaceAll(' GMT', '') }}
+          {{ new Date(String(thisPostData.executionDate)).toUTCString().replaceAll(' GMT', '') }}
         </div>
       </div>
 
       <!-- Tags -->
-      <div v-if="thisPostData?.message" class="flex flex-wrap justify-content-end gap-1">
+      <div v-if="thisPostData.message" class="flex flex-wrap justify-content-end gap-1">
         <div
-          v-for="(tag, i) in thisPostData?.tags"
+          v-for="(tag, i) in thisPostData.tags"
           :key="i"
-          class="px-2 border-round shadow-1"
-          :style="`background-color: #${intToRGBA(hashCode(tag), 0.5)}; color: white`"
+          class="px-2 border-round shadow-1 font-semibold text-white"
+          :style="`background-color: ${stringToColor(tag)}`"
         >
           {{ tag }}
         </div>
@@ -124,16 +156,12 @@ async function addLocalQuestion() {
               {
                 label: 'Delete',
                 icon: 'pi pi-trash',
-                command: () => {
-                  usePostsCRUDStore().delete([thisPostData])
-                }
+                command: () => usePostsCRUDStore().delete([thisPostData])
               },
               {
                 label: 'Edit',
                 icon: 'pi pi-pencil',
-                command: () => {
-                  ;(inEdit = true), (localMessage = thisPostData?.message)
-                }
+                command: () => ((inEdit = true), (localMessage = thisPostData.message))
               },
               {
                 label: 'Export',
@@ -142,10 +170,8 @@ async function addLocalQuestion() {
               },
               {
                 label:
-                  thisPostData?.tags?.indexOf('Private') > -1
-                    ? 'Make it Public'
-                    : 'Make it Private',
-                icon: thisPostData?.tags?.indexOf('Private') > -1 ? 'pi pi-eye' : 'pi pi-eye-slash',
+                  thisPostData.tags?.indexOf('Private') > -1 ? 'Make it Public' : 'Make it Private',
+                icon: thisPostData.tags?.indexOf('Private') > -1 ? 'pi pi-eye' : 'pi pi-eye-slash',
                 command: () => {}
               }
             ]
@@ -154,31 +180,38 @@ async function addLocalQuestion() {
       />
     </div>
 
-    <div
-      v-if="thisPostData?.message"
-      v-html="thisPostData?.message"
-      style="max-width: 45rem"
-      class=""
-    />
+    <div v-if="thisPostData.message" v-html="thisPostData.message" style="max-width: 45rem" />
     <Editor
       v-else
       v-model="localMessage"
       class="w-full shadow-1 border-round bg-cover bg-center"
       style="max-width: 45rem"
     />
-    <QuestionComponent answerMode v-if="thisPostData?.questionId" />
-    <QuestionComponent v-if="localQuestion" :question-data="localQuestion" />
+
+    <QuestionComponent
+      answerMode
+      v-if="thisPostData.questionId && thisPostData.questionData"
+      v-model:question-data="thisPostData.questionData"
+      class="mb-3"
+    />
+    <QuestionComponent
+      v-if="thisPostData.questionData && !thisPostData.message"
+      v-model:question-data="thisPostData.questionData"
+    />
+
     <div class="flex flex-column align-items-start gap-4">
       <Button
-        v-if="!thisPostData?.message"
+        v-if="!thisPostData.message"
         class="shadow-1"
-        :icon="localQuestion ? 'pi pi-minus' : 'pi pi-plus'"
-        :label="localQuestion ? 'Remove Question' : 'Add Question'"
-        @click="localQuestion ? (localQuestion = undefined) : addLocalQuestion()"
+        :icon="thisPostData.questionData ? 'pi pi-minus' : 'pi pi-plus'"
+        :label="thisPostData.questionData ? 'Remove Question' : 'Add Question'"
+        @click="
+          thisPostData.questionData ? (thisPostData.questionData = undefined) : addLocalQuestion()
+        "
       />
 
       <SplitButton
-        v-if="!thisPostData?.message"
+        v-if="!thisPostData.message"
         class="shadow-1"
         :disabled="!localMessage"
         label="Post"
@@ -204,8 +237,8 @@ async function addLocalQuestion() {
     </div>
 
     <div class="flex flex-column gap-4 w-full">
-      <!-- Reaction buttons -->
-      <div v-if="!chat && thisPostData?.message" class="flex flex-wrap justify-content-around">
+      <!-- Action buttons -->
+      <div v-if="!chat && thisPostData.message" class="flex flex-wrap justify-content-around">
         <CountButon
           v-for="(icon, index) in icons"
           :key="index"
@@ -213,80 +246,116 @@ async function addLocalQuestion() {
           :count="
             icon.name.includes('pi-thumbs-up')
               ? usePostsCRUDStore().allLoadedItems?.filter(
-                  (post: Post) => (post.tags?.indexOf('Positive') ?? -1) > -1
+                  (post: Post) =>
+                    (post.tags?.indexOf('Positive') ?? -1) > -1 && post.toPostId == thisPostData.id
                 ).length
-              : icon.name.includes('pi-comments')
+              : icon.name.includes('pi-thumbs-down')
                 ? usePostsCRUDStore().allLoadedItems?.filter(
-                    (post: Post) => (post.tags?.indexOf('Comment') ?? -1) > -1
+                    (post: Post) =>
+                      (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+                      post.toPostId == thisPostData.id
                   ).length
-                : undefined
+                : icon.name.includes('pi-comments')
+                  ? usePostsCRUDStore().allLoadedItems?.filter(
+                      (post: Post) =>
+                        (post.tags?.indexOf('Comment') ?? -1) > -1 &&
+                        post.toPostId == thisPostData.id
+                    ).length
+                  : undefined
           "
           @click="
+            // Like
             icon.name == 'pi-thumbs-up'
-              ? ((showEmojiPicker = true),
-                (icon.name = 'pi-thumbs-up-fill'),
-                usePostsCRUDStore().add([
-                  {
-                    toPostId: thisPostData?.id,
-                    message: onSelectEmoji,
-                    tags: ['Reaction', 'Emoji', 'Positive']
-                  }
-                ] as Post[]))
+              ? (showActions = index)
               : icon.name == 'pi-thumbs-up-fill'
-                ? ((showEmojiPicker = true), (icon.name = 'pi-thumbs-up'))
-                : icon.name == 'pi-thumbs-down'
-                  ? ((showEmojiPicker = true),
-                    (icon.name = 'pi-thumbs-down-fill'),
-                    usePostsCRUDStore().add([
-                      {
-                        toPostId: thisPostData?.id,
-                        message: onSelectEmoji,
-                        tags: ['Reaction', 'Emoji', 'Negative']
-                      }
-                    ] as Post[]))
+                ? usePostsCRUDStore()
+                    .delete(
+                      usePostsCRUDStore().allLoadedItems?.filter(
+                        (post) =>
+                          (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+                          post.toPostId == thisPostData.id &&
+                          post.author == useAuthStore().userData?.username
+                      )
+                    )
+                    .then(() => (icon.name = 'pi-thumbs-up'))
+                : // Dislike
+                  icon.name == 'pi-thumbs-down'
+                  ? (showActions = index)
                   : icon.name == 'pi-thumbs-down-fill'
-                    ? ((showEmojiPicker = true), (icon.name = 'pi-thumbs-down'))
-                    : icon.name == 'pi-comments'
-                      ? (showComments = !showComments)
-                      : icon.name == 'pi-send'
-                        ? (showShareList = !showShareList)
-                        : icon.name == 'pi-star'
-                          ? (useUserCollectionCRUDStore().add([
-                              { postId: thisPostData.id }
-                            ] as UserCollection[]),
-                            (icon.name = 'pi-star-fill'))
+                    ? usePostsCRUDStore()
+                        .delete(
+                          usePostsCRUDStore().allLoadedItems?.filter(
+                            (post) =>
+                              (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+                              post.toPostId == thisPostData.id &&
+                              post.author == useAuthStore().userData?.username
+                          )
+                        )
+                        .then(() => (icon.name = 'pi-thumbs-down'))
+                    : // Comments
+                      icon.name == 'pi-comments'
+                      ? (showActions = showActions == index ? undefined : index)
+                      : // Share
+                        icon.name == 'pi-send'
+                        ? (showActions = showActions == index ? undefined : index)
+                        : // Star
+                          icon.name == 'pi-star'
+                          ? useUserCollectionCRUDStore()
+                              .add([{ postId: thisPostData.id }] as UserCollection[])
+                              .then(() => (icon.name = 'pi-star-fill'))
                           : icon.name == 'pi-star-fill'
-                            ? (useUserCollectionCRUDStore().delete([
-                                { id: thisPostData.id, postId: thisPostData.id }
-                              ] as UserCollection[]),
-                              (icon.name = 'pi-star'))
-                            : undefined
+                            ? useUserCollectionCRUDStore()
+                                .delete(
+                                  useUserCollectionCRUDStore().allLoadedItems?.filter(
+                                    (elem: UserCollection) => elem.postId == thisPostData.id
+                                  )
+                                )
+                                .then(() => (icon.name = 'pi-star'))
+                            : // end
+                              undefined
           "
         />
       </div>
 
+      <!-- Like Dislike EmojiPicker -->
       <EmojiPicker
-        v-if="showEmojiPicker"
+        v-if="showActions == 0 || showActions == 1"
         native
         class="w-full"
-        @select="(onSelectEmoji = $event.i), (showEmojiPicker = false)"
+        @select="
+          usePostsCRUDStore()
+            .add([
+              {
+                toPostId: thisPostData.id,
+                message: $event.i,
+                tags: ['Reaction', 'Emoji', showActions == 0 ? 'Positive' : 'Negative']
+              }
+            ] as Post[])
+            .then(
+              () => (
+                (icons[Number(showActions)].name =
+                  showActions == 0 ? 'pi-thumbs-up-fill' : 'pi-thumbs-down-fill'),
+                (showActions = undefined)
+              )
+            )
+        "
       />
 
       <!-- Comments -->
-      <div v-if="showComments" class="h-8 overflowY-auto">
-        <PostComponent :postData="{ toPostId: thisPostData?.id } as Post" />
+      <div v-if="showActions == 2" class="h-8 overflowY-auto">
+        <PostComponent :postData="{ toPostId: thisPostData.id } as Post" />
         <PostComponent
           v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
-            (post: Post) => post.toPostId == thisPostData?.id
+            (post: Post) => post.toPostId == thisPostData.id
           )"
           :key="i"
-          :postData
+          :post-data="postData"
           class="pt-4"
         />
       </div>
 
       <!-- Share -->
-      <div v-if="showShareList" class="flex flex-wrap gap-4 justify-content-center">
+      <div v-if="showActions == 3" class="flex flex-wrap gap-4 justify-content-center">
         <UserProfileComponent
           v-for="(username, i) in ['testUser', 'Dragos']"
           :key="i"

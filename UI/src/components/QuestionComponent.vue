@@ -1,55 +1,53 @@
+<script setup lang="ts">
+import { Question } from '@/interfaces'
+
+const answerMode = defineModel('answerMode', { type: Boolean, default: false })
+const checksList = defineModel('checksList', { type: Array<Boolean>, default: [] })
+const customAnswere = defineModel('customAnswere', { type: String, default: '' })
+const thisQuestionData = defineModel('questionData', {
+  type: Object as PropType<Question>,
+  required: true,
+  default: {} as Question
+})
+</script>
+
 <template>
   <div
     class="flex flex-column gap-2 surface-hover border-round p-2 shadow-1"
     :class="answerMode ? 'align-items-start' : 'align-items-center'"
     style="min-width: 20rem"
-    v-if="answerMode ? true : useAuthStore().checkUserRights(`${useQuestionsCRUDStore().$id}.Add`)"
   >
     <div class="text-xl" v-if="answerMode">
-      {{ useQuestionsCRUDStore().editItem.title }}
+      {{ thisQuestionData.title }}
     </div>
 
-    <InputText v-else :readonly="answerMode" v-model="useQuestionsCRUDStore().editItem.title" />
+    <InputText v-else :readonly="answerMode" v-model="thisQuestionData.title" />
 
     <InputText v-if="customAnswere" v-model="customAnswere" />
     <div
       v-else
       class="flex gap-2 align-items-center"
-      v-for="(option, i) in useQuestionsCRUDStore().editItem.options"
+      v-for="(option, i) in thisQuestionData.options"
       :key="i"
     >
       <Checkbox
         v-model="checksList[i]"
         @update:modelValue="
-          ;(useQuestionsCRUDStore().editItem.selection = []),
+          (thisQuestionData.selection = []),
             checksList.forEach((elem: Boolean, i) =>
-              elem
-                ? useQuestionsCRUDStore().editItem.selection.push(
-                    useQuestionsCRUDStore().editItem.options[i]
-                  )
-                : ''
+              elem ? thisQuestionData.selection.push(thisQuestionData.options[i]) : ''
             )
-          console.log(useQuestionsCRUDStore().editItem.selection)
         "
         :binary="true"
       />
       <div class="text-md" v-if="answerMode">
-        {{ useQuestionsCRUDStore().editItem.options[i] }}
+        {{ thisQuestionData.options[i] }}
       </div>
-      <InputText
-        v-else
-        :readonly="answerMode"
-        v-model="useQuestionsCRUDStore().editItem.options[i]"
-      />
+      <InputText v-else :readonly="answerMode" v-model="thisQuestionData.options[i]" />
       <i
         v-if="!answerMode"
         class="pi pi-trash hover:text-red-700"
-        @click="
-          useQuestionsCRUDStore().editItem.options.splice(
-            useQuestionsCRUDStore().editItem.options.indexOf(option),
-            1
-          )
-        "
+        @click="thisQuestionData.options.splice(thisQuestionData.options.indexOf(option), 1)"
       />
     </div>
 
@@ -59,10 +57,7 @@
         icon="pi pi-plus"
         label="Add option"
         class="flex-grow-1 shadow-1"
-        @click="
-          useQuestionsCRUDStore().editItem.options?.push('') ??
-            (useQuestionsCRUDStore().editItem.options = [''])
-        "
+        @click="thisQuestionData.options?.push('') ?? (thisQuestionData.options = [''])"
       />
       <Button
         v-if="answerMode && !customAnswere"
@@ -80,7 +75,7 @@
         @click="
           useQuestionAnswersCRUDStore().add([
             {
-              QuestionId: useQuestionsCRUDStore().editItem.id,
+              QuestionId: thisQuestionData.id,
               Answer: customAnswere
                 ? [customAnswere]
                 : checksList
@@ -105,13 +100,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const answerMode = defineModel('answerMode', { type: Boolean, required: false, default: false })
-const checksList = defineModel('checksList', { type: Array<Boolean>, required: false, default: [] })
-const customAnswere = defineModel('customAnswere', { type: String, required: false, default: '' })
-// const questionData = defineModel('questionData', { type: String, required: false, default: '' })
-defineProps({
-  hideSubmit: { type: Boolean, required: false }
-})
-</script>

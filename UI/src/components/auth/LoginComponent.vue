@@ -64,7 +64,6 @@ async function submitLogin() {
   await useAuthStore()
     .login(inputUsername.value, inputPassword.value)
     .then((successful: Boolean) => {
-      console.log(successful)
       successful
         ? toast.add({
             severity: 'success',

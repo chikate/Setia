@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('Auth', {
         }
       )
     },
-    async register(email: string, username: string, password: string): Promise<boolean> {
+    async register(email: string, username: string, password: string): Promise<Boolean> {
       return await makeApiRequest(`${this.$id}/Register`, 'post', {
         email,
         username,
@@ -35,9 +35,8 @@ export const useAuthStore = defineStore('Auth', {
         return registerResponse.status == 200
       })
     },
-    checkUserRight(tag: string): boolean {
-      console.log(this.userData?.tags?.indexOf(tag))
-      return Boolean((this.userData?.tags?.indexOf(tag) ?? -1) > -1)
+    checkUserRight(right: string): boolean {
+      return Boolean(this.userData?.tags?.find((tag) => tag.includes(right)))
     },
     checkUserRights(tag?: string | string[]): boolean {
       // return Boolean((this.userData?.tags?.indexOf(tag) ?? -1) > 0)

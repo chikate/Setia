@@ -52,12 +52,15 @@ customUpload
           </a>
         </div>
       </div>
-      <PostComponent v-if="profileUserData?.id == useAuthStore().userData?.id" />
+      <PostComponent
+        v-if="profileUserData?.id == useAuthStore().userData?.id"
+        :post-data="usePostsCRUDStore().editItem"
+      />
     </div>
     <div
       class="flex flex-column gap-4 py-4 overflow-y-auto"
       style="max-height: 90vh"
-      @vue:beforeMount="usePostsCRUDStore().get([{ author: profileUserData.username }] as Post[])"
+      @vue:beforeMount="usePostsCRUDStore().get()"
     >
       <PostComponent
         v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
@@ -65,7 +68,7 @@ customUpload
             post.author === profileUserData.username && (post.tags.indexOf('Post') ?? -1) > -1
         )"
         :key="i"
-        :postData
+        :post-data="postData"
       />
     </div>
   </main>

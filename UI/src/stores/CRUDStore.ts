@@ -23,9 +23,14 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
           customFilter ?? this.filter
         ).then((response: Response) => {
           return response.json()
-        }))
+        }))?.filter(
+          (elem: typeof defaultValues) =>
+            (elem?.tags?.indexOf('Deleted') ?? -1) <= -1 &&
+            (elem?.postData?.tags?.indexOf('Deleted') ?? -1) <= -1
+          // (customFilter ? elem.author == useAuthStore().userData?.username : true)
+        )
       },
-      async add(customAdds?: (typeof defaultValues)[]): Promise<(typeof defaultValues)[] | undefined> {
+      async add(customAdds?: (typeof defaultValues)[]): Promise<(typeof defaultValues)[]> {
         return await makeApiRequest(`${storeName}/Add`, 'post', customAdds ?? [this.editItem]).then(
           (response: Response) => {
             this.get()
@@ -69,5 +74,6 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
       resetToDefaults() {
         return (this.editItem = defaultValues)
       }
-    }
+    },
+    persist: true
   })

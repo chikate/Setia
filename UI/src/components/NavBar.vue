@@ -76,17 +76,16 @@
         @click="notificationsOverlay.toggle($event)"
       >
         <OverlayPanel ref="notificationsOverlay" class="p-0 m-0">
-          <div class="flex flex-column">
+          <div class="flex flex-column gap-2" @vue:beforeMount="useNotificationsCRUDStore().get()">
             <NotificationComponent
-              v-for="notification in useNotificationsCRUDStore().allLoadedItems"
-              :key="notification"
+              v-for="(notification, i) in useNotificationsCRUDStore().allLoadedItems"
+              :key="i"
               :title="notification.title"
               :text="notification.comment"
-              @clickMain="$router.push('/')"
-              @clickCancel="$router.push('/')"
+              @clickMain="$router.push(`/profile/${notification.author}`)"
+              @clickCancel="notificationsOverlay.hide()"
               @clickAccept="$router.push('/')"
             />
-            <NotificationComponent title="notification.title" text="notification.comment" />
           </div>
         </OverlayPanel>
       </i>

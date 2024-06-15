@@ -10,7 +10,7 @@ namespace Setia.Models.Gov
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ForeignKey("Post")]
-        public required Guid PostId { get; set; }
+        public Guid? PostId { get; set; }
         public PostModel? PostData { get; set; }
     }
 }

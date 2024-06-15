@@ -141,9 +141,9 @@ const filters = ref({
               {
                 label: showMultipleDelete ? 'Cancel multiple select' : 'Multiple select',
                 icon: 'pi pi-th-large',
-                command: () => {
-                  ;(showMultipleDelete = !showMultipleDelete), props.store?.resetToDefaults
-                }
+                command: () => (
+                  (showMultipleDelete = !showMultipleDelete), props.store?.resetToDefaults
+                )
               },
               {
                 label: 'Collapse all',
@@ -309,7 +309,10 @@ const filters = ref({
             {{ key.header }}
           </InputGroupAddon>
 
-          <div class="flex flex-column" v-if="key.field.toLowerCase().includes('tag')">
+          <div
+            class="flex flex-column"
+            v-if="key.field.toLowerCase().includes('tag') && !(store.$id.toLowerCase() == 'tags')"
+          >
             <Chips
               :placeholder="key.header"
               v-model="(store as any).editItem[key.field]"

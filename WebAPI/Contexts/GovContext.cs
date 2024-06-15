@@ -19,33 +19,39 @@ public partial class GovContext(DbContextOptions<GovContext> options) : DbContex
         {
             entity.HasOne(e => e.QuestionData)
                   .WithMany()
-                  .HasForeignKey(e => e.QuestionId);
+                  .HasForeignKey(e => e.QuestionId)
+                  .HasConstraintName("FK_QuestionAnswer_Question");
         });
 
         modelBuilder.Entity<PontajModel>(entity =>
         {
             entity.HasOne(e => e.UserData)
                   .WithMany()
-                  .HasForeignKey(e => e.UserId);
+                  .HasForeignKey(e => e.UserId)
+                  .HasConstraintName("FK_Pontaj_User");
         });
 
         modelBuilder.Entity<UserCollectionModel>(entity =>
         {
             entity.HasOne(e => e.PostData)
                   .WithMany()
-                  .HasForeignKey(e => e.PostId);
+                  .HasForeignKey(e => e.PostId)
+                  .HasConstraintName("FK_UserCollection_Post");
         });
 
         modelBuilder.Entity<PostModel>(entity =>
         {
             entity.HasOne(e => e.QuestionData)
                   .WithMany()
-                  .HasForeignKey(e => e.QuestionId);
+                  .HasForeignKey(e => e.QuestionId)
+                  .HasConstraintName("FK_Post_Question");
 
             entity.HasOne(e => e.ToPostData)
                   .WithMany()
-                  .HasForeignKey(e => e.ToPostId);
+                  .HasForeignKey(e => e.ToPostId)
+                  .HasConstraintName("FK_Post_ToPost");
         });
+
 
         //IEnumerable<PropertyInfo> dbSetProperties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
 

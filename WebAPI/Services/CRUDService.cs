@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Setia.Contexts.Base;
 using Setia.Models.Base;
 using Setia.Models.Structs;
 using Setia.Services.Interfaces;
@@ -101,12 +100,8 @@ namespace Setia.Controllers
 
         public async Task<List<TModel>> Add(List<TModel> models)
         {
-            string failMessage = string.Empty;
             try
             {
-                failMessage = "You do not have rights to execute this action";
-                await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Add"]);
-
                 foreach (TModel model in models)
                 {
                     model.GetType().GetProperty("Author")?.SetValue(model, _auth.GetCurrentUser()?.Username);
@@ -123,7 +118,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(failMessage);
+                throw new Exception(ex.Message);
             }
         }
 
@@ -131,7 +126,6 @@ namespace Setia.Controllers
         {
             try
             {
-                await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Update"]);
                 List<TModel>? oldModels = new();
                 foreach (TModel model in models)
                 {
@@ -168,7 +162,6 @@ namespace Setia.Controllers
         {
             try
             {
-                await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Delete"]);
                 List<TModel>? itemsToDelete = new();
                 foreach (string id in ids)
                 {

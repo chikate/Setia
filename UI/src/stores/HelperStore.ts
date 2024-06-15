@@ -28,6 +28,9 @@ export const useHelperStore = defineStore('Helper', {
     },
     async setUserAvatar(avatarUrl: string) {
       await makeApiRequest(`${this.$id}/UpdateCurentUserAvatar`, 'get', { avatarUrl })
+    },
+    async sendFriendRequest(username: string) {
+      await makeApiRequest(`${this.$id}/SendFriendRequest`, 'get', { username })
     }
   }
 })

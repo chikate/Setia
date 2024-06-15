@@ -1,7 +1,11 @@
 <template>
-  <main v-if="useAuthStore().checkUserRights">
+  <main>
     <div class="flex gap-8 h-screen py-8 align-items-center">
-      <QuestionComponent v-model:answerMode="answerMode" v-model:checksList="checksList" />
+      <QuestionComponent
+        v-model:answerMode="answerMode"
+        v-model:checksList="checksList"
+        v-model:question-data="useQuestionsCRUDStore().editItem"
+      />
       <CRUDT
         :store="useQuestionsCRUDStore()"
         @rowClick="(answerMode = true), (checksList = [])"

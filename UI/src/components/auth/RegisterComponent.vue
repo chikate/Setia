@@ -3,8 +3,6 @@ import { TOAST_BASE_HP } from '@/constants'
 import FloatLabel from 'primevue/floatlabel'
 import { useToast } from 'primevue/usetoast'
 const toast = useToast()
-import { useRouter } from 'vue-router'
-const router = useRouter()
 
 const inputEmail = ref<string>('')
 const inputUsername = ref<string>('')
@@ -59,16 +57,17 @@ async function registerClickedHandler() {
     .register(inputEmail.value, inputUsername.value, inputPassword.value)
     .then((succesful: Boolean) => {
       succesful
-        ? (toast.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Account created!',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          }),
-          useAuthStore().login(inputUsername.value, inputPassword.value)).then(
-            (succesful: Boolean) => (succesful ? router.push('/') : undefined)
-          )
+        ? useAuthStore()
+            .login(inputUsername.value, inputPassword.value)
+            .then(() =>
+              toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Account created!',
+                life: TOAST_BASE_HP,
+                group: 'main'
+              })
+            )
         : toast.add({
             severity: 'error',
             summary: 'ERROR',

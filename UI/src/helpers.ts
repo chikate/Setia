@@ -6,7 +6,7 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
   if (!(body instanceof FormData)) {
     headers.append(
       'Content-Type',
-      `${method.toUpperCase() == 'GET' ? 'text/plain' : body ? 'application/problem+json; charset=utf-8' : 'x-www-form-urlencoded'}`
+      `${method.toUpperCase() == 'GET' ? 'text/plain; charset=utf-8' : body ? 'application/problem+json; charset=utf-8' : 'x-www-form-urlencoded'}`
     )
   }
   // headers.append('Authorization', `Bearer ${useAuthStore().token ?? ''}`)

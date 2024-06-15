@@ -73,7 +73,7 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
         public UserModel? GetCurrentUser()
@@ -100,28 +100,35 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
         public async Task Register(UserModel registration)
         {
             try
             {
-                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? "")) throw new Exception();
-                if (registration.Username == null || registration.Username.Length < 6) throw new Exception();
-                if (registration.Password == null || registration.Password.Length < 6) throw new Exception();
+                if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? ""))
+                    throw new Exception("Invalid email");
 
-                _context.Users.Any(u => u.Username != registration.Username);
+                if (registration.Username == null || registration.Username.Length < 6)
+                    throw new Exception("Invalid username");
+
+                if (registration.Password == null || registration.Password.Length < 6)
+                    throw new Exception("Invalid password");
+
+                if (_context.Users.Any(u => u.Username == registration.Username))
+                    throw new Exception("Username already exists");
+
                 registration.Password = CriptPassword(registration.Password);
                 _context.Users.Add(registration);
                 await _context.SaveChangesAsync();
-                string link = "https://www.google.ro";
-                await _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {link}");
+                // generate confirmation link
+                await _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {"https://www.google.ro"}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
         public async Task ChangePassword(string email, string username, string currentPassword, string newPassword)
@@ -149,7 +156,7 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
         public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(password)));
@@ -171,7 +178,7 @@ namespace Setia.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
     }

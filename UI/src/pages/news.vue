@@ -11,11 +11,11 @@ import type { Post } from '@/interfaces'
       @vue:beforeMount="usePostsCRUDStore().get()"
     >
       <PostComponent
-        v-for="postData in usePostsCRUDStore().allLoadedItems?.filter(
+        v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
           (elem: Post) => elem.tags?.indexOf('News') > -1
         )"
-        :key="postData"
-        :postData
+        :key="i"
+        :post-data="postData"
       />
     </div>
   </main>

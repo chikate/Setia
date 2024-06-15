@@ -60,9 +60,9 @@ export interface UserCollection extends Definition {
   postId: string
   postData: Post
 }
-export interface INotification {
+export interface INotification extends Definition {
   id?: string
-  icon: string
-  title: string
-  comment: string
+  icon?: string
+  title?: string
+  comment?: string
 }

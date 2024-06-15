@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex flex-row align-items-center column-gap-2 mt-2">
+  <div class="flex flex-row align-items-center column-gap-2">
     <div class="pi cursor-pointer" :class="icon" />
     {{ count == 0 ? '' : count ?? '' }}
   </div>

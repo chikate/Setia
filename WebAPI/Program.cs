@@ -41,6 +41,7 @@ builder.Services.AddScoped<IAudit, AuditService>();
 builder.Services.AddTransient<ISender, SenderService>();
 // CRUDs
 builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel, BaseContext>>();
+builder.Services.AddScoped<ICRUD<NotificationModel>, CRUDService<NotificationModel, BaseContext>>();
 builder.Services.AddScoped<ICRUD<TagModel>, CRUDService<TagModel, BaseContext>>();
 
 builder.Services.AddScoped<ICRUD<PontajModel>, CRUDService<PontajModel, GovContext>>();

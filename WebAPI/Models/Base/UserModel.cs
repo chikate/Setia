@@ -15,5 +15,6 @@ namespace Setia.Models.Base
         public DateTime? EmailVerifiedDate { get; set; } = null;
         public string? Avatar { get; set; } = null;
         public string? Signiture { get; set; } = null;
+        public List<Guid>? Friends { get; set; } = null;
     }
 }

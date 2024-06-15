@@ -136,5 +136,58 @@ namespace Setia.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SendFriendRequest(string username)
+        {
+            try
+            {
+                UserModel toUser = await _context.Users.Where(u => u.Username == username).SingleOrDefaultAsync();
+                if (toUser == null) throw new Exception("There is no user with this username");
+
+                await _context.Notifications.AddAsync(new NotificationModel
+                {
+                    UserId = toUser.Id,
+                    Title = $"{_auth.GetCurrentUser()?.Username} wants to be your friend",
+                    Author = _auth.GetCurrentUser()?.Username,
+                });
+
+                await _context.SaveChangesAsync();
+
+                return Ok("Friend request sent");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AcceptFriendRequest(Guid notificationId)
+        {
+            try
+            {
+                NotificationModel notification = await _context.Notifications.Where(u => u.Id == notificationId).SingleOrDefaultAsync();
+                if (notification == null) throw new Exception("Invalid notification");
+
+                UserModel fromUser = await _context.Users.Where(u => u.Username == notification.Author).SingleOrDefaultAsync();
+                if (fromUser == null) throw new Exception("There is no user with this username");
+
+                UserModel currentUser = _auth.GetCurrentUser();
+                fromUser.Friends.Add(currentUser.Id);
+                currentUser.Friends.Add(fromUser.Id);
+
+                _context.Users.Update(fromUser);
+                _context.Users.Update(currentUser);
+
+                return Ok($"You are now friends with {fromUser.Username}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
