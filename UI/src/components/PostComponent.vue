@@ -54,12 +54,39 @@ onBeforeMount(async () => {
   if (thisPostData.value?.author)
     authorData.value = await useHelperStore().getUserProfile(String(thisPostData.value?.author))
 
-  useUserCollectionCRUDStore().get()
-  icons.value[4].name = (await useUserCollectionCRUDStore().allLoadedItems?.find(
-    (elem: UserCollection) => elem.postId == thisPostData.value.id
-  ))
-    ? 'pi-star-fill'
-    : 'pi-star'
+  await usePostsCRUDStore().get()
+
+  icons.value = [
+    {
+      name: usePostsCRUDStore().allLoadedItems?.find(
+        (post: Post) =>
+          (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+          post.toPostId == thisPostData.value.id &&
+          post.author == useAuthStore().userData?.username
+      )
+        ? 'pi-thumbs-up-fill'
+        : 'pi-thumbs-up'
+    },
+    {
+      name: usePostsCRUDStore().allLoadedItems?.find(
+        (post: Post) =>
+          (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+          post.toPostId == thisPostData.value.id &&
+          post.author == useAuthStore().userData?.username
+      )
+        ? 'pi-thumbs-down-fill'
+        : 'pi-thumbs-down'
+    },
+    { name: 'pi-comments' },
+    { name: 'pi-send' },
+    {
+      name: useUserCollectionCRUDStore().allLoadedItems?.find(
+        (elem: UserCollection) => elem.postId == thisPostData.value.id
+      )
+        ? 'pi-star-fill'
+        : 'pi-star'
+    }
+  ]
 })
 
 function stringToColor(str: string): string {

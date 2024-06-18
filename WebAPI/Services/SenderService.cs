@@ -41,9 +41,7 @@ namespace Setia.Services
             return Task.CompletedTask;
         }
 
-        public Task UploadFile(IFormFile file, string description)
-        {
-            throw new NotImplementedException();
-        }
+        public Task UploadFile(IFormFile file, string description) => throw new Exception();
+
     }
 }

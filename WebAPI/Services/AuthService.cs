@@ -39,10 +39,10 @@ namespace Setia.Services
         {
             try
             {
-                if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) throw new Exception();
+                if (loginCredentials.Password == null || loginCredentials.Password.Length < 6) throw new Exception("Invalid Credentials");
 
                 UserModel? user = await _context.Users
-                    .FirstOrDefaultAsync(u =>
+                    .SingleOrDefaultAsync(u =>
                     u.Username == loginCredentials.Username &&
                     u.Password == CriptPassword(loginCredentials.Password));
 
@@ -68,7 +68,7 @@ namespace Setia.Services
 
                     return new { Token = token, User = user };
                 }
-                else { throw new Exception(); }
+                else throw new Exception("User Not Found");
             }
             catch (Exception ex)
             {
@@ -95,7 +95,7 @@ namespace Setia.Services
             try
             {
                 if (userId == null) { userId = GetCurrentUser()?.Id; }
-                return await _context.Users.Where(u => u.Id == userId).Select(p => p.Tags).FirstOrDefaultAsync();
+                return await _context.Users.Where(u => u.Id == userId).Select(p => p.Tags).SingleOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -135,10 +135,10 @@ namespace Setia.Services
         {
             try
             {
-                if (email == null || !Regex.IsMatch(email, _config["RegexValidator:Email"] ?? "")) throw new Exception();
-                if (username == null || username.Length < 6) throw new Exception();
-                if (currentPassword == null || currentPassword.Length < 6) throw new Exception();
-                if (newPassword == null || newPassword.Length < 6) throw new Exception();
+                if (email == null || !Regex.IsMatch(email, _config["RegexValidator:Email"] ?? "")) throw new Exception("Invalid Email");
+                if (username == null || username.Length < 6) throw new Exception("Invalid Username");
+                if (currentPassword == null || currentPassword.Length < 6) throw new Exception("Invalid Password");
+                if (newPassword == null || newPassword.Length < 6) throw new Exception("Invalid new Passowrd");
 
                 UserModel? user = await _context.Users
                     .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)

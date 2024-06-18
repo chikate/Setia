@@ -36,10 +36,14 @@ namespace Setia.Controllers
         {
             try
             {
-                IQueryable<TModel> query = _contextTable.AsNoTracking().AsQueryable();
-                query = query.Where(e => !e.Tags.Any(t => t.Contains("Deleted")));
+                _context.Set<UserModel>()
+                    .Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Admin")));
 
-                _context.Set<UserModel>().Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Role.Admin")));
+                IQueryable<TModel> query = _contextTable
+                    .Where(e => !e.Tags.Any(t => t.Contains("Deleted")))
+                    .AsNoTracking()
+                    .AsQueryable();
+
                 //foreach (string tag in await _auth.GetUserTags(""))
                 //{
                 //    if (!(await _auth.CheckUserRights(["Dragos"])).Any(c => c == "Dragos"))
@@ -70,31 +74,22 @@ namespace Setia.Controllers
                 #endregion
 
                 foreach (PropertyInfo property in typeof(TModel).GetProperties())
-                {
                     if (property.GetCustomAttributes(typeof(ForeignKeyAttribute), false).Any())
-                    {
-                        string includeName = "";
-                        if (property.Name.Substring(property.Name.Length - 2) == "Id")
-                        {
-                            includeName = property.Name.Substring(0, property.Name.Length - 2) + "Data";
-                        }
-                        else
-                        {
-                            includeName = property.Name + "Data";
-                        }
-                        query = query.Include(includeName);
-                    }
+                        query = query.Include(
+                            property.Name.Substring(property.Name.Length - 2) == "Id"
+                                ? property.Name.Substring(0, property.Name.Length - 2) + "Data"
+                                : property.Name + "Data"
+                        );
 
-                    //if (filter != null)
-                    //    query = query.Where(e => property.GetValue(e).Equals(property.GetValue(filter)));
-                }
+                //if (filter != null)
+                //    query = query.Where(e => property.GetValue(e).Equals(property.GetValue(filter)));
 
                 return await query.ToListAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
 
@@ -136,7 +131,7 @@ namespace Setia.Controllers
                     //PropertyInfo? AuthorUsernameProperty = model.GetType().GetProperty("AuthorUsername");
                     //AuthorUsernameProperty?.SetValue(model, _auth.GetCurrentUser().Username);
 
-                    PropertyInfo? idProperty = model.GetType().GetProperties()[0]; if (idProperty == null) throw new InvalidOperationException("Model does not have an Id property.");
+                    PropertyInfo? idProperty = model.GetType().GetProperties()[0]; if (idProperty == null) throw new Exception("Model does not have an Id property.");
 
                     //var idValue = idProperty.GetValue(model); if (idValue == null) throw new ArgumentException("Id value cannot be null.");
                     TModel? oldModel = await _contextTable.FindAsync(idProperty.GetValue(model)); // if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the dataSetia.");
@@ -154,7 +149,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
 
@@ -178,7 +173,7 @@ namespace Setia.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception();
+                throw new Exception(ex.Message);
             }
         }
     }

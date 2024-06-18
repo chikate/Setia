@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Setia.Contexts.Base;
 using Setia.Contexts.Gov;
 using Setia.Models.Base;
-using Setia.Models.Gov;
 using Setia.Services.Interfaces;
 
 namespace Setia.Controllers
@@ -89,12 +88,7 @@ namespace Setia.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserProfile(string username)
         {
-            try
-            {
-                UserModel user = await _context.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
-                if (user == null) throw new Exception();
-                return Ok(user);
-            }
+            try { return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Username == username)); }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
@@ -105,12 +99,7 @@ namespace Setia.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPostsForUser(string username)
         {
-            try
-            {
-                List<PostModel> posts = await _contextGov.Posts.Where(u => u.Author == username && !u.Tags.Any(t => t.Contains("Deleted"))).ToListAsync();
-                if (posts == null) throw new Exception();
-                return Ok(posts);
-            }
+            try { return Ok(await _contextGov.Posts.Where(u => u.Author == username && !u.Tags.Any(t => t.Contains("Deleted"))).ToListAsync()); }
             catch (Exception ex)
             {
                 _logger.LogError(ex, this.GetType().FullName);
@@ -123,8 +112,8 @@ namespace Setia.Controllers
         {
             try
             {
-                UserModel user = await _context.Users.FindAsync(_auth.GetCurrentUser()?.Id);
-                if (user == null) throw new Exception();
+                UserModel? user = await _context.Users.FindAsync(_auth.GetCurrentUser()?.Id);
+                if (user == null) throw new Exception("User Not Found");
                 user.Avatar = avatarUrl;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
@@ -142,7 +131,7 @@ namespace Setia.Controllers
         {
             try
             {
-                UserModel toUser = await _context.Users.Where(u => u.Username == username).SingleOrDefaultAsync();
+                UserModel? toUser = await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
                 if (toUser == null) throw new Exception("There is no user with this username");
 
                 await _context.Notifications.AddAsync(new NotificationModel
@@ -168,13 +157,13 @@ namespace Setia.Controllers
         {
             try
             {
-                NotificationModel notification = await _context.Notifications.Where(u => u.Id == notificationId).SingleOrDefaultAsync();
+                NotificationModel? notification = await _context.Notifications.Where(u => u.Id == notificationId).SingleOrDefaultAsync();
                 if (notification == null) throw new Exception("Invalid notification");
 
-                UserModel fromUser = await _context.Users.Where(u => u.Username == notification.Author).SingleOrDefaultAsync();
+                UserModel? fromUser = await _context.Users.Where(u => u.Username == notification.Author).SingleOrDefaultAsync();
                 if (fromUser == null) throw new Exception("There is no user with this username");
 
-                UserModel currentUser = _auth.GetCurrentUser();
+                UserModel? currentUser = _auth.GetCurrentUser();
                 fromUser.Friends.Add(currentUser.Id);
                 currentUser.Friends.Add(fromUser.Id);
 

@@ -20,9 +20,8 @@ const values = ref(keys.value.map((key) => props.store.getDefaults()[key]))
 const exposedData = ref(
   keys.value
     .filter(
-      (param: string) => param.toLowerCase() != 'deleted' && param.toLowerCase() != 'password'
-      // && param.toLowerCase() != 'author' &&
-      // param.toLowerCase() != 'executiondate'
+      (param: string) => param.toLowerCase() != 'password' && param.toLowerCase() != 'executiondate'
+      // && param.toLowerCase() != 'author'
     )
     .map((elem: string, i) => ({
       field: elem,
