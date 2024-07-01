@@ -23,7 +23,7 @@ const icons = ref([
     name: usePostsCRUDStore().allLoadedItems?.find(
       (post: Post) =>
         (post.tags?.indexOf('Positive') ?? -1) > -1 &&
-        post.toPostId == thisPostData.value.id &&
+        post.entityId == thisPostData.value.id &&
         post.author == useAuthStore().userData?.username
     )
       ? 'pi-thumbs-up-fill'
@@ -33,14 +33,14 @@ const icons = ref([
     name: usePostsCRUDStore().allLoadedItems?.find(
       (post: Post) =>
         (post.tags?.indexOf('Negative') ?? -1) > -1 &&
-        post.toPostId == thisPostData.value.id &&
+        post.entityId == thisPostData.value.id &&
         post.author == useAuthStore().userData?.username
     )
       ? 'pi-thumbs-down-fill'
       : 'pi-thumbs-down'
   },
   { name: 'pi-comments' },
-  { name: 'pi-send' },
+  // { name: 'pi-send' },
   {
     name: useUserCollectionCRUDStore().allLoadedItems?.find(
       (elem: UserCollection) => elem.postId == thisPostData.value.id
@@ -61,7 +61,7 @@ onBeforeMount(async () => {
       name: usePostsCRUDStore().allLoadedItems?.find(
         (post: Post) =>
           (post.tags?.indexOf('Positive') ?? -1) > -1 &&
-          post.toPostId == thisPostData.value.id &&
+          post.entityId == thisPostData.value.id &&
           post.author == useAuthStore().userData?.username
       )
         ? 'pi-thumbs-up-fill'
@@ -71,14 +71,14 @@ onBeforeMount(async () => {
       name: usePostsCRUDStore().allLoadedItems?.find(
         (post: Post) =>
           (post.tags?.indexOf('Negative') ?? -1) > -1 &&
-          post.toPostId == thisPostData.value.id &&
+          post.entityId == thisPostData.value.id &&
           post.author == useAuthStore().userData?.username
       )
         ? 'pi-thumbs-down-fill'
         : 'pi-thumbs-down'
     },
     { name: 'pi-comments' },
-    { name: 'pi-send' },
+    // { name: 'pi-send' },
     {
       name: useUserCollectionCRUDStore().allLoadedItems?.find(
         (elem: UserCollection) => elem.postId == thisPostData.value.id
@@ -107,7 +107,7 @@ function stringToColor(str: string): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-async function post(tag?: string) {
+async function post(tags?: string[]) {
   let questionsData: Question | undefined = undefined
   if (thisPostData.value?.questionData)
     questionsData = (
@@ -119,8 +119,8 @@ async function post(tag?: string) {
       message: localMessage.value,
       questionId: questionsData?.id,
       // comment
-      tags: thisPostData.value?.toPostId ? ['Comment'] : [tag],
-      toPostId: thisPostData.value?.toPostId
+      tags: thisPostData.value?.entityId ? ['Comment'] : tags,
+      entityId: thisPostData.value?.entityId
     }
   ] as Post[])
 }
@@ -221,6 +221,7 @@ async function addLocalQuestion() {
       v-model:question-data="thisPostData.questionData"
       class="mb-3"
     />
+
     <QuestionComponent
       v-if="thisPostData.questionData && !thisPostData.message"
       v-model:question-data="thisPostData.questionData"
@@ -242,7 +243,7 @@ async function addLocalQuestion() {
         class="shadow-1"
         :disabled="!localMessage"
         label="Post"
-        @click="post('Post')"
+        @click="post(['Post'])"
         :model="[
           {
             label: 'News',
@@ -252,7 +253,7 @@ async function addLocalQuestion() {
               } else {
                 usePostsCRUDStore().editItem.tags = ['News']
               }
-              post('News')
+              post(['Post', 'News'])
             }
           },
           {
@@ -274,19 +275,19 @@ async function addLocalQuestion() {
             icon.name.includes('pi-thumbs-up')
               ? usePostsCRUDStore().allLoadedItems?.filter(
                   (post: Post) =>
-                    (post.tags?.indexOf('Positive') ?? -1) > -1 && post.toPostId == thisPostData.id
+                    (post.tags?.indexOf('Positive') ?? -1) > -1 && post.entityId == thisPostData.id
                 ).length
               : icon.name.includes('pi-thumbs-down')
                 ? usePostsCRUDStore().allLoadedItems?.filter(
                     (post: Post) =>
                       (post.tags?.indexOf('Negative') ?? -1) > -1 &&
-                      post.toPostId == thisPostData.id
+                      post.entityId == thisPostData.id
                   ).length
                 : icon.name.includes('pi-comments')
                   ? usePostsCRUDStore().allLoadedItems?.filter(
                       (post: Post) =>
                         (post.tags?.indexOf('Comment') ?? -1) > -1 &&
-                        post.toPostId == thisPostData.id
+                        post.entityId == thisPostData.id
                     ).length
                   : undefined
           "
@@ -300,7 +301,7 @@ async function addLocalQuestion() {
                       usePostsCRUDStore().allLoadedItems?.filter(
                         (post) =>
                           (post.tags?.indexOf('Positive') ?? -1) > -1 &&
-                          post.toPostId == thisPostData.id &&
+                          post.entityId == thisPostData.id &&
                           post.author == useAuthStore().userData?.username
                       )
                     )
@@ -314,7 +315,7 @@ async function addLocalQuestion() {
                           usePostsCRUDStore().allLoadedItems?.filter(
                             (post) =>
                               (post.tags?.indexOf('Negative') ?? -1) > -1 &&
-                              post.toPostId == thisPostData.id &&
+                              post.entityId == thisPostData.id &&
                               post.author == useAuthStore().userData?.username
                           )
                         )
@@ -353,7 +354,7 @@ async function addLocalQuestion() {
           usePostsCRUDStore()
             .add([
               {
-                toPostId: thisPostData.id,
+                entityId: thisPostData.id,
                 message: $event.i,
                 tags: ['Reaction', 'Emoji', showActions == 0 ? 'Positive' : 'Negative']
               }
@@ -370,10 +371,10 @@ async function addLocalQuestion() {
 
       <!-- Comments -->
       <div v-if="showActions == 2" class="h-8 overflowY-auto">
-        <PostComponent :postData="{ toPostId: thisPostData.id } as Post" />
+        <PostComponent :postData="{ entityId: thisPostData.id } as Post" />
         <PostComponent
           v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
-            (post: Post) => post.toPostId == thisPostData.id
+            (post: Post) => post.entityId == thisPostData.id
           )"
           :key="i"
           :post-data="postData"

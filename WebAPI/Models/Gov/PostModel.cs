@@ -15,8 +15,7 @@ namespace Setia.Models.Gov
         public Guid? QuestionId { get; set; } = null;
         public QuestionModel? QuestionData { get; set; } = null;
 
-        [ForeignKey("FK_Post_ToPost")]
-        public Guid? ToPostId { get; set; } = null;
-        public PostModel? ToPostData { get; set; } = null;
+        public string? EntityId { get; set; } = null;
+        public string? Entity { get; set; } = null;
     }
 }

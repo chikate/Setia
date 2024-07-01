@@ -1,7 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: Dragos DEMO
+name: Deploy
 
 on:
   push:
@@ -12,7 +9,7 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
-    # environment: DEV
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,53 +31,44 @@ jobs:
 
       - name: Init .NET
         run: |
-          # Set the PATH to include the directory for dotnet and other tools
-          export PATH="/usr/local/bin/dotnet:$PATH"
-
-          # Change directory to the workspace
-          cd "$WORKSPACE/WebAPI"
+          # Change directory to the WebAPI project
+          cd WebAPI
 
           # Restore and publish the .NET application
           dotnet restore
-
-          # Build the project
           dotnet build --configuration Release
-
-          # Run tests without building again
           dotnet test --no-build --verbosity normal
-
-          # Publish the application
-          dotnet publish -r linux-x64 --self-contained true --configuration Release --output "$WORKSPACE/publish" -p:EnvironmentName=development
+          dotnet publish -r linux-x64 --self-contained true --configuration Release --output ../publish -p:EnvironmentName=development
 
           # Synchronize the directories using rsync
-          rsync -av --delete "$WORKSPACE/UI/dist/" "$WORKSPACE/publish/dist/"
+          rsync -av --delete ../UI/dist/ ../publish/dist/
 
-          # Set the variables
-          MACHINE_NAME="DEV-Setia"
-          SITE_FOLDER="Setia/Dev"
-          SITE_NAME="Setia"
+      - name: Deploy to remote server
+        env:
+          MACHINE_NAME: "DEV-Setia"
+          SITE_FOLDER: "Setia/Dev"
+          SITE_NAME: "Setia"
+        run: |
+          # SSH to the remote machine and execute the deployment commands
+          ssh $MACHINE_NAME << 'EOF'
+            set -e
 
-          # Use SSH to execute remote commands (you must have SSH access set up)
-          ssh $MACHINE_NAME << EOF
-          # Stop the application pool (assuming a similar service exists on Linux)
-              sudo systemctl stop $SITE_NAME
+            # Stop the application pool (assuming a similar service exists on Linux)
+            sudo systemctl stop $SITE_NAME
 
-              # Use find and rm to delete specific folders
-              find "/var/www/html/$SITE_FOLDER" -type d \( -name "_config" -o -name "LOGS" \) -exec rm -r {} +
+            # Use find and rm to delete specific folders
+            sudo find "/var/www/html/$SITE_FOLDER" -type d \( -name "_config" -o -name "LOGS" \) -exec rm -r {} +
 
-              # Copy the published files to the remote server
-              rsync -av --delete "$WORKSPACE/publish/" "$MACHINE_NAME:/var/www/html/$SITE_FOLDER/"
+            # Copy the published files to the remote server
+            rsync -av --delete "$GITHUB_WORKSPACE/publish/" "$MACHINE_NAME:/var/www/html/$SITE_FOLDER/"
 
-              # Start the application pool
-              sudo systemctl start $SITE_NAME
+            # Start the application pool
+            sudo systemctl start $SITE_NAME
           EOF
 
-          # Check the exit status and handle errors
-          if [ $? -ne 0 ]; then
-              echo "Failed with error code $?."
-              exit 1
-          fi
-
+      - name: Final .NET operations
+        run: |
+          cd WebAPI
           dotnet restore
           dotnet build --no-restore
           dotnet test --no-build --verbosity normal

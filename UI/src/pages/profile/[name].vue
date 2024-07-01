@@ -71,19 +71,19 @@ customUpload
         :post-data="postData"
       />
     </div>
+    <Dialog v-model:visible="showUploadAvatar" modal>
+      <div class="align-items-center w-full flex flex-column gap-3">
+        <Image :src="avatarUrl" width="250" preview imageClass="border-round" />
+        <InputText
+          @vue:beforeMount="avatarUrl = profileUserData.avatar"
+          v-model="avatarUrl"
+          @keypress.enter="
+            useHelperStore().setUserAvatar(avatarUrl),
+              (profileUserData.avatar = avatarUrl),
+              (showUploadAvatar = false)
+          "
+        />
+      </div>
+    </Dialog>
   </main>
-  <Dialog v-model:visible="showUploadAvatar" modal>
-    <div class="align-items-center w-full flex flex-column gap-3">
-      <Image :src="avatarUrl" width="250" preview imageClass="border-round" />
-      <InputText
-        @vue:beforeMount="avatarUrl = profileUserData.avatar"
-        v-model="avatarUrl"
-        @keypress.enter="
-          useHelperStore().setUserAvatar(avatarUrl),
-            (profileUserData.avatar = avatarUrl),
-            (showUploadAvatar = false)
-        "
-      />
-    </div>
-  </Dialog>
 </template>

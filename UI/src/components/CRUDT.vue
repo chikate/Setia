@@ -20,7 +20,10 @@ const values = ref(keys.value.map((key) => props.store.getDefaults()[key]))
 const exposedData = ref(
   keys.value
     .filter(
-      (param: string) => param.toLowerCase() != 'password' && param.toLowerCase() != 'executiondate'
+      (param: string) =>
+        param.toLowerCase() != 'password' &&
+        param.toLowerCase() != 'id' &&
+        param.toLowerCase() != 'executiondate'
       // && param.toLowerCase() != 'author'
     )
     .map((elem: string, i) => ({
@@ -38,19 +41,23 @@ const exposedData = ref(
 
 onBeforeMount(async () => {
   exposedData.value.forEach(async (elem, index) => {
-    if (typeof elem.type == typeof Object() && !Array.isArray(elem.type)) {
+    if (
+      typeof elem.type == typeof Object() &&
+      !Array.isArray(elem.type) &&
+      typeof elem.type != typeof String()
+    ) {
       exposedData.value.splice(index, 1)
-      Object.keys(props.store.getDefaults()[elem.field]).forEach(async (e) => {
+      Object.keys(props.store.getDefaults()[elem.field])?.forEach(async (el) => {
         exposedData.value.push({
-          field: elem.field + '.' + e,
+          field: elem.field + '.' + el,
           header:
-            e[0].toUpperCase() +
-            e
+            el[0].toUpperCase() +
+            el
               .substring(1)
               .replaceAll(/([A-Z])/g, ' $1')
               .toLowerCase()
               .replaceAll(' data', ''),
-          type: props.store.getDefaults()[elem.field][e]
+          type: props.store.getDefaults()[elem.field][el]
         })
       })
     }
@@ -367,32 +374,25 @@ const filters = ref({
             />
           </Button>
 
+          <!-- <Calendar
+            v-else-if="store.editItem[key.field]?.split('T')[1]?.endsWith('Z')"
+            @vue:beforeMount="
+              (store as any).editItem[key.field] = new Date(store.editItem[key.field]).toISOString()
+            "
+            @update:modelValue="
+              (store as any).editItem[key.field] = ($event as Date)?.toISOString()
+            "
+            v-model="(store as any).editItem[key.field]"
+            showTime
+            hourFormat="24"
+            :placeholder="key.header"
+          /> -->
+
           <InputText
             v-else
             v-model="(store as any).editItem[key.field]"
             :placeholder="key.header"
           />
-
-          <!-- <Calendar
-              v-else-if="
-                new RegExp(
-                  '\d{1,4}[-./]\d{1,2}[-./]\d{2,4}(?:\.\d+)?Z?',
-                  store.editItem[field]
-                )
-              "
-              @vue:beforeMount="
-                (store as any).editItem[field] = new Date(
-                  store.editItem[field]
-                ).toLocaleString()
-              "
-              @update:modelValue="
-                (store as any).editItem[field] = $event ? $event : undefined
-              "
-              v-model="(store as any).editItem[field]"
-              showTime
-              hourFormat="24"
-              :placeholder="field"
-            /> -->
         </InputGroup>
       </div>
     </Dialog>

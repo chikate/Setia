@@ -12,7 +12,7 @@ namespace Setia.Controllers
         where TContext : DbContext
     {
         private readonly TContext _context;
-        private readonly DbSet<TModel> _contextTable;
+        private readonly DbSet<TModel> _dbData;
         private readonly ILogger<CRUDService<TModel, TContext>> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
@@ -26,7 +26,7 @@ namespace Setia.Controllers
         )
         {
             _context = context;
-            _contextTable = context.Set<TModel>();
+            _dbData = context.Set<TModel>();
             _logger = logger;
             _audit = audit;
             _auth = auth;
@@ -39,7 +39,7 @@ namespace Setia.Controllers
                 _context.Set<UserModel>()
                     .Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Admin")));
 
-                IQueryable<TModel> query = _contextTable
+                IQueryable<TModel> query = _dbData
                     .Where(e => !e.Tags.Any(t => t.Contains("Deleted")))
                     .AsNoTracking()
                     .AsQueryable();
@@ -92,7 +92,6 @@ namespace Setia.Controllers
                 throw new Exception(ex.Message);
             }
         }
-
         public async Task<List<TModel>> Add(List<TModel> models)
         {
             try
@@ -104,7 +103,7 @@ namespace Setia.Controllers
                     PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
                     passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
 
-                    await _contextTable.AddAsync(model);
+                    await _dbData.AddAsync(model);
                 }
                 await _context.SaveChangesAsync();
                 foreach (TModel model in models) await _audit.LogAuditTrail<TModel>(model);
@@ -116,7 +115,6 @@ namespace Setia.Controllers
                 throw new Exception(ex.Message);
             }
         }
-
         public async Task<List<TModel>> Update(List<TModel> models)
         {
             try
@@ -134,15 +132,18 @@ namespace Setia.Controllers
                     PropertyInfo? idProperty = model.GetType().GetProperties()[0]; if (idProperty == null) throw new Exception("Model does not have an Id property.");
 
                     //var idValue = idProperty.GetValue(model); if (idValue == null) throw new ArgumentException("Id value cannot be null.");
-                    TModel? oldModel = await _contextTable.FindAsync(idProperty.GetValue(model)); // if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the dataSetia.");
+                    TModel? oldModel = await _dbData.FindAsync(idProperty.GetValue(model)); // if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the dataSetia.");
                     if (oldModel != null)
                     {
                         oldModels.Add(oldModel);
-                        _contextTable.Entry(oldModel).CurrentValues.SetValues(model);
+                        _dbData.Entry(oldModel).CurrentValues.SetValues(model);
                     }
                 }
                 await _context.SaveChangesAsync();
-                try { for (int i = 0; i < models.Count; i++) await _audit.LogAuditTrail(models[i], oldModels[i]); }
+                try
+                {
+                    for (int i = 0; i < models.Count; i++) await _audit.LogAuditTrail(models[i], oldModels[i]);
+                }
                 catch (Exception ex) { }
                 return models;
             }
@@ -152,7 +153,6 @@ namespace Setia.Controllers
                 throw new Exception(ex.Message);
             }
         }
-
         public async Task Delete(List<string> ids)
         {
             try
@@ -160,11 +160,11 @@ namespace Setia.Controllers
                 List<TModel>? itemsToDelete = new();
                 foreach (string id in ids)
                 {
-                    TModel? itemToDelete = await _contextTable.FindAsync(id);
+                    TModel? itemToDelete = await _dbData.FindAsync(id);
                     if (itemToDelete != null)
                     {
                         itemsToDelete.Add(itemToDelete);
-                        _contextTable.Remove(itemToDelete);
+                        _dbData.Remove(itemToDelete);
                     }
                 }
                 await _context.SaveChangesAsync();

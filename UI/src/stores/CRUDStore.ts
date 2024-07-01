@@ -11,7 +11,6 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
       filter?: (typeof defaultValues)[]
     } => {
       return {
-        selectedItems: [defaultValues],
         editItem: defaultValues
       }
     },
@@ -49,11 +48,12 @@ export const useCRUDStore = (storeName: string, defaultValues: any) =>
         })
       },
       async delete(customDelete?: (typeof defaultValues)[]) {
-        const toDelete = customDelete ?? [this.editItem]
-        if (toDelete[0]) {
+        const toDelete = customDelete ?? this.selectedItems
+        console.log(toDelete)
+        if (toDelete && toDelete[0]) {
           toDelete?.forEach((elem: typeof defaultValues) => {
             if (elem.tags) {
-              if (elem.tags?.find((elem: Taging) => !(elem.tag == 'Deleted'))) {
+              if (elem.tags.find((elem: Taging) => elem.tag != 'Deleted')) {
                 elem.tags.push('Deleted')
               }
             } else {

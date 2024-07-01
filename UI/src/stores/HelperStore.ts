@@ -31,6 +31,13 @@ export const useHelperStore = defineStore('Helper', {
     },
     async sendFriendRequest(username: string) {
       await makeApiRequest(`${this.$id}/SendFriendRequest`, 'get', { username })
+    },
+    async getQuestionAnswereDistribution(questionId: string) {
+      return (
+        await makeApiRequest(`QuestionAnswers/GetQuestionAnswereDistribution`, 'get', {
+          questionId
+        })
+      ).json()
     }
   }
 })

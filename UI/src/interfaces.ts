@@ -19,8 +19,8 @@ export interface Post extends Definition {
   message?: string
   questionId?: string
   questionData?: Question
-  toPostId?: string
-  toPostData?: Post
+  entityId?: string
+  entity?: string
 }
 export interface Pontaj extends Definition {
   id?: number

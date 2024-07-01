@@ -45,11 +45,6 @@ public partial class GovContext(DbContextOptions<GovContext> options) : DbContex
                   .WithMany()
                   .HasForeignKey(e => e.QuestionId)
                   .HasConstraintName("FK_Post_Question");
-
-            entity.HasOne(e => e.ToPostData)
-                  .WithMany()
-                  .HasForeignKey(e => e.ToPostId)
-                  .HasConstraintName("FK_Post_ToPost");
         });
 
 

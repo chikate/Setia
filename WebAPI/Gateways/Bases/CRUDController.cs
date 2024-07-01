@@ -2,24 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Setia.Services.Interfaces;
 
-namespace Base.Gateways.Controllers
+namespace Base.Gateways.Bases
 {
     [Authorize]
     [ApiController]
     [Route("/api/[controller]/[action]")]
-    public class CRUDController<TModel> : ControllerBase
+    public abstract class CRUDController<TModel> : ControllerBase
     {
         private readonly ICRUD<TModel> _CRUD;
-        //private readonly IAuth _auth;
-        public CRUDController
-        (
-            ICRUD<TModel> CRUD
-        //IAuth auth
-        )
-        {
-            _CRUD = CRUD;
-            //_auth = auth;
-        }
+        public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TModel>>> Get(/*[FromQuery] List<TModel>? filters = default*/)
@@ -38,15 +29,27 @@ namespace Base.Gateways.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] List<TModel> models)
         {
-            try { return Ok(await _CRUD.Add(models)); }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            try
+            {
+                return Ok(await _CRUD.Add(models));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] List<TModel> models)
         {
-            try { return Ok(await _CRUD.Update(models)); }
-            catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+            try
+            {
+                return Ok(await _CRUD.Update(models));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error message: " + ex.Message);
+            }
         }
 
         [HttpDelete]

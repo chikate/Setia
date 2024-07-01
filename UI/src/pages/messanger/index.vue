@@ -25,7 +25,7 @@ const userToSendRequestTo = ref<string>('')
       </div>
       <InputText
         v-model="message"
-        @keydown.enter="posts.push({ message } as Post), (message = '')"
+        @keydown.enter="usePostsCRUDStore().add(), (message = '')"
         placeholder="Message"
         class="p-3 px-4"
       />

@@ -76,33 +76,6 @@ namespace Setia.Services
                 throw new Exception(ex.Message);
             }
         }
-        public UserModel? GetCurrentUser()
-        {
-            if (_httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
-            {
-                IEnumerable<Claim> userClaims = identity.Claims;
-
-                string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value ?? "";
-                string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-
-                UserModel? user = _context.Users.Where(u => u.Email == email && u.Username == username).SingleOrDefault();
-                return user;
-            }
-            return null;
-        }
-        public async Task<IEnumerable<string>> GetUserTags(string? specific = ".", Guid? userId = null)
-        {
-            try
-            {
-                if (userId == null) { userId = GetCurrentUser()?.Id; }
-                return await _context.Users.Where(u => u.Id == userId).Select(p => p.Tags).SingleOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
-        }
         public async Task Register(UserModel registration)
         {
             try
@@ -124,6 +97,33 @@ namespace Setia.Services
                 await _context.SaveChangesAsync();
                 // generate confirmation link
                 await _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {"https://www.google.ro"}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, this.GetType().FullName);
+                throw new Exception(ex.Message);
+            }
+        }
+        public UserModel? GetCurrentUser()
+        {
+            if (_httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity)
+            {
+                IEnumerable<Claim> userClaims = identity.Claims;
+
+                string email = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.Email)?.Value ?? "";
+                string username = userClaims.FirstOrDefault(d => d.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+
+                UserModel? user = _context.Users.Where(u => u.Email == email && u.Username == username).SingleOrDefault();
+                return user;
+            }
+            return null;
+        }
+        public async Task<IEnumerable<string>> GetUserTags(string? specific = ".", Guid? userId = null)
+        {
+            try
+            {
+                if (userId == null) { userId = GetCurrentUser()?.Id; }
+                return await _context.Users.Where(u => u.Id == userId).Select(p => p.Tags).SingleOrDefaultAsync();
             }
             catch (Exception ex)
             {
