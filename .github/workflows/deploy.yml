@@ -43,32 +43,32 @@ jobs:
           # Synchronize the directories using rsync
           rsync -av --delete ../UI/dist/ ../publish/dist/
 
-      - name: Deploy to remote server
-        env:
-          MACHINE_NAME: "DEV-Setia"
-          SITE_FOLDER: "Setia/Dev"
-          SITE_NAME: "Setia"
-        run: |
-          # SSH to the remote machine and execute the deployment commands
-          ssh $MACHINE_NAME << 'EOF'
-            set -e
+      # - name: Deploy to remote server
+      #   env:
+      #     MACHINE_NAME: "DEV-Setia"
+      #     SITE_FOLDER: "Setia/Dev"
+      #     SITE_NAME: "Setia"
+      #   run: |
+      #     # SSH to the remote machine and execute the deployment commands
+      #     ssh $MACHINE_NAME << 'EOF'
+      #       set -e
 
-            # Stop the application pool (assuming a similar service exists on Linux)
-            sudo systemctl stop $SITE_NAME
+      #       # Stop the application pool (assuming a similar service exists on Linux)
+      #       sudo systemctl stop $SITE_NAME
 
-            # Use find and rm to delete specific folders
-            sudo find "/var/www/html/$SITE_FOLDER" -type d \( -name "_config" -o -name "LOGS" \) -exec rm -r {} +
+      #       # Use find and rm to delete specific folders
+      #       sudo find "/var/www/html/$SITE_FOLDER" -type d \( -name "_config" -o -name "LOGS" \) -exec rm -r {} +
 
-            # Copy the published files to the remote server
-            rsync -av --delete "$GITHUB_WORKSPACE/publish/" "$MACHINE_NAME:/var/www/html/$SITE_FOLDER/"
+      #       # Copy the published files to the remote server
+      #       rsync -av --delete "$GITHUB_WORKSPACE/publish/" "$MACHINE_NAME:/var/www/html/$SITE_FOLDER/"
 
-            # Start the application pool
-            sudo systemctl start $SITE_NAME
-          EOF
+      #       # Start the application pool
+      #       sudo systemctl start $SITE_NAME
+      #     EOF
 
-      - name: Final .NET operations
-        run: |
-          cd WebAPI
-          dotnet restore
-          dotnet build --no-restore
-          dotnet test --no-build --verbosity normal
+      # - name: Final .NET operations
+      #   run: |
+      #     cd WebAPI
+      #     dotnet restore
+      #     dotnet build --no-restore
+      #     dotnet test --no-build --verbosity normal
