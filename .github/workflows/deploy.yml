@@ -1,0 +1,76 @@
+name: Deploy DEV
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: FE
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+      - run: |
+          cd FE
+          npm ci
+          npm test
+          npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: FE-DEV
+          path: build/
+          retention-days: 1
+
+      - name: BE
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+        env:
+          CONNECTION_STRING: ${{secrets.CONNECTION_STRING}}
+      - run: |
+          cd BE
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet test --no-build --verbosity normal
+          dotnet publish -r linux-x64 --self-contained true --configuration Release --output ../publish -p:EnvironmentName=development
+
+          # Synchronize the directories using rsync
+          rsync -av --delete ../UI/dist/ ../publish/dist/
+
+      # - name: Deploy to remote server
+      #   env:
+      #     MACHINE_NAME: "DEV-Setia"
+      #     SITE_FOLDER: "Setia/Dev"
+      #     SITE_NAME: "Setia"
+      #   run: |
+      #     # SSH to the remote machine and execute the deployment commands
+      #     ssh $MACHINE_NAME << 'EOF'
+      #       set -e
+
+      #       # Stop the application pool (assuming a similar service exists on Linux)
+      #       sudo systemctl stop $SITE_NAME
+
+      #       # Use find and rm to delete specific folders
+      #       sudo find "/var/www/html/$SITE_FOLDER" -type d \( -name "_config" -o -name "LOGS" \) -exec rm -r {} +
+
+      #       # Copy the published files to the remote server
+      #       rsync -av --delete "$GITHUB_WORKSPACE/publish/" "$MACHINE_NAME:/var/www/html/$SITE_FOLDER/"
+
+      #       # Start the application pool
+      #       sudo systemctl start $SITE_NAME
+      #     EOF
+
+      # - name: Final .NET operations
+      #   run: |
+      #     cd WebAPI
+      #     dotnet restore
+      #     dotnet build --no-restore
+      #     dotnet test --no-build --verbosity normal
