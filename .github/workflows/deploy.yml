@@ -37,9 +37,8 @@ jobs:
           dotnet-version: 8.0.x
       - name: Build Backend
         run: |
-          cd BE
           dotnet restore
-          
+
           # Ensure the secret is correctly set
           dotnet user-secrets set "ConnectionStrings" "${{ secrets.CONNECTION_STRING }}"
 
