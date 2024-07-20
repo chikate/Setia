@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import type { TreeNode } from 'primevue/treenode'
+
 const padding = defineModel('padding', { type: Number, required: false, default: 1 })
 const menuItems = defineModel('menuItems', {
-  type: Array,
+  type: Array as PropType<TreeNode[]>,
   required: false,
   default: () => {
     return useRouter()
       .getRoutes()
       .map((route) => ({
         key: route.path,
-        label: route?.name?.split('/')[1].replaceAll('-', ' ').replaceAll('_', ' '),
+        label: String(route?.name)?.split('/')[1].replaceAll('-', ' ').replaceAll('_', ' '),
         children: route.path.split('/')[2]
           ? route.path.split('/').map((elem) => {
               if (elem != '') return { key: elem, label: elem }
