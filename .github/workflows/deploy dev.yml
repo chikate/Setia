@@ -62,17 +62,3 @@ jobs:
           name: BE-DEV
           path: BE/publish/
           retention-days: 1
-
-  deplay:
-    runs-on: ubuntu-latest
-    needs: [build-fe, build-be]
-    steps:
-      - name: Download artifact from build-fe job
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-
-      - name: Deploy to Web
-        uses: z 
-        with:
-          app-name: ${{ vars.NAME }}
