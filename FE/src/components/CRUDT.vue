@@ -82,7 +82,7 @@ const filters = ref({
 </script>
 
 <template>
-  <div :id="store.$id" class="flex justify-content-center h-full w-full">
+  <div :id="store.$id" class="card p-1" style="min-width: 300px">
     <DataTable
       @vue:before-mount="store.get()"
       :value="store.allLoadedItems"
@@ -92,8 +92,6 @@ const filters = ref({
       scrollable
       scrollHeight="flex"
       size="small"
-      class="flex-grow-1 border-round p-2"
-      style="height: 80vh; max-width: 70vw"
       v-model:selection="(store as any).selectedItems"
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
@@ -231,7 +229,7 @@ const filters = ref({
               (() => {
                 const value = field.split('.').reduce((acc, part) => acc && acc[part], data)
                 return value?.toString().split('T')[1]?.endsWith('Z')
-                  ? new Date(value)?.toUTCString()?.replaceAll(' GMT', '') ?? value?.toString()
+                  ? (new Date(value)?.toUTCString()?.replaceAll(' GMT', '') ?? value?.toString())
                   : value?.toString()
               })()
             }}

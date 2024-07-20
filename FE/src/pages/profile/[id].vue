@@ -34,87 +34,7 @@ customUpload
 /> -->
 
 <template>
-  <main v-show="loadingComplete" class="max-h-screen flex-row gap-4">
-    <PanelMenu
-      toggleall
-      :model="[
-        {
-          label: 'Security',
-          icon: 'pi pi-file',
-          items: [
-            {
-              label: 'Recovery',
-              icon: 'pi pi-file',
-              items: [
-                {
-                  label: 'Invoices',
-                  icon: 'pi pi-file-pdf',
-                  items: [
-                    {
-                      label: 'Pending',
-                      icon: 'pi pi-stop'
-                    },
-                    {
-                      label: 'Paid',
-                      icon: 'pi pi-check-circle'
-                    }
-                  ]
-                },
-                {
-                  label: 'Clients',
-                  icon: 'pi pi-users'
-                }
-              ]
-            },
-            {
-              label: 'Recover password',
-              icon: 'pi pi-image'
-            },
-            {
-              label: 'Change password',
-              icon: 'pi pi-image'
-            }
-          ]
-        },
-        {
-          label: 'Cloud',
-          icon: 'pi pi-cloud',
-          items: [
-            {
-              label: 'Upload',
-              icon: 'pi pi-cloud-upload'
-            },
-            {
-              label: 'Download',
-              icon: 'pi pi-cloud-download'
-            },
-            {
-              label: 'Sync',
-              icon: 'pi pi-refresh'
-            }
-          ]
-        },
-        {
-          label: 'Devices',
-          icon: 'pi pi-desktop',
-          items: [
-            {
-              label: 'Phone',
-              icon: 'pi pi-mobile'
-            },
-            {
-              label: 'Desktop',
-              icon: 'pi pi-desktop'
-            },
-            {
-              label: 'Tablet',
-              icon: 'pi pi-tablet'
-            }
-          ]
-        }
-      ]"
-      multiple
-    />
+  <div v-show="loadingComplete" class="flex-column justify-content-center">
     <div class="flex flex-column gap-4">
       <div class="flex flex-wrap align-items-center gap-3">
         <Avatar
@@ -138,7 +58,7 @@ customUpload
       />
     </div>
     <div
-      class="flex flex-column gap-4 py-4 overflow-y-auto"
+      class="flex flex-column gap-4 py-4"
       style="max-height: 90vh"
       @vue:beforeMount="usePostsCRUDStore().get()"
     >
@@ -165,5 +85,5 @@ customUpload
         />
       </div>
     </Dialog>
-  </main>
+  </div>
 </template>

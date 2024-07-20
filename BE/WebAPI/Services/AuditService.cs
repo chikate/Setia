@@ -40,10 +40,7 @@ namespace Setia.Services
                 await _context.SaveChangesAsync();
 
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
 
         public string CompareObjects<T>(T obj1, T obj2)

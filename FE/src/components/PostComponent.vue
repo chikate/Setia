@@ -211,7 +211,7 @@ async function addLocalQuestion() {
     <Editor
       v-else
       v-model="localMessage"
-      class="w-full shadow-1 border-round bg-cover bg-center"
+      class="w-full card border-round bg-cover bg-center"
       style="max-width: 45rem"
     />
 
@@ -370,7 +370,7 @@ async function addLocalQuestion() {
       />
 
       <!-- Comments -->
-      <div v-if="showActions == 2" class="h-8 overflowY-auto">
+      <div v-if="showActions == 2" class="h-8">
         <PostComponent :postData="{ entityId: thisPostData.id } as Post" />
         <PostComponent
           v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(

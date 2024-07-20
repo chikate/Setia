@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "iisExpress": {
@@ -8,14 +8,18 @@
   },
   "profiles": {
     "IIS Express": {
-      "applicationUrl": "https://localhost:3000",
       "commandName": "IISExpress",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_CLIENT": "Dragos"
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Swagger": {
+      "commandName": "IISExpress",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "launchBrowser": true,
-      "launchUrl": "swagger"
+      "launchUrl": "swagger/index.html"
     }
   }
 }

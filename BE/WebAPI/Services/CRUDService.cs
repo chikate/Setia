@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Setia.Models.Base;
 using Setia.Models.Structs;
 using Setia.Services.Interfaces;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -32,17 +31,16 @@ namespace Setia.Controllers
             _auth = auth;
         }
 
-        public async Task<IEnumerable<TModel>> Get(List<TModel>? filter = default)
+        public async Task<IEnumerable<TModel>> Get(TModel? filter = default)
         {
             try
             {
-                _context.Set<UserModel>()
-                    .Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Admin")));
+                //_context.Set<UserModel>()
+                //    .Where(e => e.Tags.Any(u => u.Contains("Dragos") || u.Contains("Admin")));
 
                 IQueryable<TModel> query = _dbData
                     .Where(e => !e.Tags.Any(t => t.Contains("Deleted")))
-                    .AsNoTracking()
-                    .AsQueryable();
+                    .AsNoTracking();
 
                 //foreach (string tag in await _auth.GetUserTags(""))
                 //{
@@ -73,108 +71,69 @@ namespace Setia.Controllers
                 //}
                 #endregion
 
-                foreach (PropertyInfo property in typeof(TModel).GetProperties())
-                    if (property.GetCustomAttributes(typeof(ForeignKeyAttribute), false).Any())
-                        query = query.Include(
-                            property.Name.Substring(property.Name.Length - 2) == "Id"
-                                ? property.Name.Substring(0, property.Name.Length - 2) + "Data"
-                                : property.Name + "Data"
-                        );
+                foreach (PropertyInfo property in typeof(TModel).GetProperties()
+                    .Where(p => p.GetCustomAttributes(typeof(ForeignKeyAttribute), false).Any()))
+                    query = query.Include(
+                        property.Name.EndsWith("Id")
+                            ? property.Name.Substring(0, property.Name.Length - 2) + "Data"
+                            : property.Name + "Data"
+                    );
 
                 //if (filter != null)
                 //    query = query.Where(e => property.GetValue(e).Equals(property.GetValue(filter)));
 
+                if (filter != null)
+                    foreach (PropertyInfo property in typeof(TModel).GetProperties())
+                    {
+                        object? filterValue = property.GetValue(filter);
+                        if (filterValue != null && !string.IsNullOrEmpty(filterValue.ToString()))
+                            query = query.Where(e => property.GetValue(e) != null && property.GetValue(e).Equals(filterValue));
+                    }
+
                 return await query.ToListAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
-        public async Task<List<TModel>> Add(List<TModel> models)
+        public async Task<TModel> Add(TModel model)
         {
             try
             {
-                foreach (TModel model in models)
-                {
-                    model.GetType().GetProperty("Author")?.SetValue(model, _auth.GetCurrentUser()?.Username);
-                    //model.GetType().GetProperty("AuthorData")?.SetValue(model, _auth.GetCurrentUser());
-                    PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
-                    passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
+                model.GetType().GetProperty("AuthorId")?.SetValue(model, _auth.GetCurrentUser()?.Id);
+                //PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
+                //passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
 
-                    await _dbData.AddAsync(model);
-                }
+                await _dbData.AddAsync(model);
                 await _context.SaveChangesAsync();
-                foreach (TModel model in models) await _audit.LogAuditTrail<TModel>(model);
-                return models;
+                await _audit.LogAuditTrail<TModel>(model);
+                return model;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
-        public async Task<List<TModel>> Update(List<TModel> models)
+        public async Task<TModel> Update(TModel model)
         {
             try
             {
-                List<TModel>? oldModels = new();
-                foreach (TModel model in models)
-                {
-                    //PropertyInfo? userProperty = model.GetType().GetProperty("User");
-                    //if (userProperty?.GetValue(model) == null) userProperty?.SetValue(model, _auth.GetCurrentUser());
-                    //PropertyInfo? usernameProperty = model.GetType().GetProperty("Username");
-                    //if (usernameProperty?.GetValue(model) == null) usernameProperty?.SetValue(model, _auth.GetCurrentUser().Username);
-                    //PropertyInfo? AuthorUsernameProperty = model.GetType().GetProperty("AuthorUsername");
-                    //AuthorUsernameProperty?.SetValue(model, _auth.GetCurrentUser().Username);
-
-                    PropertyInfo? idProperty = model.GetType().GetProperties()[0]; if (idProperty == null) throw new Exception("Model does not have an Id property.");
-
-                    //var idValue = idProperty.GetValue(model); if (idValue == null) throw new ArgumentException("Id value cannot be null.");
-                    TModel? oldModel = await _dbData.FindAsync(idProperty.GetValue(model)); // if (oldModel == null) throw new Exception($"Entity with Id '{idValue}' not found in the dataSetia.");
-                    if (oldModel != null)
-                    {
-                        oldModels.Add(oldModel);
-                        _dbData.Entry(oldModel).CurrentValues.SetValues(model);
-                    }
-                }
+                TModel oldModel = model;
+                _context.Update(model);
                 await _context.SaveChangesAsync();
-                try
-                {
-                    for (int i = 0; i < models.Count; i++) await _audit.LogAuditTrail(models[i], oldModels[i]);
-                }
-                catch (Exception) { }
-                return models;
+                await _audit.LogAuditTrail(model, oldModel);
+                return model;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
-        public async Task Delete(List<string> ids)
+        public async Task Delete(string id)
         {
             try
             {
-                List<TModel>? itemsToDelete = new();
-                foreach (string id in ids)
+                TModel? itemToDelete = await _dbData.FindAsync(id);
+                if (itemToDelete != null)
                 {
-                    TModel? itemToDelete = await _dbData.FindAsync(id);
-                    if (itemToDelete != null)
-                    {
-                        itemsToDelete.Add(itemToDelete);
-                        _dbData.Remove(itemToDelete);
-                    }
+                    _dbData.Remove(itemToDelete);
+                    await _context.SaveChangesAsync();
+                    await _audit.LogAuditTrail<TModel>(itemToDelete);
                 }
-                await _context.SaveChangesAsync();
-                foreach (TModel deletedItem in itemsToDelete) await _audit.LogAuditTrail<TModel>(deletedItem);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
     }
 }

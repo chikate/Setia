@@ -1,7 +1,8 @@
 export const API_URL: string = import.meta.env.VITE_API_URL
+export const ENV_NAME: string = import.meta.env.VITE_ENV_NAME
 export const TOAST_BASE_HP: number = 3000
 export const DEFAULT_ROWS_OPTIONS: number[] = [15, 30, 60, 100]
-export const DEFAULT_ROWS_INDEX: number = 1
+export const DEFAULT_ROWS_INDEX: number = 0
 export const DARK_THEME_BACKGROUND_IMAGE: string =
   'https://www.ukri.org/wp-content/uploads/2021/10/STFC-041021-EuropeFromSpace-GettyImages-1284041267.jpg'
 

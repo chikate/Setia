@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Setia.Contexts.Base;
 using Setia.Contexts.Gov;
 using Setia.Models.Base;
@@ -16,7 +15,6 @@ namespace Setia.Controllers
     {
         private readonly BaseContext _context;
         private readonly GovContext _contextGov;
-        private readonly ILogger<HelperController> _logger;
         private readonly IAudit _audit;
         private readonly IAuth _auth;
         private readonly IWebHostEnvironment _hostingEnvironment;
@@ -25,7 +23,6 @@ namespace Setia.Controllers
         (
             BaseContext context,
             GovContext contextGov,
-            ILogger<HelperController> logger,
             IAudit audit,
             IAuth auth,
             IWebHostEnvironment hostingEnvironment
@@ -33,7 +30,6 @@ namespace Setia.Controllers
         {
             _context = context;
             _contextGov = contextGov;
-            _logger = logger;
             _audit = audit;
             _auth = auth;
             _hostingEnvironment = hostingEnvironment;
@@ -44,29 +40,33 @@ namespace Setia.Controllers
         {
             try
             {
-                string Author = _auth.GetCurrentUser().Username;
-                if (Author.IsNullOrEmpty()) return BadRequest("Invalid author ID");
-
-                string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, Author);
-                if (!Directory.Exists(userDirectory)) Directory.CreateDirectory(userDirectory);
-
-                foreach (IFormFile file in files)
+                Guid? AuthorId = _auth.GetCurrentUser().Id;
+                if (AuthorId != null)
                 {
-                    if (file.Length > 0)
+                    string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, AuthorId.ToString());
+                    if (!Directory.Exists(userDirectory)) Directory.CreateDirectory(userDirectory);
+
+                    foreach (IFormFile file in files)
                     {
-                        using (FileStream stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
+                        if (file.Length > 0)
                         {
-                            await file.CopyToAsync(stream);
-                            await _audit.LogAuditTrail<FileStream>(stream);
+                            using (FileStream stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                                await _audit.LogAuditTrail<FileStream>(stream);
+                            }
                         }
                     }
-                }
 
-                return Ok();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Invalid author ID");
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest("An error occurred while uploading files.");
             }
         }
@@ -80,7 +80,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -91,7 +90,6 @@ namespace Setia.Controllers
             try { return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Username == username)); }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -106,7 +104,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -125,7 +122,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -151,7 +147,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -178,7 +173,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }

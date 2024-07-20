@@ -19,7 +19,7 @@ namespace Base.Migrations.Gov
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gov")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -30,8 +30,8 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Avatar")
                         .HasColumnType("text");
@@ -78,8 +78,8 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("BeginTime")
                         .HasColumnType("timestamp with time zone");
@@ -112,8 +112,8 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Entity")
                         .HasColumnType("text");
@@ -150,8 +150,8 @@ namespace Base.Migrations.Gov
                         .IsRequired()
                         .HasColumnType("text[]");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("timestamp with time zone");
@@ -175,8 +175,8 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
@@ -214,8 +214,8 @@ namespace Base.Migrations.Gov
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExecutionDate")
                         .HasColumnType("timestamp with time zone");

@@ -33,15 +33,10 @@ namespace Setia.Services
                    subject,
                    message
                  ));
+                return Task.CompletedTask;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-            }
-            return Task.CompletedTask;
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
-
-        public Task UploadFile(IFormFile file, string description) => throw new Exception();
-
+        public Task UploadFile(IFormFile file, string description) => throw new();
     }
 }

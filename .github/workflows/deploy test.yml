@@ -1,6 +1,14 @@
 name: Deploy DEV
 
+env:
+  ORG_ID: ${{ secrets.ORG_ID }}
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+
 on:
+  workflow_dispatch:
+  release:
+    types: [published]
   push:
     branches: [master, main]
   pull_request:

@@ -29,8 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import Chart from 'primevue/chart'
-
 const answerMode = ref(false)
 const datasetsData = ref()
 const checksList = ref<boolean[]>([])

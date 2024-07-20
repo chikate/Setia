@@ -10,32 +10,29 @@ import { PrimeVueResolver } from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
-  return {
-    plugins: [
-      vue(),
-      VueRouter(),
-      Components({ resolvers: [PrimeVueResolver()] }),
-      AutoImport({
-        imports: [
-          'vue',
-          VueRouterAutoImports,
-          {
-            'vue-router/auto': ['useLink']
-          }
-        ],
-        dirs: ['src/stores/**'],
-        vueTemplate: true
-      })
-    ],
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
-    },
-    envDir: 'envs',
-    server: {
-      port: 3000
+export default defineConfig({
+  plugins: [
+    vue(),
+    VueRouter(),
+    Components({ resolvers: [PrimeVueResolver()] }),
+    AutoImport({
+      imports: [
+        'vue',
+        VueRouterAutoImports,
+        {
+          'vue-router/auto': ['useLink']
+        }
+      ],
+      dirs: ['src/stores/**'],
+      vueTemplate: true
+    })
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    port: 3000
   }
 })

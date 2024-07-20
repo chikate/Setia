@@ -1,0 +1,62 @@
+name: Deploy DEV
+
+env:
+  VITE_API_KEY: ${{ secrets.HOST }}/api/
+  VITE_ENV_NAME: ${{ vars.NAME }}
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build-fe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Build Frontend
+        run: |
+          cd FE
+          npm ci
+          npm run build
+
+      - name: Upload Frontend Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: FE-DEV
+          path: FE/dist/
+          retention-days: 1
+
+  build-be:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build Backend
+        run: |
+          cd BE
+          dotnet restore
+
+          dotnet user-secrets set "ConnectionStrings" "${{ secrets.DB_CONNECTION_STRING }}"
+
+          dotnet build --configuration Release
+          dotnet publish -r linux-x64 --self-contained true --configuration Release --output ../publish -p:EnvironmentName=development
+      - name: Upload Backend Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: BE-DEV
+          path: BE/publish/
+          retention-days: 1

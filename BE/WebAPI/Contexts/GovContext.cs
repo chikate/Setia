@@ -5,16 +5,19 @@ namespace Setia.Contexts.Gov;
 
 public partial class GovContext(DbContextOptions<GovContext> options) : DbContext(options)
 {
+    #region SQL Tables
     public DbSet<PontajModel> Pontaj { get; set; }
     public DbSet<QuestionModel> Questions { get; set; }
     public DbSet<QuestionAnswerModel> QuestionAnswers { get; set; }
     public DbSet<PostModel> Posts { get; set; }
     public DbSet<UserCollectionModel> UsersCollection { get; set; }
+    #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("gov");
 
+        #region FKs
         modelBuilder.Entity<QuestionAnswerModel>(entity =>
         {
             entity.HasOne(e => e.QuestionData)
@@ -46,7 +49,7 @@ public partial class GovContext(DbContextOptions<GovContext> options) : DbContex
                   .HasForeignKey(e => e.QuestionId)
                   .HasConstraintName("FK_Post_Question");
         });
-
+        #endregion
 
         //IEnumerable<PropertyInfo> dbSetProperties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
 

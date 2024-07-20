@@ -31,7 +31,8 @@ namespace Base.Gateways.Bases
         {
             try
             {
-                return Ok(await _CRUD.Add(models));
+                foreach (TModel model in models) await _CRUD.Add(model);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -44,7 +45,8 @@ namespace Base.Gateways.Bases
         {
             try
             {
-                return Ok(await _CRUD.Update(models));
+                foreach (TModel model in models) await _CRUD.Update(model);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -55,14 +57,15 @@ namespace Base.Gateways.Bases
         [HttpDelete]
         public async Task<IActionResult> Delete(List<string> ids)
         {
+
             try
             {
-                await _CRUD.Delete(ids);
+                foreach (string id in ids) await _CRUD.Delete(id);
                 return Ok($"[{ids}] were permanently deleted");
             }
             catch (Exception ex)
             {
-                return BadRequest("Error message: " + ex.Message);
+                return BadRequest($"Error message: " + ex.Message);
             }
         }
     }

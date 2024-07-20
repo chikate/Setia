@@ -7,17 +7,17 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    CRUDT: typeof import('./components/CRUDT.vue')['default']
-    FooterBar: typeof import('./components/FooterBar.vue')['default']
-    LoginComponent: typeof import('./components/auth/LoginComponent.vue')['default']
-    NavBar: typeof import('./components/NavBar.vue')['default']
-    NotificationComponent: typeof import('./components/NotificationComponent.vue')['default']
-    PageNotFound: typeof import('./components/PageNotFound.vue')['default']
-    PasswordRecoveryComponent: typeof import('./components/auth/recovery/PasswordRecoveryComponent.vue')['default']
-    QuestionComponent: typeof import('./components/QuestionComponent.vue')['default']
-    RegisterComponent: typeof import('./components/auth/RegisterComponent.vue')['default']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
-    UsernameRecoveryComponent: typeof import('./components/auth/recovery/UsernameRecoveryComponent.vue')['default']
+    CRUDT: (typeof import('./components/CRUDT.vue'))['default']
+    FooterBar: (typeof import('./components/FooterBar.vue'))['default']
+    LoginComponent: (typeof import('./components/auth/LoginComponent.vue'))['default']
+    NavBar: (typeof import('./components/NavBar.vue'))['default']
+    NotificationComponent: (typeof import('./components/NotificationComponent.vue'))['default']
+    PageNotFound: (typeof import('./components/PageNotFound.vue'))['default']
+    PasswordRecoveryComponent: (typeof import('./components/auth/recovery/PasswordRecoveryComponent.vue'))['default']
+    QuestionComponent: (typeof import('./components/QuestionComponent.vue'))['default']
+    RegisterComponent: (typeof import('./components/auth/RegisterComponent.vue'))['default']
+    RouterLink: (typeof import('vue-router'))['RouterLink']
+    RouterView: (typeof import('vue-router'))['RouterView']
+    UsernameRecoveryComponent: (typeof import('./components/auth/recovery/UsernameRecoveryComponent.vue'))['default']
   }
 }

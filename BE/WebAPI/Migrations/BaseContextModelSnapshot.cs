@@ -19,7 +19,7 @@ namespace Base.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("base")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
@@ -33,8 +33,8 @@ namespace Base.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -65,8 +65,8 @@ namespace Base.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
@@ -101,8 +101,8 @@ namespace Base.Migrations
                     b.Property<string>("Tag")
                         .HasColumnType("ltree");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Comments")
                         .HasColumnType("text");
@@ -121,77 +121,82 @@ namespace Base.Migrations
                         new
                         {
                             Tag = "Role.Admin",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(4626)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(7428)
                         },
                         new
                         {
                             Tag = "Controller.CRUD1.Get",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5297)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8121)
                         },
                         new
                         {
                             Tag = "Controller.CRUD1.Add",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5337)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8162)
                         },
                         new
                         {
                             Tag = "Controller.CRUD1.Update",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5381)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8209)
                         },
                         new
                         {
                             Tag = "Controller.CRUD1.Delete",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5404)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8233)
                         },
                         new
                         {
                             Tag = "Controller.Auth.Login",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5508)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8335)
                         },
                         new
                         {
                             Tag = "Controller.Auth.Register",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5552)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8391)
                         },
                         new
                         {
                             Tag = "Controller.Auth.CheckUserRights",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5576)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8413)
                         },
                         new
                         {
                             Tag = "Controller.Helper.Upload",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6206)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8503)
                         },
                         new
                         {
                             Tag = "Controller.Helper.GetUserTags",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6229)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8525)
                         },
                         new
                         {
                             Tag = "Controller.Helper.GetUserProfile",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6252)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8565)
                         },
                         new
                         {
                             Tag = "Controller.Helper.GetPostsForUser",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6293)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8588)
                         },
                         new
                         {
                             Tag = "Controller.Helper.UpdateCurentUserAvatar",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6316)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8631)
                         },
                         new
                         {
                             Tag = "Controller.Helper.SendFriendRequest",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6358)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8656)
                         },
                         new
                         {
                             Tag = "Controller.Helper.AcceptFriendRequest",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6381)
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8680)
+                        },
+                        new
+                        {
+                            Tag = "Controller.QuestionAnswers.GetQuestionAnswereDistribution",
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8975)
                         });
                 });
 
@@ -201,8 +206,8 @@ namespace Base.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Avatar")
                         .HasColumnType("text");
@@ -245,13 +250,13 @@ namespace Base.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("06fda06e-fbf9-4ba7-b16f-0ffb4f60834b"),
+                            Id = new Guid("9ef3c815-91f9-4404-b3a2-adfc9b7792e1"),
                             Email = "",
-                            ExecutionDate = new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(4113),
-                            Name = "Test Name",
-                            Password = "FD5CB51BAFD60F6FDBEDDE6E62C473DA6F247DB271633E15919BAB78A02EE9EB",
-                            Tags = new List<string> { "Dragos" },
-                            Username = "testUser"
+                            ExecutionDate = new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(6732),
+                            Name = "Dragos",
+                            Password = "E7CF3EF4F17C3999A94F2C6F612E8A888E5B1026878E4E19398B23BD38EC221A",
+                            Tags = new List<string> { "Dragos", "Admin" },
+                            Username = "Dragos"
                         });
                 });
 

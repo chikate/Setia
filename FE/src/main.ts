@@ -30,6 +30,10 @@ app.use(
       return { top: 0 }
     }
   })
+  // .beforeEach((to, from, next) => {
+  //   console.log('test')
+  //   next()
+  // })
 )
 
 // Components

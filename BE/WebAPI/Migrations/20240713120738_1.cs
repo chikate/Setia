@@ -34,7 +34,7 @@ namespace Base.Migrations
                     EntityId = table.Column<string>(type: "text", nullable: true),
                     Payload = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true)
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -49,7 +49,7 @@ namespace Base.Migrations
                     Tag = table.Column<string>(type: "ltree", nullable: false),
                     Comments = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -72,7 +72,7 @@ namespace Base.Migrations
                     Signiture = table.Column<string>(type: "text", nullable: true),
                     Friends = table.Column<List<Guid>>(type: "uuid[]", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -92,7 +92,7 @@ namespace Base.Migrations
                     Title = table.Column<string>(type: "text", nullable: true),
                     Comment = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -109,31 +109,32 @@ namespace Base.Migrations
             migrationBuilder.InsertData(
                 schema: "base",
                 table: "Tags",
-                columns: new[] { "Tag", "Author", "Comments", "ExecutionDate", "Tags" },
+                columns: new[] { "Tag", "AuthorId", "Comments", "ExecutionDate", "Tags" },
                 values: new object[,]
                 {
-                    { "Controller.Auth.CheckUserRights", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5576), null },
-                    { "Controller.Auth.Login", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5508), null },
-                    { "Controller.Auth.Register", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5552), null },
-                    { "Controller.CRUD1.Add", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5337), null },
-                    { "Controller.CRUD1.Delete", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5404), null },
-                    { "Controller.CRUD1.Get", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5297), null },
-                    { "Controller.CRUD1.Update", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(5381), null },
-                    { "Controller.Helper.AcceptFriendRequest", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6381), null },
-                    { "Controller.Helper.GetPostsForUser", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6293), null },
-                    { "Controller.Helper.GetUserProfile", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6252), null },
-                    { "Controller.Helper.GetUserTags", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6229), null },
-                    { "Controller.Helper.SendFriendRequest", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6358), null },
-                    { "Controller.Helper.UpdateCurentUserAvatar", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6316), null },
-                    { "Controller.Helper.Upload", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(6206), null },
-                    { "Role.Admin", null, null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(4626), null }
+                    { "Controller.Auth.CheckUserRights", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8413), null },
+                    { "Controller.Auth.Login", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8335), null },
+                    { "Controller.Auth.Register", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8391), null },
+                    { "Controller.CRUD1.Add", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8162), null },
+                    { "Controller.CRUD1.Delete", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8233), null },
+                    { "Controller.CRUD1.Get", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8121), null },
+                    { "Controller.CRUD1.Update", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8209), null },
+                    { "Controller.Helper.AcceptFriendRequest", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8680), null },
+                    { "Controller.Helper.GetPostsForUser", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8588), null },
+                    { "Controller.Helper.GetUserProfile", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8565), null },
+                    { "Controller.Helper.GetUserTags", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8525), null },
+                    { "Controller.Helper.SendFriendRequest", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8656), null },
+                    { "Controller.Helper.UpdateCurentUserAvatar", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8631), null },
+                    { "Controller.Helper.Upload", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8503), null },
+                    { "Controller.QuestionAnswers.GetQuestionAnswereDistribution", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(8975), null },
+                    { "Role.Admin", null, null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(7428), null }
                 });
 
             migrationBuilder.InsertData(
                 schema: "base",
                 table: "Users",
-                columns: new[] { "Id", "Author", "Avatar", "Email", "EmailVerifiedDate", "ExecutionDate", "Friends", "Name", "Password", "Signiture", "Tags", "Username" },
-                values: new object[] { new Guid("06fda06e-fbf9-4ba7-b16f-0ffb4f60834b"), null, null, "", null, new DateTime(2024, 6, 18, 19, 35, 30, 723, DateTimeKind.Utc).AddTicks(4113), null, "Test Name", "FD5CB51BAFD60F6FDBEDDE6E62C473DA6F247DB271633E15919BAB78A02EE9EB", null, new List<string> { "Dragos" }, "testUser" });
+                columns: new[] { "Id", "AuthorId", "Avatar", "Email", "EmailVerifiedDate", "ExecutionDate", "Friends", "Name", "Password", "Signiture", "Tags", "Username" },
+                values: new object[] { new Guid("9ef3c815-91f9-4404-b3a2-adfc9b7792e1"), null, null, "", null, new DateTime(2024, 7, 13, 15, 7, 38, 449, DateTimeKind.Utc).AddTicks(6732), null, "Dragos", "E7CF3EF4F17C3999A94F2C6F612E8A888E5B1026878E4E19398B23BD38EC221A", null, new List<string> { "Dragos", "Admin" }, "Dragos" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserDataId",

@@ -6,7 +6,7 @@ import type { Post } from '@/interfaces'
   <main>
     <div
       id="PostsWrapper"
-      class="flex flex-column gap-4 py-4 overflow-y-auto"
+      class="flex flex-column gap-4 py-4"
       style="max-height: 90vh"
       @vue:beforeMount="usePostsCRUDStore().get()"
     >

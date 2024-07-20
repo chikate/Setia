@@ -28,7 +28,7 @@ namespace Base.Migrations.Gov
                     EndOption = table.Column<string>(type: "text", nullable: true),
                     Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -51,7 +51,7 @@ namespace Base.Migrations.Gov
                     Signiture = table.Column<string>(type: "text", nullable: true),
                     Friends = table.Column<List<Guid>>(type: "uuid[]", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -70,7 +70,7 @@ namespace Base.Migrations.Gov
                     EntityId = table.Column<string>(type: "text", nullable: true),
                     Entity = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -93,7 +93,7 @@ namespace Base.Migrations.Gov
                     Answer = table.Column<List<string>>(type: "text[]", nullable: false),
                     QuestionId = table.Column<Guid>(type: "uuid", nullable: false),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -119,7 +119,7 @@ namespace Base.Migrations.Gov
                     EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>
@@ -141,7 +141,7 @@ namespace Base.Migrations.Gov
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PostId = table.Column<Guid>(type: "uuid", nullable: true),
                     ExecutionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Author = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     Tags = table.Column<List<string>>(type: "text[]", nullable: true)
                 },
                 constraints: table =>

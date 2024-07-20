@@ -70,11 +70,7 @@ namespace Setia.Services
                 }
                 else throw new Exception("User Not Found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
         public async Task Register(UserModel registration)
         {
@@ -98,11 +94,7 @@ namespace Setia.Services
                 // generate confirmation link
                 await _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {"https://www.google.ro"}");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
         public UserModel? GetCurrentUser()
         {
@@ -125,11 +117,7 @@ namespace Setia.Services
                 if (userId == null) { userId = GetCurrentUser()?.Id; }
                 return await _context.Users.Where(u => u.Id == userId).Select(p => p.Tags).SingleOrDefaultAsync();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
         public async Task ChangePassword(string email, string username, string currentPassword, string newPassword)
         {
@@ -153,11 +141,7 @@ namespace Setia.Services
                 }
                 return;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
         public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(password)));
         public async Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null)
@@ -175,11 +159,7 @@ namespace Setia.Services
 
                 return userRights;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, this.GetType().FullName);
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { _logger.LogError(ex, this.GetType().FullName); throw; }
         }
     }
 }

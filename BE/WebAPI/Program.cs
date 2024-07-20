@@ -16,6 +16,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ConfigurationManager config = builder.Configuration;
 
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -115,6 +116,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 app.UseStaticFiles();
 
 app.Services.CreateScope().ServiceProvider.GetRequiredService<BaseContext>().Database.Migrate();

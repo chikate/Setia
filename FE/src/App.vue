@@ -1,133 +1,73 @@
-<script setup>
-const router = useRouter()
-const padding = defineModel('padding', { type: Number, required: false, default: 3 })
+<script setup lang="ts">
+const padding = defineModel('padding', { type: Number, required: false, default: 1 })
+const menuItems = defineModel('menuItems', {
+  type: Array,
+  required: false,
+  default: () => {
+    return useRouter()
+      .getRoutes()
+      .map((route) => ({
+        key: route.path,
+        label: route?.name?.split('/')[1].replaceAll('-', ' ').replaceAll('_', ' '),
+        children: route.path.split('/')[2]
+          ? route.path.split('/').map((elem) => {
+              if (elem != '') return { key: elem, label: elem }
+            })
+          : undefined
+      }))
+  }
+})
+const selectedMenuItems = defineModel('selectedMenuItems', {
+  type: Object,
+  required: false,
+  default: {}
+})
+const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
+  type: Number,
+  required: false,
+  default: 85
+})
 </script>
 
 <template>
-  <div class="flex-row align-items-center justify-content-center">
-    <div class="bg-gray-500 h-full flex-grow-1 flex">
-      <div class="flex-grow-1" />
-      <div :class="`flex-row align-items-center justify-content-end p-${padding}`">
-        <Menu
-          :model="[
-            {
-              label: 'USER SETTINGS',
-              icon: 'pi pi-file',
-              items: [
-                {
-                  label: 'Home',
-                  icon: 'pi pi-home',
-                  command: async () => router.push(`/`)
-                },
-                {
-                  label: 'Settings',
-                  icon: 'pi pi-cog',
-                  command: async () =>
-                    await useHelperStore()
-                      .getUserProfile(String(useAuthStore().userData?.username))
-                      .then((result) =>
-                        result ? router.push(`/profile/${result.username}`) : undefined
-                      ),
-
-                  items: [
-                    {
-                      label: 'Document',
-                      icon: 'pi pi-file'
-                    },
-                    {
-                      label: 'Image',
-                      icon: 'pi pi-image'
-                    },
-                    {
-                      label: 'Video',
-                      icon: 'pi pi-video'
-                    }
-                  ]
-                },
-                {
-                  label: 'Privacy & Safety',
-                  icon: 'pi pi-folder-open'
-                }
-              ]
-            },
-            {
-              label: 'Administration',
-              icon: 'pi pi-file-edit',
-              items: [
-                {
-                  label: 'Users',
-                  command: () => router.push('/adm'),
-                  icon: 'pi pi-copy'
-                },
-                {
-                  label: 'Delete',
-                  icon: 'pi pi-times'
-                }
-              ]
-            },
-            {
-              label: 'Rights',
-              icon: 'pi pi-search'
-            },
-            {
-              separator: true
-            },
-            {
-              label: 'Share',
-              icon: 'pi pi-share-alt',
-              items: [
-                {
-                  label: 'Slack',
-                  icon: 'pi pi-slack'
-                },
-                {
-                  label: 'Whatsapp',
-                  icon: 'pi pi-whatsapp'
-                }
-              ]
-            },
-            {
-              separator: true
-            }
-          ]"
-        >
-          <template #end>
-            <Button
-              v-ripple
-              class="border-0 bg-primary-reverse cursor-pointer gap-2 w-full px-2 m-0"
-              @click="
-                async () =>
-                  await useHelperStore()
-                    .getUserProfile(String(useAuthStore().userData?.username))
-                    .then((result) =>
-                      result ? router.push(`/profile/${result.username}`) : undefined
-                    )
-              "
-            >
-              <Avatar
-                image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-                shape="circle"
-              />
-              <div class="flex-column align-items-start">
-                <span class="font-bold">Amy Elsner</span>
-                <span class="text-sm">Admin</span>
-              </div>
-            </Button>
-          </template>
-        </Menu>
-      </div>
+  <main>
+    <Splitter
+      v-if="useAuthStore()?.token"
+      class="flex-row align-items-center overflow-hidden bg-gray-50"
+    >
+      <SplitterPanel
+        :size="100 - percentageOfTheScreen"
+        :minSize="100 - percentageOfTheScreen"
+        class="shadow-1 bg-white flex overflow-auto"
+        :class="`p-${padding}`"
+      >
+        <div class="flex-grow-1" />
+        <Tree
+          :value="menuItems"
+          v-model:selectionKeys="selectedMenuItems"
+          selectionMode="single"
+          filter
+          filterMode="strict"
+          loadingMode="icon"
+          @node-expand="console.log($event)"
+          @update:selectionKeys="$router.push(Object.keys($event)[0] ?? '/')"
+        />
+      </SplitterPanel>
+      <SplitterPanel :size="percentageOfTheScreen" :class="`p-${padding} overflow-auto flex-row`">
+        <router-view v-slot="{ Component }" class="flex-grow-1 overflow-auto">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+        <div class="flex-grow-1" />
+        <!-- <Button icon="pi pi-times" rounded /> -->
+      </SplitterPanel>
+    </Splitter>
+    <div v-else class="h-full flex justify-content-around">
+      <LoginComponent />
     </div>
-    <div :class="`p-${padding}`" style="width: 50rem">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </div>
-    <div class="flex-grow-1">
-      <Button icon="pi pi-times" rounded :class="`absolute top-0 mt-${padding}`" />
-    </div>
-  </div>
+    <main class="fixed vignette pointer-events-none z-5" />
+  </main>
 </template>
 
 <style>

@@ -12,20 +12,17 @@ namespace Setia.Controllers
     public class AuthController : ControllerBase
     {
         private readonly BaseContext _context;
-        private readonly ILogger<AuthController> _logger;
         private readonly IConfiguration _config;
         private readonly IAuth _auth;
 
         public AuthController
         (
             BaseContext context,
-            ILogger<AuthController> logger,
             IConfiguration config,
             IAuth auth
         )
         {
             _context = context;
-            _logger = logger;
             _config = config;
             _auth = auth;
         }
@@ -37,7 +34,6 @@ namespace Setia.Controllers
             try { return Ok(await _auth.Login(loginCredentials)); }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -53,7 +49,6 @@ namespace Setia.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
@@ -64,7 +59,6 @@ namespace Setia.Controllers
             try { return Ok(await _auth.CheckUserRights(rightsToCeck, user)); }
             catch (Exception ex)
             {
-                _logger.LogError(ex, this.GetType().FullName);
                 return BadRequest(ex.Message);
             }
         }
