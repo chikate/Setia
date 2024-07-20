@@ -24,6 +24,7 @@ jobs:
       - name: Build Frontend
         run: |
           cd FE
+          ls
           npm ci
           npm run build
 
@@ -46,6 +47,8 @@ jobs:
           dotnet-version: 8.0.x
       - name: Build Backend
         run: |
+          cd BE
+          ls
           dotnet restore
 
           dotnet user-secrets set "ConnectionStrings" "${{ secrets.DB_CONNECTION_STRING }}"
