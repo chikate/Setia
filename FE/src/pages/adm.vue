@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 function scrollTo(elem: string, offset: number = 70) {
   const element = document.getElementById(elem)
   if (element) {
@@ -19,4 +19,4 @@ function scrollTo(elem: string, offset: number = 70) {
     })
   }
 }
-</script>
+</script> -->
