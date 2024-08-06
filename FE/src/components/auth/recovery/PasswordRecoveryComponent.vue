@@ -16,6 +16,14 @@
 </template>
 
 <script setup lang="ts">
-const inputEmail = ref<string>('')
-const inputUsername = ref<string>('')
+const inputEmail = defineModel('inputEmail', {
+  type: String,
+  required: false,
+  default: ''
+})
+const inputUsername = defineModel('inputUsername', {
+  type: String,
+  required: false,
+  default: ''
+})
 </script>

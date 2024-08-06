@@ -14,5 +14,9 @@
 </template>
 
 <script setup lang="ts">
-const inputEmail = ref<string>('')
+const inputEmail = defineModel('inputEmail', {
+  type: String,
+  required: false,
+  default: ''
+})
 </script>

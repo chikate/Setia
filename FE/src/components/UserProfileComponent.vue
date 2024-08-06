@@ -3,7 +3,7 @@ import type { User } from '@/interfaces'
 
 const profileUserData = ref<User>({} as User)
 const isMyProfile = computed<boolean>(
-  () => profileUserData.value?.id === useAuthStore().userData?.id
+  () => profileUserData.value.id === useAuthStore().userData?.id
 )
 
 const props = defineProps({
@@ -30,10 +30,10 @@ onBeforeMount(async () => {
     </div>
 
     <div class="flex flex-column text-center align-items-start">
-      <a class="font-bold sm:w-full">{{ profileUserData?.username }}</a>
+      <a class="font-bold sm:w-full">{{ profileUserData.username }}</a>
       <!-- <a class="opacity-50">
         Joined in
-        {{ new Date(profileUserData?.executionDate ?? '').toUTCString().replaceAll(' GMT', '') }}
+        {{ new Date(profileUserData.executionDate ?? '').toUTCString().replaceAll(' GMT', '') }}
       </a> -->
     </div>
   </div>

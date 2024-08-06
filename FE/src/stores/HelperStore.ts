@@ -27,10 +27,14 @@ export const useHelperStore = defineStore('Helper', {
       return (await makeApiRequest(`${this.$id}/GetUserProfile`, 'get', { username })).json()
     },
     async setUserAvatar(avatarUrl: string) {
-      await makeApiRequest(`${this.$id}/UpdateCurentUserAvatar`, 'get', { avatarUrl })
+      await makeApiRequest(`${this.$id}/UpdateCurentUserAvatar`, 'get', {
+        avatarUrl
+      })
     },
     async sendFriendRequest(username: string) {
-      await makeApiRequest(`${this.$id}/SendFriendRequest`, 'get', { username })
+      await makeApiRequest(`${this.$id}/SendFriendRequest`, 'get', {
+        username
+      })
     },
     async getQuestionAnswereDistribution(questionId: string) {
       return (

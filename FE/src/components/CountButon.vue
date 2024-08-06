@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const icon = defineModel('icon', { type: String, required: true, default: 'pi-thumbs-up' })
+const icon = defineModel('icon', {
+  type: String,
+  required: true,
+  default: 'pi-thumbs-up'
+})
 // const count = defineModel('count', { type: Number, required: false, default: 0 })
 
 defineProps({

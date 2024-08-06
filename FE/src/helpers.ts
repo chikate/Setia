@@ -24,7 +24,7 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
   // let urlParams = ''
   // if (method.toUpperCase() == 'GET') {
   //   urlParams = Object.values(body)
-  //     ?.map((filter) => 'filters=' + encodeURIComponent(JSON.stringify(filter)))
+  //     .map((filter) => 'filters=' + encodeURIComponent(JSON.stringify(filter)))
   //     .join('&')
   // }
   // console.log(urlParams)
@@ -33,29 +33,33 @@ export async function makeApiRequest(path: string, method: string, body?: any): 
     path +=
       '?' +
       Object.entries(body)
-        ?.map((entrie) => `${entrie[0]}=${entrie[1]}`)
+        .map((entrie) => `${entrie[0]}=${entrie[1]}`)
         .join('&')
   }
 
-  // Fetch function
-  return await fetch(API_URL + path, {
-    method,
-    headers,
-    body:
-      body && method.toUpperCase() != 'GET'
-        ? body instanceof FormData
-          ? body
-          : JSON.stringify(body)
-        : undefined
-  })
-
+  try {
+    // Fetch function
+    return await fetch(API_URL + path, {
+      method,
+      headers,
+      body:
+        body && method.toUpperCase() != 'GET'
+          ? body instanceof FormData
+            ? body
+            : JSON.stringify(body)
+          : undefined
+    })
+  } catch (error) {
+    console.error
+  }
+  return new Response()
   // await response
 
   // if (response.status === 200) {
-  //   if (response.headers.get('Content-Type')?.includes('application/json')) {
+  //   if (response.headers.get('Content-Type').includes('application/json')) {
   //     return await response.json()
   //   }
-  //   if (response.headers.get('Content-Type')?.includes('text/plain')) {
+  //   if (response.headers.get('Content-Type').includes('text/plain')) {
   //     return await response.text()
   //   } else {
   //     return response
@@ -69,6 +73,10 @@ export function capitalizeString(input: string): string {
   return input[0].toUpperCase() + input.substring(1)
 }
 
+export function capitalize(input: string): string {
+  return input.replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 export function isValidISODate(dateString: string): boolean {
   const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/
   if (!isoDatePattern.test(dateString)) {
@@ -76,4 +84,13 @@ export function isValidISODate(dateString: string): boolean {
   }
   const date = new Date(dateString)
   return !isNaN(date.getTime()) && dateString === date.toISOString().split('T')[0]
+}
+
+export function download(url: string, name?: string) {
+  const a = document.createElement('a') as HTMLAnchorElement
+  a.href = url
+  a.download = (name ?? url.split('/').pop() ?? 'download').replace(/[^0-9A-Z]+/gi, '')
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
 }

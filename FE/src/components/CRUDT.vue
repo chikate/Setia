@@ -47,7 +47,7 @@ onBeforeMount(async () => {
       typeof elem.type != typeof String()
     ) {
       exposedData.value.splice(index, 1)
-      Object.keys(props.store.getDefaults()[elem.field])?.forEach(async (el) => {
+      Object.keys(props.store.getDefaults()[elem.field]).forEach(async (el) => {
         exposedData.value.push({
           field: elem.field + '.' + el,
           header:
@@ -96,8 +96,8 @@ const filters = ref({
       v-model:expandedRows="expandedRows"
       v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
-      :globalFilterFields="[exposedData[0]?.field]"
-      :paginator="store.allLoadedItems?.length > DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
+      :globalFilterFields="[exposedData[0].field]"
+      :paginator="store.allLoadedItems?.length ?? 0 > DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
       :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
       :totalRecords="store.allLoadedItems?.length ?? 0"
@@ -146,7 +146,7 @@ const filters = ref({
                 label: showMultipleDelete ? 'Cancel multiple select' : 'Multiple select',
                 icon: 'pi pi-th-large',
                 command: () => (
-                  (showMultipleDelete = !showMultipleDelete), props.store?.resetToDefaults
+                  (showMultipleDelete = !showMultipleDelete), props.store.resetToDefaults
                 )
               },
               {
@@ -179,14 +179,14 @@ const filters = ref({
         <slot name="expansion" />
       </template>
       <Column
-        v-if="showMultipleDelete && !(selectedColumns?.length == exposedData?.length)"
+        v-if="showMultipleDelete && !(selectedColumns?.length ?? 0 == exposedData?.length ?? 0)"
         selectionMode="multiple"
         class="pr-0 pt-0"
         style="width: 1px"
         key="select"
       />
       <!-- <Column
-        v-if="!(selectedColumns.length == exposedData?.length) && $slots.expansion"
+        v-if="!(selectedColumns.length == exposedData.length) && $slots.expansion"
         expander
         class="pr-0"
         style="width: 1px"
@@ -194,7 +194,7 @@ const filters = ref({
       /> -->
 
       <Column
-        v-if="!(selectedColumns?.length == exposedData?.length)"
+        v-if="!(selectedColumns?.length ?? 0 == exposedData?.length ?? 0)"
         style="width: 1px"
         header="#"
         headerClass="column-text-center "
@@ -208,7 +208,7 @@ const filters = ref({
       </Column>
 
       <Column
-        v-for="(col, i) in exposedData?.filter((item: any) => !selectedColumns.includes(item))"
+        v-for="(col, i) in exposedData.filter((item: any) => !selectedColumns.includes(item))"
         :key="col.field + '_' + i"
         :header="col.header"
         :field="col.field"
@@ -227,10 +227,12 @@ const filters = ref({
           <div v-else>
             {{
               (() => {
-                const value = field.split('.').reduce((acc, part) => acc && acc[part], data)
-                return value?.toString().split('T')[1]?.endsWith('Z')
-                  ? (new Date(value)?.toUTCString()?.replaceAll(' GMT', '') ?? value?.toString())
-                  : value?.toString()
+                const value = field
+                  .split('.')
+                  .reduce((acc: any, part: any) => acc && acc[part], data)
+                return value.toString().split('T')[1].endsWith('Z')
+                  ? (new Date(value).toUTCString().replaceAll(' GMT', '') ?? value.toString())
+                  : value.toString()
               })()
             }}
           </div>
@@ -248,8 +250,8 @@ const filters = ref({
 
       <!-- <Column
         v-if="
-          !(selectedColumns.length == exposedData?.length) && store.allLoadedItems
-            ? store.allLoadedItems[0]?.active
+          !(selectedColumns.length == exposedData.length) && store.allLoadedItems
+            ? store.allLoadedItems[0].active
             : false
         "
         header="Active"
@@ -330,7 +332,7 @@ const filters = ref({
               option-label="tag"
               option-value="tag"
               multiple
-              :filter="(useTagsCRUDStore()?.allLoadedItems?.length ?? 0) > 20"
+              :filter="(useTagsCRUDStore().allLoadedItems?.length ?? 0) > 20"
               class="w-full"
               listStyle="height:20.28rem"
             />
@@ -373,12 +375,12 @@ const filters = ref({
           </Button>
 
           <!-- <Calendar
-            v-else-if="store.editItem[key.field]?.split('T')[1]?.endsWith('Z')"
+            v-else-if="store.editItem[key.field].split('T')[1].endsWith('Z')"
             @vue:beforeMount="
               (store as any).editItem[key.field] = new Date(store.editItem[key.field]).toISOString()
             "
             @update:modelValue="
-              (store as any).editItem[key.field] = ($event as Date)?.toISOString()
+              (store as any).editItem[key.field] = ($event as Date).toISOString()
             "
             v-model="(store as any).editItem[key.field]"
             showTime

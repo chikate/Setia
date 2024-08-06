@@ -12,7 +12,7 @@ import type { Post } from '@/interfaces'
     >
       <PostComponent
         v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
-          (elem: Post) => elem.tags?.indexOf('News') > -1
+          (elem: Post) => elem.tags.indexOf('News') > -1
         )"
         :key="i"
         :post-data="postData"

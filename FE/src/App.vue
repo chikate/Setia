@@ -1,23 +1,45 @@
 <script setup lang="ts">
 import type { TreeNode } from 'primevue/treenode'
+import Toast from 'primevue/toast'
 
-const padding = defineModel('padding', { type: Number, required: false, default: 1 })
+const globalPadding = defineModel('globalPadding', {
+  type: Number,
+  required: false,
+  default: 1
+})
 const menuItems = defineModel('menuItems', {
   type: Array as PropType<TreeNode[]>,
   required: false,
-  default: () => {
-    return useRouter()
+  default: () =>
+    useRouter()
       .getRoutes()
-      .map((route) => ({
-        key: route.path,
-        label: String(route?.name)?.split('/')[1].replaceAll('-', ' ').replaceAll('_', ' '),
-        children: route.path.split('/')[2]
-          ? route.path.split('/').map((elem) => {
-              if (elem != '') return { key: elem, label: elem }
-            })
-          : undefined
-      }))
-  }
+      .reduce((acc, route) => {
+        if (route.path.includes(':')) return acc
+
+        const parts = route.path.split('/')
+        const [_, root, ...rest] = parts
+
+        if (!root) return acc
+
+        let node = acc.find((item) => item.key === root) as any
+        if (!node) {
+          node = {
+            key: root,
+            label: root.replace(/[-_]/g, ' '),
+            children: []
+          }
+          acc.push(node)
+        }
+
+        if (rest.length > 0)
+          node.children.push({
+            key: parts.slice(1).join('/'),
+            label: String(rest).replace(/[-_]/g, ' ')
+          })
+        else node.leaf = true
+
+        return acc
+      }, [] as TreeNode[])
 })
 const selectedMenuItems = defineModel('selectedMenuItems', {
   type: Object,
@@ -34,28 +56,31 @@ const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
 <template>
   <main>
     <Splitter
-      v-if="useAuthStore()?.token"
+      v-if="useAuthStore().token"
       class="flex-row align-items-center overflow-hidden bg-gray-50"
     >
       <SplitterPanel
         :size="100 - percentageOfTheScreen"
         :minSize="100 - percentageOfTheScreen"
         class="shadow-1 bg-white flex overflow-auto"
-        :class="`p-${padding}`"
+        :class="`p-${globalPadding}`"
       >
         <div class="flex-grow-1" />
         <Tree
           :value="menuItems"
-          v-model:selectionKeys="selectedMenuItems"
           selectionMode="single"
+          v-model:selectionKeys="selectedMenuItems"
+          :metaKeySelection="false"
           filter
           filterMode="strict"
           loadingMode="icon"
-          @node-expand="console.log($event)"
-          @update:selectionKeys="$router.push(Object.keys($event)[0] ?? '/')"
+          @nodeSelect="$router.push($event.key)"
         />
       </SplitterPanel>
-      <SplitterPanel :size="percentageOfTheScreen" :class="`p-${padding} overflow-auto flex-row`">
+      <SplitterPanel
+        :size="percentageOfTheScreen"
+        :class="`p-${globalPadding} overflow-auto flex-row`"
+      >
         <router-view v-slot="{ Component }" class="flex-grow-1 overflow-auto">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
@@ -69,6 +94,7 @@ const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
       <LoginComponent />
     </div>
     <main class="fixed vignette pointer-events-none z-5" />
+    <Toast group="main" />
   </main>
 </template>
 

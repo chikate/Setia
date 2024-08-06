@@ -2,14 +2,32 @@
 import { TOAST_BASE_HP } from '@/constants'
 import FloatLabel from 'primevue/floatlabel'
 import { useToast } from 'primevue/usetoast'
+
 const toast = useToast()
 
-const inputEmail = ref<string>('')
-const inputUsername = ref<string>('')
-const inputPassword = ref<string>('')
-const inputRepeatPassword = ref<string>('')
-
 const registerClicked = ref<boolean>(false)
+
+const inputEmail = defineModel('inputEmail', {
+  type: String,
+  required: false,
+  default: ''
+})
+const inputUsername = defineModel('inputUsername', {
+  type: String,
+  required: false,
+  default: ''
+})
+const inputPassword = defineModel('inputPassword', {
+  type: String,
+  required: false,
+  default: ''
+})
+
+const inputRepeatPassword = defineModel('inputRepeatPassword', {
+  type: String,
+  required: false,
+  default: ''
+})
 
 async function registerClickedHandler() {
   registerClicked.value = true

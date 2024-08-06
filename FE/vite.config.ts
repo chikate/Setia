@@ -12,20 +12,14 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
     VueRouter(),
     Components({ resolvers: [PrimeVueResolver()] }),
     AutoImport({
-      imports: [
-        'vue',
-        VueRouterAutoImports,
-        {
-          'vue-router/auto': ['useLink']
-        }
-      ],
+      imports: ['vue', VueRouterAutoImports],
       dirs: ['src/stores/**'],
       vueTemplate: true
-    })
+    }),
+    vue()
   ],
   resolve: {
     alias: {

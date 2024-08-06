@@ -4,14 +4,14 @@
 
     <div class="flex flex-column gap-2">
       <InputGroup>
-        <InputGroupAddon v-if="inputUsername" style="min-width: 6rem" class="p-0">
+        <InputGroupAddon v-if="inputUsername" style="min-width: 6rem" class="p-0 m-0">
           Username
         </InputGroupAddon>
         <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
       </InputGroup>
 
       <InputGroup>
-        <InputGroupAddon v-if="inputPassword" style="min-width: 6rem" class="p-0">
+        <InputGroupAddon v-if="inputPassword" style="min-width: 6rem" class="p-0 m-0">
           Password
         </InputGroupAddon>
         <Password
@@ -40,7 +40,7 @@
       <ProgressSpinner v-if="showLoginSpinner" style="width: 20px; height: 20px" strokeWidth="8" />
     </Button>
 
-    <div class="flex-row justify-content-around" @click="$emit('close')">
+    <div class="flex-row justify-content-around">
       <RouterLink to="/recovery">Can't sign in?</RouterLink>
       <RouterLink to="/register">Create Account</RouterLink>
     </div>
@@ -49,14 +49,24 @@
 
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
-
+const toast = useToast()
 const showLoginSpinner = ref<boolean>(false)
 
-const inputUsername = ref<string>('')
-const inputPassword = ref<string>('')
-const staySignedIn = ref<boolean>(false)
-
-const toast = useToast()
+const inputUsername = defineModel('inputUsername', {
+  type: String,
+  required: false,
+  default: ''
+})
+const inputPassword = defineModel('inputPassword', {
+  type: String,
+  required: false,
+  default: ''
+})
+const staySignedIn = defineModel('staySignedIn', {
+  type: Boolean,
+  required: false,
+  default: false
+})
 
 async function submitLogin() {
   if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
@@ -69,14 +79,14 @@ async function submitLogin() {
             severity: 'success',
             summary: 'Succesful login',
             detail: '',
-            life: 3000,
+            life: TOAST_BASE_HP,
             group: 'main'
           })
         : toast.add({
             severity: 'error',
             summary: 'Invalid account',
             detail: '',
-            life: 3000,
+            life: TOAST_BASE_HP,
             group: 'main'
           })
     })

@@ -2,25 +2,26 @@
 import type { Post, User } from '@/interfaces'
 
 const profileUserData = ref<User>({} as User)
-const router = useRouter()
 const showUploadAvatar = ref()
 const avatarUrl = ref<string>('')
 const isMyProfile = computed<boolean>(
-  () => profileUserData.value?.id === useAuthStore().userData?.id
+  () => profileUserData.value.id === useAuthStore().userData?.id
 )
 
 const loadingComplete = ref<boolean>(false)
-onBeforeMount(async () => {
+
+onBeforeMount(init)
+async function init() {
   try {
     profileUserData.value = await useHelperStore().getUserProfile(
-      String((useRoute().params as any)?.name)
+      String((useRoute().params as any).name)
     )
 
     loadingComplete.value = true
   } catch {
-    router.push('/profile')
+    useRouter().push('/profile')
   }
-})
+}
 </script>
 
 <!-- <FileUpload
@@ -39,21 +40,22 @@ customUpload
       <div class="flex flex-wrap align-items-center gap-3">
         <Avatar
           class="shadow-1"
-          :image="profileUserData?.avatar"
+          :image="profileUserData.avatar"
           size="xlarge"
           shape="circle"
           @click="showUploadAvatar = isMyProfile && !showUploadAvatar"
           :class="isMyProfile ? 'cursor-pointer' : undefined"
         />
         <div class="flex flex-column">
-          <a class="font-bold">{{ profileUserData?.username }}</a>
+          <a class="font-bold">{{ profileUserData.username }}</a>
           <a class="opacity-50">
-            Joined {{ new Date(profileUserData?.executionDate ?? '').toDateString().toLowerCase() }}
+            Joined
+            {{ new Date(profileUserData.executionDate ?? '').toDateString().toLowerCase() }}
           </a>
         </div>
       </div>
       <PostComponent
-        v-if="profileUserData?.id == useAuthStore().userData?.id"
+        v-if="profileUserData.id == useAuthStore().userData?.id"
         :post-data="usePostsCRUDStore().editItem"
       />
     </div>

@@ -66,7 +66,7 @@
       </div>
 
       <i
-        v-badge="useNotificationsCRUDStore().allLoadedItems?.length"
+        v-badge="useNotificationsCRUDStore().allLoadedItems?.length ?? ''"
         v-tooltip.left="{
           value: `Notifications`,
           showDelay: 700,
@@ -97,7 +97,11 @@
             <div v-else class="flex flex-column gap-3">
               <Button
                 label="Profile"
-                @click="$router.push(`/profile/${useAuthStore().userData?.username}`)"
+                @click="
+                  useAuthStore().userData
+                    ? $router.push(`/profile/${useAuthStore().userData?.username}`)
+                    : undefined
+                "
               />
               <Button label="Collection" @click="$router.push(`/collection`)" />
               <Button

@@ -3,7 +3,7 @@
     <InputText v-model="search" class="card hover:bg-gray-50" placeholder="Search" />
     <div class="flex-wrap">
       <div
-        v-for="(friend, i) in friends?.filter((elem) => elem.name.includes(search))"
+        v-for="(friend, i) in friends.filter((elem) => elem.name.includes(search))"
         :key="i"
         class="card cursor-pointer hover:bg-gray-50 bg-primary-reverse border-round p-2 gap-2 flex-row align-items-center justify-content-center"
       >

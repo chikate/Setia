@@ -2,7 +2,10 @@
 import { Question, QuestionAnswer } from '@/interfaces'
 
 const answerMode = defineModel('answerMode', { type: Boolean, default: false })
-const customAnswere = defineModel('customAnswere', { type: String, default: '' })
+const customAnswere = defineModel('customAnswere', {
+  type: String,
+  default: ''
+})
 const thisQuestionData = defineModel('questionData', {
   type: Object as PropType<Question>,
   required: true,
@@ -80,7 +83,7 @@ async function refresh() {
         icon="pi pi-plus"
         label="Add option"
         class="flex-grow-1 shadow-1"
-        @click="thisQuestionData.options?.push('') ?? (thisQuestionData.options = [''])"
+        @click="thisQuestionData.options.push('') ?? (thisQuestionData.options = [''])"
       />
       <Button
         v-if="answerMode && !customAnswere"

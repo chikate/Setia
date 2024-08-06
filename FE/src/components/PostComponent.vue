@@ -14,7 +14,7 @@ const thisPostData = defineModel('postData', {
 
 const showActions = ref<number>()
 const authorData = ref<User>({} as User)
-const localMessage = ref(thisPostData.value?.message)
+const localMessage = ref(thisPostData.value.message)
 const menuRef = ref()
 const inEdit = ref<boolean>(false)
 
@@ -22,7 +22,7 @@ const icons = ref([
   {
     name: usePostsCRUDStore().allLoadedItems?.find(
       (post: Post) =>
-        (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+        (post.tags.indexOf('Positive') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
         post.author == useAuthStore().userData?.username
     )
@@ -32,7 +32,7 @@ const icons = ref([
   {
     name: usePostsCRUDStore().allLoadedItems?.find(
       (post: Post) =>
-        (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+        (post.tags.indexOf('Negative') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
         post.author == useAuthStore().userData?.username
     )
@@ -51,8 +51,8 @@ const icons = ref([
 ])
 
 onBeforeMount(async () => {
-  if (thisPostData.value?.author)
-    authorData.value = await useHelperStore().getUserProfile(String(thisPostData.value?.author))
+  if (thisPostData.value.author)
+    authorData.value = await useHelperStore().getUserProfile(String(thisPostData.value.author))
 
   await usePostsCRUDStore().get()
 
@@ -60,7 +60,7 @@ onBeforeMount(async () => {
     {
       name: usePostsCRUDStore().allLoadedItems?.find(
         (post: Post) =>
-          (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+          (post.tags.indexOf('Positive') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
           post.author == useAuthStore().userData?.username
       )
@@ -70,7 +70,7 @@ onBeforeMount(async () => {
     {
       name: usePostsCRUDStore().allLoadedItems?.find(
         (post: Post) =>
-          (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+          (post.tags.indexOf('Negative') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
           post.author == useAuthStore().userData?.username
       )
@@ -109,18 +109,18 @@ function stringToColor(str: string): string {
 
 async function post(tags?: string[]) {
   let questionsData: Question | undefined = undefined
-  if (thisPostData.value?.questionData)
+  if (thisPostData.value.questionData)
     questionsData = (
-      await useQuestionsCRUDStore().add([thisPostData.value?.questionData] as Question[])
+      await useQuestionsCRUDStore().add([thisPostData.value.questionData] as Question[])
     )[0]
-  await usePostsCRUDStore()?.add([
+  await usePostsCRUDStore().add([
     {
-      ...usePostsCRUDStore()?.editItem,
+      ...usePostsCRUDStore().editItem,
       message: localMessage.value,
       questionId: questionsData?.id,
       // comment
-      tags: thisPostData.value?.entityId ? ['Comment'] : tags,
-      entityId: thisPostData.value?.entityId
+      tags: thisPostData.value.entityId ? ['Comment'] : tags,
+      entityId: thisPostData.value.entityId
     }
   ] as Post[])
 }
@@ -197,8 +197,8 @@ async function addLocalQuestion() {
               },
               {
                 label:
-                  thisPostData.tags?.indexOf('Private') > -1 ? 'Make it Public' : 'Make it Private',
-                icon: thisPostData.tags?.indexOf('Private') > -1 ? 'pi pi-eye' : 'pi pi-eye-slash',
+                  thisPostData.tags.indexOf('Private') > -1 ? 'Make it Public' : 'Make it Private',
+                icon: thisPostData.tags.indexOf('Private') > -1 ? 'pi pi-eye' : 'pi pi-eye-slash',
                 command: () => {}
               }
             ]
@@ -248,8 +248,8 @@ async function addLocalQuestion() {
           {
             label: 'News',
             command: () => {
-              if (usePostsCRUDStore()?.editItem?.tags) {
-                usePostsCRUDStore()?.editItem?.tags?.push('News')
+              if (usePostsCRUDStore().editItem.tags) {
+                usePostsCRUDStore().editItem.tags.push('News')
               } else {
                 usePostsCRUDStore().editItem.tags = ['News']
               }
@@ -275,18 +275,17 @@ async function addLocalQuestion() {
             icon.name.includes('pi-thumbs-up')
               ? usePostsCRUDStore().allLoadedItems?.filter(
                   (post: Post) =>
-                    (post.tags?.indexOf('Positive') ?? -1) > -1 && post.entityId == thisPostData.id
+                    (post.tags.indexOf('Positive') ?? -1) > -1 && post.entityId == thisPostData.id
                 ).length
               : icon.name.includes('pi-thumbs-down')
                 ? usePostsCRUDStore().allLoadedItems?.filter(
                     (post: Post) =>
-                      (post.tags?.indexOf('Negative') ?? -1) > -1 &&
-                      post.entityId == thisPostData.id
+                      (post.tags.indexOf('Negative') ?? -1) > -1 && post.entityId == thisPostData.id
                   ).length
                 : icon.name.includes('pi-comments')
                   ? usePostsCRUDStore().allLoadedItems?.filter(
                       (post: Post) =>
-                        (post.tags?.indexOf('Comment') ?? -1) > -1 &&
+                        (post.tags.indexOf('Comment') ?? -1) > -1 &&
                         post.entityId == thisPostData.id
                     ).length
                   : undefined
@@ -300,7 +299,7 @@ async function addLocalQuestion() {
                     .delete(
                       usePostsCRUDStore().allLoadedItems?.filter(
                         (post) =>
-                          (post.tags?.indexOf('Positive') ?? -1) > -1 &&
+                          (post.tags.indexOf('Positive') ?? -1) > -1 &&
                           post.entityId == thisPostData.id &&
                           post.author == useAuthStore().userData?.username
                       )
@@ -314,7 +313,7 @@ async function addLocalQuestion() {
                         .delete(
                           usePostsCRUDStore().allLoadedItems?.filter(
                             (post) =>
-                              (post.tags?.indexOf('Negative') ?? -1) > -1 &&
+                              (post.tags.indexOf('Negative') ?? -1) > -1 &&
                               post.entityId == thisPostData.id &&
                               post.author == useAuthStore().userData?.username
                           )

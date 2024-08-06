@@ -14,7 +14,7 @@
       ]"
       :key="i"
       :to="menu.path"
-      :class="{ 'text-blue-500': useRoute().path == menu.path }"
+      :class="{ 'text-blue-500': $route.path == menu.path }"
       v-tooltip.bottom="menu.label"
     >
       <i
@@ -24,7 +24,7 @@
     </RouterLink>
     <a
       @click="
-        useAuthStore().token
+        useAuthStore().userData
           ? $router.push(`/profile/${useAuthStore().userData?.username}`)
           : accountOverlay.toggle($event)
       "
@@ -33,7 +33,7 @@
       <Avatar
         class="mx-1"
         v-if="true"
-        v-badge="useNotificationsCRUDStore().allLoadedItems?.length"
+        v-badge="useNotificationsCRUDStore().allLoadedItems?.length ?? ''"
         v-tooltip.bottom="'Profile'"
       />
       <div class="pr-2 font-semibold" v-else>
