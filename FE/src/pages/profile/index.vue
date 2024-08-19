@@ -3,7 +3,7 @@ const search = ref()
 </script>
 
 <template>
-  <main
+  <div
     class="p-8"
     style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))"
   >
@@ -13,5 +13,5 @@ const search = ref()
       <a class="text-7xl font-bold">SEARCH PROFILES</a>
       <InputText v-model="search" @keypress.enter="$router.push(`/profile/${search}`)" />
     </div>
-  </main>
+  </div>
 </template>

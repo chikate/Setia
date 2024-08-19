@@ -65,7 +65,7 @@ namespace Main.Services.Base
                     expires: DateTime.SpecifyKind(DateTime.Now.AddDays(1)!, DateTimeKind.Utc),
                     signingCredentials: new SigningCredentials(
                         new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(_config["Key"] ?? "")),
+                            Encoding.UTF8.GetBytes(_config["CryptKey"] ?? "")),
                             SecurityAlgorithms.HmacSha256)));
 
                 return new { Token = token, User = user };

@@ -17,7 +17,10 @@ export default defineConfig({
     AutoImport({
       imports: ['vue', VueRouterAutoImports],
       dirs: ['src/stores/**'],
-      vueTemplate: true
+      vueTemplate: true,
+      eslintrc: {
+        enabled: true
+      }
     }),
     vue()
   ],
@@ -27,6 +30,12 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000
+    port: 3000,
+    strictPort: true
+    // hmr: {
+    //   host: import.meta.env.VITE_SERVER_IP,
+    //   protocol: 'ws',
+    //   clientPort: 3000
+    // }
   }
 })

@@ -144,7 +144,7 @@ async function registerClickedHandler() {
         <template #footer>
           <Divider class="my-3 p-0" />
           <p class="m-0 mb-2 p-0">Suggestions</p>
-          <ul class="px-4 m-0" style="line-height: 1.5">
+          <ul class="px-4 m-0">
             <li>At least one lowercase</li>
             <li>At least one uppercase</li>
             <li>At least one numeric</li>

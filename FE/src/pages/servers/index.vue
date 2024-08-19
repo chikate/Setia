@@ -12,6 +12,7 @@
         {{ friend.name }}
       </div>
     </div>
+    <Button @click="$router.push('/servers/create-server')" />
   </div>
 </template>
 

@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
         ValidIssuer = config["Server"],
         ValidAudience = config["Origin"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Key"] ?? ""))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"] ?? ""))
     }
 );
 
@@ -141,10 +141,6 @@ app.Map("/send", async context =>
             CancellationToken.None
         );
     }
-    else
-    {
-        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-    }
+    else context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 });
-
 await app.RunAsync();

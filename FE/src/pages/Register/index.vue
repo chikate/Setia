@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-4 w-screen align-items-center justify-content-center">
+  <div class="flex flex-wrap gap-4 align-items-center justify-content-center">
     <RegisterComponent />
     <div>
       <label>We are glat thet you decided to join us</label>

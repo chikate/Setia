@@ -39,7 +39,8 @@ const exposedData = ref(
     }))
 )
 
-onBeforeMount(async () => {
+onBeforeMount(init)
+async function init() {
   exposedData.value.forEach(async (elem, index) => {
     if (
       typeof elem.type == typeof Object() &&
@@ -62,7 +63,7 @@ onBeforeMount(async () => {
       })
     }
   })
-})
+}
 
 // add column filters here otherwhise it will brake, we need to make this runtime depending push values
 const filters = ref({
@@ -109,7 +110,7 @@ const filters = ref({
     >
       <!-- @row-click="(expandedRows[$event.index] = true), console.log(expandedRows)" -->
       <template #header>
-        <div class="flex-row gap-2 align-items-end px-2">
+        <div class="flex-row gap-2 align-items-center px-2">
           <h2 class="w-full m-0 p-0 font-bold">
             {{
               store.$id[0].toUpperCase() +

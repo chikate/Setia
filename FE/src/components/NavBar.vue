@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed z-5 w-screen flex-row gap-8 pointer-events-none px-8"
+    class="fixed z-5 w-full flex-row gap-8 pointer-events-none px-8"
     :class="[
       !(scrollPosition < scrollThresHold && $route.name == '/')
         ? 'py-3 bg-gray-alpha-20 blur-10'

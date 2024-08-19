@@ -69,9 +69,7 @@ body {
   color: var(--color-text);
   background: var(--color-background);
 
-  line-height: 1.6;
   font-family: 'Open Sans', 'Segoe UI', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -90,6 +88,21 @@ body {
 
 .p-splitter {
   height: 100%;
+}
+
+.p-splitter .p-splitter-gutter:hover .p-splitter-gutter-handle {
+  background: #6189bd;
+  outline-color: transparent;
+}
+
+.p-splitter .p-splitter-gutter {
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s,
+    outline-color 0.2s;
+  background: transparent;
 }
 
 .p-splitter-panel {

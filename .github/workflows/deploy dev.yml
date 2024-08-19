@@ -1,9 +1,5 @@
 name: Deploy DEV
 
-env:
-  VITE_API_KEY: ${{ secrets.HOST }}/api/
-  VITE_ENV_NAME: ${{ vars.NAME }}
-
 on:
   push:
     branches: [master, main]
@@ -11,12 +7,13 @@ on:
     branches: [master, main]
 
 jobs:
-  build-fe:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+################################################################################
+      - name: Setup Frontend
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
@@ -25,22 +22,11 @@ jobs:
         run: |
           cd FE
           ls
+
           npm ci
           npm run build
-
-      - name: Upload Frontend Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: FE-DEV
-          path: FE/dist/
-          retention-days: 1
-
-  build-be:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
+################################################################################
+      - name: Setup Backend
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
@@ -49,16 +35,26 @@ jobs:
         run: |
           cd BE
           ls
+
           dotnet restore
 
-          dotnet user-secrets set "ConnectionStrings" "${{ secrets.DB_CONNECTION_STRING }}"
-
-          dotnet build -c Release
-          dotnet publish -c Release
+          dotnet user-secrets set "DBConnectionStrings" "${{ secrets.DB_CONNECTION_STRING }}"
+          dotnet user-secrets set "DBTech" "PgSQL"
+          dotnet user-secrets set "CryptKey" "uwXk6g6Kxr166TGji80ICeI0udlzm7hT"
+          dotnet user-secrets set "Origin" "http://localhost:3000"
+          dotnet user-secrets set "Server" "https://localhost:44381"
           
-      - name: Upload Backend Artifacts
+          dotnet build -c Release
+          dotnet publish -c Release -o ./webapp
+################################################################################
+      - name: Copy Frontend to Backend
+        run: |
+          cp -R FE/dist/* BE/webapp/
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BE-DEV
-          path: BE/publish/
+          name: iis-deploy-${{ vars.NAME }}
+          path: BE/webapp/**
+          if-no-files-found: error
           retention-days: 1

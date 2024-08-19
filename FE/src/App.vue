@@ -46,11 +46,6 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
   required: false,
   default: {}
 })
-const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
-  type: Number,
-  required: false,
-  default: 85
-})
 </script>
 
 <template>
@@ -60,8 +55,8 @@ const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
       class="flex-row align-items-center overflow-hidden bg-gray-50"
     >
       <SplitterPanel
-        :size="100 - percentageOfTheScreen"
-        :minSize="100 - percentageOfTheScreen"
+        :size="25"
+        :minSize="15"
         class="shadow-1 bg-white flex overflow-auto"
         :class="`p-${globalPadding}`"
       >
@@ -77,17 +72,17 @@ const percentageOfTheScreen = defineModel('percentageOfTheScreen', {
           @nodeSelect="$router.push($event.key)"
         />
       </SplitterPanel>
-      <SplitterPanel
-        :size="percentageOfTheScreen"
-        :class="`p-${globalPadding} overflow-auto flex-row`"
-      >
+      <SplitterPanel :size="50" :class="`p-${globalPadding} overflow-auto flex-row`">
         <router-view v-slot="{ Component }" class="flex-grow-1 overflow-auto">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
           </transition>
         </router-view>
-        <div class="flex-grow-1" />
+        <!-- <div class="flex-grow-1" /> -->
         <!-- <Button icon="pi pi-times" rounded /> -->
+      </SplitterPanel>
+      <SplitterPanel :size="25" :minSize="3" :class="`p-${globalPadding} overflow-auto flex-row`">
+        <Button icon="pi pi-times" rounded @click="$router.go(-1)" />
       </SplitterPanel>
     </Splitter>
     <div v-else class="h-full flex justify-content-around">

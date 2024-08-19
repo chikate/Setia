@@ -1,13 +1,14 @@
 import App from './App.vue'
 
 import { createApp } from 'vue'
+
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
-import PrimeVue from 'primevue/config'
 
+import PrimeVue from 'primevue/config'
 import Tooltip from 'primevue/tooltip'
 import BadgeDirective from 'primevue/badgedirective'
 import InputGroup from 'primevue/inputgroup'
@@ -19,7 +20,9 @@ import { WEB_SOCKET_URL } from './constants'
 const app = createApp(App)
 
 // Pinia
-app.use(createPinia().use(piniaPluginPersistedstate))
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)
 
 // Routes
 app.use(
@@ -47,21 +50,17 @@ app.component('InputGroupAddon', InputGroupAddon)
 
 app.mount('body')
 
-// Replace "localhost:3000" with your server address
 const socket = new WebSocket(WEB_SOCKET_URL)
 
-// Event handler for when the connection is established
 socket.onopen = () => {
   socket.send('Client connected!')
   console.info('WebSocket connection established!')
 }
 
-// Event handler for when a message is received from the server
 socket.onmessage = (data) => {
   console.log(`Received: ${data}`)
 }
 
-// Event handler for when an error occurs with the WebSocket
 socket.onerror = (error) => {
   console.error(`WebSocket error: ${error}`)
 }
