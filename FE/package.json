@@ -10,7 +10,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "chart.js": "^4.4.3",
     "html-to-image": "^1.11.11",
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^3.2.1",
