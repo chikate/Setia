@@ -16,7 +16,7 @@ jobs:
       - name: Setup Frontend
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "10.x"
 
       - name: Build Frontend
         run: |
@@ -45,16 +45,16 @@ jobs:
           dotnet user-secrets set "Server" "https://localhost:44381"
           
           dotnet build -c Release
-          dotnet publish -c Release -o ./webapp
+          dotnet publish -c Release -o ./WebApp
 ################################################################################
       - name: Copy Frontend to Backend
         run: |
-          cp -R FE/dist/* BE/webapp/
+          cp -R FE/dist/* BE/WebApp/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: iis-deploy-${{ vars.NAME }}
-          path: BE/webapp/**
+          path: BE/WebApp/**
           if-no-files-found: error
           retention-days: 1
