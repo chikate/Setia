@@ -1,6 +1,4 @@
-import { defineStore } from 'pinia'
-import { makeApiRequest } from '@/helpers'
-import { Taging } from '@/interfaces'
+import type { Taging } from '@/interfaces'
 
 export const useCRUDStore = (storeName: string, defaultValues: any) =>
   defineStore(storeName, {

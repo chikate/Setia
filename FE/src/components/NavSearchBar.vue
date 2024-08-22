@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const accountOverlay = ref()
+</script>
+
 <template>
   <nav
     class="fixed bg-primary-reverse shadow-3 border-1 border-priamry align-items-center border-round z-5 flex-row"
@@ -45,10 +49,6 @@
     </a>
   </nav>
 </template>
-
-<script setup lang="ts">
-const accountOverlay = ref()
-</script>
 
 <style scoped>
 a {

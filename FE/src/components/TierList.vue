@@ -1,3 +1,78 @@
+<script setup lang="ts">
+import * as htmlToImage from 'html-to-image'
+
+const tierListSize = defineModel('tierListSize', {
+  type: Number,
+  required: false,
+  default: 100
+})
+
+const tierListUniformGap = defineModel('tierListUniformGap', {
+  type: Number,
+  required: false,
+  default: 0
+})
+
+const loadingImage = ref<boolean>(false)
+
+document.addEventListener('dragend', dragEnd)
+
+async function saveImage() {
+  loadingImage.value = true
+  await htmlToImage.toPng(document.getElementById('tierList') as HTMLElement).then(download)
+  // $el.children[1]
+  setTimeout(() => (loadingImage.value = false), 300)
+}
+
+async function dragStart(ev: any) {
+  ev.dataTransfer.setData('text', ev.target.id)
+  ev.target.classList.add('opacity-05')
+}
+async function dragOver(ev: any) {
+  ev.preventDefault()
+}
+async function dragEnd(ev: any) {
+  ev.target.classList.remove('opacity-05')
+}
+// Needs improvement !!!!
+async function drop(ev: any) {
+  ev.preventDefault()
+
+  const target = ev.target.id.includes('droptarget')
+    ? ev.target
+    : ev.target.id.includes('drag')
+      ? ev.target.parentNode
+      : undefined
+
+  if (!target) return
+
+  const offsetX = ev.clientX - target.getBoundingClientRect().left
+  const offsetY = ev.clientY - target.getBoundingClientRect().top
+
+  let children = Array.from(target.children)
+
+  let insertionIndex = children.findIndex((child: any) => {
+    const childRect = child.getBoundingClientRect()
+    const childMidX = (childRect.left + childRect.right) / 2
+    const childMidY = (childRect.top + childRect.bottom) / 2
+    return offsetX < childMidX && offsetY < childMidY
+  })
+
+  if (insertionIndex < 0) insertionIndex = children.length
+
+  const element = document.getElementById(ev.dataTransfer.getData('text'))
+  insertionIndex < children.length
+    ? target.insertBefore(element, children[insertionIndex])
+    : target.appendChild(element)
+}
+
+// async function extractTierListOrder(): Promise<string[][]> {
+//   return Array.from(
+//     document.getElementById('tierList').querySelectorAll('[id^="droptarget-"]') || []
+//   ).map((tier) => Array.from(tier.querySelectorAll('img')).map((img) => img.src))
+// }
+</script>
+
 <template>
   <div class="flex-column gap-2 w-full align-items-start">
     <div class="flex-row align-items-center w-full">
@@ -93,82 +168,6 @@
     <!-- </div> -->
   </div>
 </template>
-
-<script setup lang="ts">
-import * as htmlToImage from 'html-to-image'
-import { download } from '@/helpers'
-
-const tierListSize = defineModel('tierListSize', {
-  type: Number,
-  required: false,
-  default: 100
-})
-
-const tierListUniformGap = defineModel('tierListUniformGap', {
-  type: Number,
-  required: false,
-  default: 0
-})
-
-const loadingImage = ref<boolean>(false)
-
-document.addEventListener('dragend', dragEnd)
-
-async function saveImage() {
-  loadingImage.value = true
-  await htmlToImage.toPng(document.getElementById('tierList') as HTMLElement).then(download)
-  // $el.children[1]
-  setTimeout(() => (loadingImage.value = false), 300)
-}
-
-async function dragStart(ev: any) {
-  ev.dataTransfer.setData('text', ev.target.id)
-  ev.target.classList.add('opacity-05')
-}
-async function dragOver(ev: any) {
-  ev.preventDefault()
-}
-async function dragEnd(ev: any) {
-  ev.target.classList.remove('opacity-05')
-}
-// Needs improvement !!!!
-async function drop(ev: any) {
-  ev.preventDefault()
-
-  const target = ev.target.id.includes('droptarget')
-    ? ev.target
-    : ev.target.id.includes('drag')
-      ? ev.target.parentNode
-      : undefined
-
-  if (!target) return
-
-  const offsetX = ev.clientX - target.getBoundingClientRect().left
-  const offsetY = ev.clientY - target.getBoundingClientRect().top
-
-  let children = Array.from(target.children)
-
-  let insertionIndex = children.findIndex((child: any) => {
-    const childRect = child.getBoundingClientRect()
-    const childMidX = (childRect.left + childRect.right) / 2
-    const childMidY = (childRect.top + childRect.bottom) / 2
-    return offsetX < childMidX && offsetY < childMidY
-  })
-
-  if (insertionIndex < 0) insertionIndex = children.length
-
-  const element = document.getElementById(ev.dataTransfer.getData('text'))
-  insertionIndex < children.length
-    ? target.insertBefore(element, children[insertionIndex])
-    : target.appendChild(element)
-}
-
-// async function extractTierListOrder(): Promise<string[][]> {
-//   return Array.from(
-//     document.getElementById('tierList').querySelectorAll('[id^="droptarget-"]') || []
-//   ).map((tier) => Array.from(tier.querySelectorAll('img')).map((img) => img.src))
-// }
-</script>
 
 <style scoped>
 .p-inputtext {

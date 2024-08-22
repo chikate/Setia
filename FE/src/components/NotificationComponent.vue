@@ -1,3 +1,10 @@
+<script setup lang="ts">
+defineProps({
+  title: { type: String, required: true },
+  text: { type: String, required: true }
+})
+</script>
+
 <template>
   <div class="flex-row">
     <Button :label="title" text @click="$emit('clickMain')" />
@@ -5,10 +12,3 @@
     <Button icon="pi pi-times" text @click="$emit('clickCancel')" />
   </div>
 </template>
-
-<script setup lang="ts">
-defineProps({
-  title: { type: String, required: true },
-  text: { type: String, required: true }
-})
-</script>

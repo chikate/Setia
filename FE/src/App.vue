@@ -14,7 +14,12 @@ const menuItems = defineModel('menuItems', {
     useRouter()
       .getRoutes()
       .reduce((acc, route) => {
-        if (route.path.includes(':')) return acc
+        if (
+          route.path.includes(':') ||
+          route.path.includes('register') ||
+          route.path.includes('login')
+        )
+          return acc
 
         const parts = route.path.split('/')
         const [_, root, ...rest] = parts
@@ -25,7 +30,7 @@ const menuItems = defineModel('menuItems', {
         if (!node) {
           node = {
             key: root,
-            label: root.replace(/[-_]/g, ' '),
+            label: capitalize(root.replace(/[-_]/g, ' ')),
             children: []
           }
           acc.push(node)
@@ -34,7 +39,7 @@ const menuItems = defineModel('menuItems', {
         if (rest.length > 0)
           node.children.push({
             key: parts.slice(1).join('/'),
-            label: String(rest).replace(/[-_]/g, ' ')
+            label: capitalize(String(rest).replace(/[-_]/g, ' '))
           })
         else node.leaf = true
 
@@ -50,10 +55,7 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
 
 <template>
   <main>
-    <Splitter
-      v-if="useAuthStore().token"
-      class="flex-row align-items-center overflow-hidden bg-gray-50"
-    >
+    <Splitter class="flex-row align-items-center overflow-hidden bg-gray-50">
       <SplitterPanel
         :size="25"
         :minSize="15"
@@ -69,7 +71,7 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
           filter
           filterMode="strict"
           loadingMode="icon"
-          @nodeSelect="$router.push($event.key)"
+          @nodeSelect="$router.replace($event.key)"
         />
       </SplitterPanel>
       <SplitterPanel :size="50" :class="`p-${globalPadding} overflow-auto flex-row`">
@@ -85,9 +87,6 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
         <Button icon="pi pi-times" rounded @click="$router.go(-1)" />
       </SplitterPanel>
     </Splitter>
-    <div v-else class="h-full flex justify-content-around">
-      <LoginComponent />
-    </div>
     <main class="fixed vignette pointer-events-none z-5" />
     <Toast group="main" />
   </main>

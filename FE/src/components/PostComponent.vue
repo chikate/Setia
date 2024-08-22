@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EmojiPicker from 'vue3-emoji-picker'
 import type { Post, User, UserCollection, Question } from '@/interfaces'
+
 defineProps({
   // postData: { type: Object as PropType<Post>, required: false },
   chat: { type: Boolean, required: false }
@@ -298,7 +299,7 @@ async function addLocalQuestion() {
                 ? usePostsCRUDStore()
                     .delete(
                       usePostsCRUDStore().allLoadedItems?.filter(
-                        (post) =>
+                        (post: Post) =>
                           (post.tags.indexOf('Positive') ?? -1) > -1 &&
                           post.entityId == thisPostData.id &&
                           post.author == useAuthStore().userData?.username
@@ -370,7 +371,7 @@ async function addLocalQuestion() {
 
       <!-- Comments -->
       <div v-if="showActions == 2" class="h-8">
-        <PostComponent :postData="{ entityId: thisPostData.id } as Post" />
+        <PostComponent :postData="{ entityId: thisPostData.id }" />
         <PostComponent
           v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
             (post: Post) => post.entityId == thisPostData.id

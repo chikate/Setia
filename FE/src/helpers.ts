@@ -94,3 +94,7 @@ export function download(url: string, name?: string) {
   a.click()
   document.body.removeChild(a)
 }
+
+export async function canUserAccessRoute(to: string): Promise<boolean> {
+  return Boolean(to)
+}

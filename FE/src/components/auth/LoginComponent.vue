@@ -1,3 +1,51 @@
+<script setup lang="ts">
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
+const showLoginSpinner = ref<boolean>(false)
+
+const inputUsername = defineModel('inputUsername', {
+  type: String,
+  required: false,
+  default: ''
+})
+const inputPassword = defineModel('inputPassword', {
+  type: String,
+  required: false,
+  default: ''
+})
+const staySignedIn = defineModel('staySignedIn', {
+  type: Boolean,
+  required: false,
+  default: false
+})
+
+async function submitLogin() {
+  if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
+  showLoginSpinner.value = true
+  await useAuthStore()
+    .login(inputUsername.value, inputPassword.value)
+    .then((successful: Boolean) => {
+      successful
+        ? toast.add({
+            severity: 'success',
+            summary: 'Succesful login',
+            detail: '',
+            life: TOAST_BASE_HP,
+            group: 'main'
+          })
+        : toast.add({
+            severity: 'error',
+            summary: 'Invalid account',
+            detail: '',
+            life: TOAST_BASE_HP,
+            group: 'main'
+          })
+    })
+  showLoginSpinner.value = false
+}
+</script>
+
 <template>
   <div class="flex flex-column gap-3" style="width: 18rem">
     <lable class="font-bold">Login</lable>
@@ -46,51 +94,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useToast } from 'primevue/usetoast'
-import { TOAST_BASE_HP } from '@/constants'
-const toast = useToast()
-const showLoginSpinner = ref<boolean>(false)
-
-const inputUsername = defineModel('inputUsername', {
-  type: String,
-  required: false,
-  default: ''
-})
-const inputPassword = defineModel('inputPassword', {
-  type: String,
-  required: false,
-  default: ''
-})
-const staySignedIn = defineModel('staySignedIn', {
-  type: Boolean,
-  required: false,
-  default: false
-})
-
-async function submitLogin() {
-  if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
-  showLoginSpinner.value = true
-  await useAuthStore()
-    .login(inputUsername.value, inputPassword.value)
-    .then((successful: Boolean) => {
-      successful
-        ? toast.add({
-            severity: 'success',
-            summary: 'Succesful login',
-            detail: '',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          })
-        : toast.add({
-            severity: 'error',
-            summary: 'Invalid account',
-            detail: '',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          })
-    })
-  showLoginSpinner.value = false
-}
-</script>

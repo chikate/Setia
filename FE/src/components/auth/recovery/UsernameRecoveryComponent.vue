@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const inputEmail = defineModel('inputEmail', {
+  type: String,
+  required: false,
+  default: ''
+})
+</script>
+
 <template>
   <div class="flex flex-column gap-2">
     <lable class="mb-2 flex">Recover usernames</lable>
@@ -12,11 +20,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const inputEmail = defineModel('inputEmail', {
-  type: String,
-  required: false,
-  default: ''
-})
-</script>

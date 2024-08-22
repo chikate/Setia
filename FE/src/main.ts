@@ -2,7 +2,6 @@ import App from './App.vue'
 
 import { createApp } from 'vue'
 
-import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -20,27 +19,26 @@ import { WEB_SOCKET_URL } from './constants'
 const app = createApp(App)
 
 // Pinia
+// needs variable
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 
 // Routes
-app.use(
-  createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes,
-    scrollBehavior() {
-      return { top: 0 }
-    }
-  })
-  // .beforeEach((to, from, next) => {
-  //   console.log('test')
-  //   next()
-  // })
-)
+// needs variable
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
+  // scrollBehavior() {
+  //   return { top: 0 }
+  // }
+})
+router.beforeEach(async (to, from, next) => {
+  if (await canUserAccessRoute(to.fullPath)) return next()
+})
+app.use(router)
 
 app.use(PrimeVue)
-
 // Components
 app.use(ToastService)
 app.directive('tooltip', Tooltip)
@@ -51,16 +49,13 @@ app.component('InputGroupAddon', InputGroupAddon)
 app.mount('body')
 
 const socket = new WebSocket(WEB_SOCKET_URL)
-
 socket.onopen = () => {
   socket.send('Client connected!')
   console.info('WebSocket connection established!')
 }
-
 socket.onmessage = (data) => {
   console.log(`Received: ${data}`)
 }
-
 socket.onerror = (error) => {
   console.error(`WebSocket error: ${error}`)
 }

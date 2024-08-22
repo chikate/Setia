@@ -1,5 +1,3 @@
-import { defineStore } from 'pinia'
-import { makeApiRequest } from '@/helpers'
 import type { User } from '@/interfaces'
 
 export const useAuthStore = defineStore('Auth', {
@@ -39,10 +37,10 @@ export const useAuthStore = defineStore('Auth', {
     checkUserRight(right: string): boolean {
       return Boolean(this.userData?.tags.find((tag) => tag.includes(right)))
     },
-    checkUserRights(tag?: string | string[]): boolean {
-      // return Boolean((this.userData.tags.indexOf(tag) ?? -1) > 0)
-      return false
-    },
+    // checkUserRights(tag?: string | string[]): boolean {
+    //   // return Boolean((this.userData.tags.indexOf(tag) ?? -1) > 0)
+    //   return false
+    // },
     async logOut() {
       // this.token = undefined
       // this.userData = undefined

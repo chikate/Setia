@@ -1,3 +1,33 @@
+<script setup lang="ts">
+const accountOverlay = ref()
+const notificationsOverlay = ref()
+const languageOverlay = ref()
+
+const scrollPosition = ref<number>(0)
+const scrollThresHold = ref<number>(200)
+const languages = ref([
+  {
+    label: 'English',
+    command: () => {
+      languageOverlay.value.hide()
+    }
+  },
+  {
+    label: 'Română - Romanian',
+    command: () => {
+      languageOverlay.value.hide()
+    }
+  }
+])
+
+// Functions
+window.addEventListener('scroll', function () {
+  if (window.location.pathname == '/') {
+    scrollPosition.value = window.scrollY
+  }
+})
+</script>
+
 <template>
   <nav
     class="fixed z-5 w-full flex-row gap-8 pointer-events-none px-8"
@@ -122,36 +152,6 @@
     </div>
   </nav>
 </template>
-
-<script setup lang="ts">
-const accountOverlay = ref()
-const notificationsOverlay = ref()
-const languageOverlay = ref()
-
-const scrollPosition = ref<number>(0)
-const scrollThresHold = ref<number>(200)
-const languages = ref([
-  {
-    label: 'English',
-    command: () => {
-      languageOverlay.value.hide()
-    }
-  },
-  {
-    label: 'Română - Romanian',
-    command: () => {
-      languageOverlay.value.hide()
-    }
-  }
-])
-
-// Functions
-window.addEventListener('scroll', function () {
-  if (window.location.pathname == '/') {
-    scrollPosition.value = window.scrollY
-  }
-})
-</script>
 
 <style scoped>
 a {

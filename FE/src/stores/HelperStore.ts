@@ -1,6 +1,4 @@
-import { makeApiRequest } from '@/helpers'
-import { User } from '@/interfaces'
-import { defineStore } from 'pinia'
+import type { User } from '@/interfaces'
 
 export const useHelperStore = defineStore('Helper', {
   state: (): {
