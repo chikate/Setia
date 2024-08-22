@@ -23,7 +23,7 @@ const menuItems = defineModel('menuItems', {
 
         const parts = route.path.split('/')
         const [_, root, ...rest] = parts
-
+        console.log(_)
         if (!root) return acc
 
         let node = acc.find((item) => item.key === root) as any

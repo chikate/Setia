@@ -1,5 +1,3 @@
 <template>
-
-    <h1>tos</h1>
-
+  <h1>tos</h1>
 </template>

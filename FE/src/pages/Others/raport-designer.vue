@@ -43,6 +43,7 @@
           :draggable="true"
           :ondrag="dragStart"
           v-for="item in parameters"
+          :key="item"
         >
           <Dropdown
             :options="[

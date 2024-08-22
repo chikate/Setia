@@ -1,8 +1,6 @@
 <template>
-
-    <div class="flex-row gap-6">
-      <PasswordRecoveryComponent />
-      <UsernameRecoveryComponent />
-    </div>
-
+  <div class="flex-row gap-6">
+    <PasswordRecoveryComponent />
+    <UsernameRecoveryComponent />
+  </div>
 </template>

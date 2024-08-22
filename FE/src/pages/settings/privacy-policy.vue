@@ -1,5 +1,3 @@
 <template>
-
-    <h1>p-p</h1>
-
+  <h1>p-p</h1>
 </template>

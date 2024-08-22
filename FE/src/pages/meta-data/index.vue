@@ -25,7 +25,7 @@
                     group: 'main'
                   })
                   event.target.loading = true
-                  $setTimeout(() => (event.target.loading = false), TOAST_BASE_HP / 1.5)
+                  setTimeout(() => (event.target.loading = false), TOAST_BASE_HP / 1.5)
                 }
               else
                 toast.add({
@@ -43,6 +43,7 @@
           :draggable="true"
           :ondrag="dragStart"
           v-for="item in parameters"
+          :key="item"
         >
           <Dropdown
             :options="[
