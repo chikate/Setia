@@ -1,7 +1,8 @@
-import App from './App.vue'
+import App from '@/App.vue'
 
 import { createApp } from 'vue'
 
+import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -14,7 +15,8 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import ToastService from 'primevue/toastservice'
 
-import { WEB_SOCKET_URL } from './constants'
+import { WEB_SOCKET_URL } from '@/constants'
+import { canUserAccessRoute } from '@/helpers'
 
 const app = createApp(App)
 

@@ -25,7 +25,7 @@
                     group: 'main'
                   })
                   event.target.loading = true
-                  setTimeout(() => (event.target.loading = false), TOAST_BASE_HP / 1.5)
+                  setTimeout(TOAST_BASE_HP / 1.5, () => (event.target.loading = false))
                 }
               else
                 toast.add({

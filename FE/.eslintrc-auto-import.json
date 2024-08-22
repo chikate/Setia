@@ -102,6 +102,19 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true
+    "watchSyncEffect": true,
+    "RouteLocationRaw": true,
+    "[alias]": true,
+    "[import-names]": true,
+    "axios": true,
+    "useMouse": true,
+    "useMyFetch": true,
+    "$route": true,
+    "Route": true,
+    "$router": true,
+    "Router": true,
+    "vue-router": true,
+    "ComponentCustomProperties": true,
+    "definePage": true
   }
 }

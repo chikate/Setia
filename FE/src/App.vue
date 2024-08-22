@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TreeNode } from 'primevue/treenode'
 import Toast from 'primevue/toast'
+import { capitalize } from '@/helpers'
 
 const globalPadding = defineModel('globalPadding', {
   type: Number,

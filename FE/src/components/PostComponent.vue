@@ -313,7 +313,7 @@ async function addLocalQuestion() {
                     ? usePostsCRUDStore()
                         .delete(
                           usePostsCRUDStore().allLoadedItems?.filter(
-                            (post) =>
+                            (post: Post) =>
                               (post.tags.indexOf('Negative') ?? -1) > -1 &&
                               post.entityId == thisPostData.id &&
                               post.author == useAuthStore().userData?.username

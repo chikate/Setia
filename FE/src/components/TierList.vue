@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
+import { download } from '@/helpers'
 
 const tierListSize = defineModel('tierListSize', {
   type: Number,
