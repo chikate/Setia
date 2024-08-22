@@ -22,20 +22,18 @@ jobs:
         run: |
           cd FE
           ls
-
           npm ci
           npm run build
 ################################################################################
       - name: Setup Backend
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: '8.0.x'
 
       - name: Build Backend
         run: |
-          cd BE
+          cd BE/Main
           ls
-
           dotnet restore
 
           dotnet user-secrets set "DBConnectionStrings" "${{ secrets.DB_CONNECTION_STRING }}"
@@ -45,7 +43,7 @@ jobs:
           dotnet user-secrets set "Server" "https://localhost:44381"
           
           dotnet build -c Release
-          dotnet publish -c Release -o ./WebApp
+          dotnet publish -c Release -o ../WebApp
 ################################################################################
       - name: Copy Frontend to Backend
         run: |
