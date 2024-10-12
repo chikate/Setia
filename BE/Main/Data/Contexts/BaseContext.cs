@@ -1,4 +1,4 @@
-﻿using Main.Data.Models.Base;
+﻿using Main.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,7 +18,13 @@ public partial class BaseContext(DbContextOptions<BaseContext> options) : DbCont
         modelBuilder.HasDefaultSchema("base");
 
         #region Default Users
-        UserModel defaultUser = new UserModel { Tags = ["Dragos", "Admin"], Username = "Dragos", Password = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes("Password"))), Name = "Dragos" };
+        UserModel defaultUser = new()
+        {
+            Tags = ["Dragos", "Admin"],
+            Username = "Dragos",
+            Password = Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes("Password"))),
+            Name = "Dragos"
+        };
         modelBuilder.Entity<UserModel>().HasData(defaultUser);
         #endregion
 

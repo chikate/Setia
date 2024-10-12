@@ -1,12 +1,16 @@
-export interface BaseAudit {
+export interface IAuthenticationDTO {
+  username?: string
+  password?: string
+}
+export interface IBaseAudit {
   executionDate?: string
   author?: string
   authorData?: User
 }
-export interface Definition extends BaseAudit {
+export interface IDefinition extends IBaseAudit {
   tags: string[]
 }
-export interface User extends Definition {
+export interface User extends IDefinition {
   id?: string
   username: string
   password: string
@@ -14,7 +18,7 @@ export interface User extends Definition {
   name: string
   avatar: string
 }
-export interface Post extends Definition {
+export interface Post extends IDefinition {
   id?: string
   message?: string
   questionId?: string
@@ -22,7 +26,7 @@ export interface Post extends Definition {
   entityId?: string
   entity?: string
 }
-export interface Pontaj extends Definition {
+export interface Pontaj extends IDefinition {
   id?: number
   user?: number
   userData?: User
@@ -30,11 +34,11 @@ export interface Pontaj extends Definition {
   endTime: string
   description: string
 }
-export interface Taging extends Definition {
+export interface Taging extends IDefinition {
   tag?: string
   comments?: string
 }
-export interface Question extends Definition {
+export interface Question extends IDefinition {
   id?: string
   title: string
   comment: string
@@ -42,7 +46,7 @@ export interface Question extends Definition {
   selection: string[]
   expires: Date
 }
-export interface QuestionAnswer extends Definition {
+export interface QuestionAnswer extends IDefinition {
   id?: string
   user: string
   userData: User
@@ -50,17 +54,17 @@ export interface QuestionAnswer extends Definition {
   questionData: Question
   answer: string[]
 }
-export interface UserTag extends Definition {
+export interface UserTag extends IDefinition {
   id?: string
   user: string
   tag: string
 }
-export interface UserCollection extends Definition {
+export interface UserCollection extends IDefinition {
   id?: string
   postId: string
   postData: Post
 }
-export interface INotification extends Definition {
+export interface INotification extends IDefinition {
   id?: string
   icon?: string
   title?: string

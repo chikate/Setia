@@ -1,9 +1,9 @@
 using Main.Data.Contexts;
 using Main.Data.Models;
-using Main.Data.Models.Base;
-using Main.Services.Base;
-using Main.Services.Base.Interfaces;
+using Main.Services;
+using Main.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -14,20 +14,34 @@ using System.Text;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ConfigurationManager config = builder.Configuration;
 
-switch (config["DBTech"])
+// Prepare Data Base
+Action<DbContextOptionsBuilder> dbOptions = options =>
 {
-    case "PgSQL":
-        builder.Services.AddDbContext<BaseContext>(options => options.UseNpgsql(config["DBConnectionStrings"]));
-        builder.Services.AddDbContext<GovContext>(options => options.UseNpgsql(config["DBConnectionStrings"]));
-        break;
-    case "MsSQL":
-        //builder.Services.AddDbContext<BaseContext>(options => options.UseSqlServer(config["DBConnectionStrings"]));
-        //builder.Services.AddDbContext<GovContext>(options => options.UseSqlServer(config["DBConnectionStrings"]));
-        break;
-    default:
-        throw new InvalidOperationException("Unsupported DBTech value: " + config["DBTech"]);
-}
+    switch (config["DBTech"])
+    {
+        case "PgSQL": options.UseNpgsql(config["DBConnectionStrings"]); break;
+            //case "MsSQL": options.UseSqlServer(config["DBConnectionStrings"]); break;
+    }
+};
 
+// Create Tabels
+builder.Services.AddDbContext<BaseContext>(dbOptions);
+builder.Services.AddDbContext<GovContext>(dbOptions);
+
+// Register Services
+builder.Services.AddScoped<ICRUD<IntervalModel>, CRUDService<IntervalModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<QuestionModel>, CRUDService<QuestionModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<QuestionAnswerModel>, CRUDService<QuestionAnswerModel, GovContext>>();
+builder.Services.AddScoped<ICRUD<PostModel>, CRUDService<PostModel, GovContext>>();
+
+builder.Services.AddScoped<IAuth, AuthService>();
+builder.Services.AddScoped<IAudit, AuditService>();
+builder.Services.AddTransient<ISender, SenderService>();
+
+builder.Services.AddScoped<ICRUD<AuditModel>, CRUDService<AuditModel, BaseContext>>();
+builder.Services.AddScoped<ICRUD<NotificationModel>, CRUDService<NotificationModel, BaseContext>>();
+
+// Dependencies Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
@@ -39,29 +53,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidIssuer = config["Server"],
         ValidAudience = config["Origin"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"] ?? ""))
-    }
-);
-
-#region Services
-
-builder.Services.AddScoped<ICRUD<IntervalModel>, CRUDService<IntervalModel, GovContext>>();
-builder.Services.AddScoped<ICRUD<QuestionModel>, CRUDService<QuestionModel, GovContext>>();
-builder.Services.AddScoped<ICRUD<QuestionAnswerModel>, CRUDService<QuestionAnswerModel, GovContext>>();
-builder.Services.AddScoped<ICRUD<PostModel>, CRUDService<PostModel, GovContext>>();
-
-#region Base Services
-builder.Services.AddScoped<IAuth, AuthService>();
-builder.Services.AddScoped<IAudit, AuditService>();
-builder.Services.AddTransient<ISender, SenderService>();
-
-builder.Services.AddScoped<ICRUD<UserModel>, CRUDService<UserModel, BaseContext>>();
-builder.Services.AddScoped<ICRUD<NotificationModel>, CRUDService<NotificationModel, BaseContext>>();
-#endregion
-
-#endregion
+    });
 
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Apply global authorization filter to all controllers
+    options.Filters.Add(new AuthorizeFilter());
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -82,8 +81,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                }
-            },
+            }   },
             Array.Empty<string>()
         }
     });
@@ -91,18 +89,13 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.WebHost.UseUrls(config["Server"] ?? "");
 
-// Cors
-builder.Services.AddCors(options =>
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins(config["Origin"] ?? "")
-            .AllowAnyHeader()
-            .AllowAnyOrigin()
-            .AllowAnyMethod()));
-
 // App
 WebApplication app = builder.Build();
 
-app.UseCors("AllowSpecificOrigin");
+app.UseCors(builder => builder
+    .AllowAnyHeader()
+    .AllowAnyOrigin()
+    .AllowAnyMethod());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -116,8 +109,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.UseStaticFiles();
@@ -126,7 +122,7 @@ app.Services.CreateScope().ServiceProvider.GetRequiredService<BaseContext>().Dat
 app.Services.CreateScope().ServiceProvider.GetRequiredService<GovContext>().Database.Migrate();
 
 app.UseWebSockets();
-app.Map("/send", async context =>
+app.Map("/ws", async context =>
 {
     if (context.WebSockets.IsWebSocketRequest)
     {
@@ -143,4 +139,7 @@ app.Map("/send", async context =>
     }
     else context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 });
+
+//app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["Origin"] ?? ""));
+
 await app.RunAsync();

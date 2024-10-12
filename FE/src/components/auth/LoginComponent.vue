@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast'
+import { TOAST_BASE_HP } from '@/constants'
+import { IAuthenticationDTO } from '@/interfaces'
 
 const toast = useToast()
 const showLoginSpinner = ref<boolean>(false)
@@ -19,12 +21,20 @@ const staySignedIn = defineModel('staySignedIn', {
   required: false,
   default: false
 })
+const inputWidth = defineModel('inputWidth', {
+  type: Number,
+  required: false,
+  default: 110
+})
 
 async function submitLogin() {
   if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
   showLoginSpinner.value = true
   await useAuthStore()
-    .login(inputUsername.value, inputPassword.value)
+    .login({
+      username: inputUsername.value,
+      password: inputPassword.value
+    } as IAuthenticationDTO)
     .then((successful: Boolean) => {
       successful
         ? toast.add({
@@ -52,14 +62,22 @@ async function submitLogin() {
 
     <div class="flex flex-column gap-2">
       <InputGroup>
-        <InputGroupAddon v-if="inputUsername" style="min-width: 6rem" class="p-0 m-0">
+        <InputGroupAddon
+          v-if="inputUsername"
+          :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+          class="m-0 p-2 px-3 justify-content-start"
+        >
           Username
         </InputGroupAddon>
         <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
       </InputGroup>
 
       <InputGroup>
-        <InputGroupAddon v-if="inputPassword" style="min-width: 6rem" class="p-0 m-0">
+        <InputGroupAddon
+          v-if="inputPassword"
+          :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+          class="m-0 p-2 px-3 justify-content-start"
+        >
           Password
         </InputGroupAddon>
         <Password
@@ -84,9 +102,12 @@ async function submitLogin() {
       >.
     </div>
 
-    <Button label="Login" @click="submitLogin" :disabled="showLoginSpinner">
-      <ProgressSpinner v-if="showLoginSpinner" style="width: 20px; height: 20px" strokeWidth="8" />
-    </Button>
+    <Button
+      label="Login"
+      :loading="showLoginSpinner"
+      class="button-gradient-effect"
+      @click="submitLogin"
+    />
 
     <div class="flex-row justify-content-around">
       <RouterLink to="/recovery">Can't sign in?</RouterLink>

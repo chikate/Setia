@@ -14,14 +14,14 @@ export default defineConfig({
     VueRouter(),
     Vue(),
     AutoImport({
-      imports: ['vue', VueRouterAutoImports, 'pinia'],
-      dirs: ['src/stores/**'],
+      imports: ['vue', VueRouterAutoImports, 'vue-router', 'pinia'],
+      dirs: ['./src/stores/**'],
       vueTemplate: true,
       eslintrc: {
         enabled: true
       }
     }),
-    Components({ resolvers: [PrimeVueResolver()], dirs: ['src/components/**'] })
+    Components({ resolvers: [PrimeVueResolver()], dirs: ['./src/components/**'] })
   ],
   resolve: {
     alias: {
@@ -29,8 +29,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
-    strictPort: true
+    port: 3000
     // hmr: {
     //   host: import.meta.env.VITE_SERVER_IP,
     //   protocol: 'ws',

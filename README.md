@@ -37,22 +37,10 @@ Right click on **Base** project > select **"Manage User Secrets"** and paste thi
 
 # new Migrations
 
-To create a new migration:
+To add a new migration:
 
 ```bash
-Add-Migration SetiaGov[Comment] -Context GovContext
-```
-
-if there is no migration in **Migrations** folder
-then update the database with the migration
-
-```bash
-Update-Database -Context GovContext
-```
-
-```bash
-Add-Migration SetiaBase[Comment] -Context GovContext
-Update-Database -Context GovContext
+Add-Migration 1 -Context BaseContext -Output Data/Migrations/Base
 ```
 
 # new CRUDs

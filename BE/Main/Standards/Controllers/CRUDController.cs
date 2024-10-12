@@ -1,72 +1,59 @@
-using Main.Services.Base.Interfaces;
+using Main.Data.DTOs;
+using Main.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.Standards.Controllers
+namespace Main.Standards.Controllers;
+
+[Authorize]
+[Route("/api/[controller]/[action]")]
+public abstract class CRUDController<TModel> : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("/api/[controller]/[action]")]
-    public abstract class CRUDController<TModel> : ControllerBase
+    private readonly ICRUD<TModel> _CRUD;
+    public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TModel>>> Get([FromQuery] GetFilterDTO<TModel>? filter = null)
     {
-        private readonly ICRUD<TModel> _CRUD;
-        public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TModel>>> Get(/*[FromQuery] List<TModel>? filters = default*/)
+        try
         {
-            try
-            {
-                // await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Add"]);
-                return Ok(await _CRUD.Get());
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            // await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Add"]);
+            return Ok(await _CRUD.Get(filter));
         }
+        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] List<TModel> models)
+    [HttpPost]
+    public async Task<IActionResult> Add([FromBody] List<TModel> models)
+    {
+        try
         {
-            try
-            {
-                foreach (TModel model in models) await _CRUD.Add(model);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            foreach (TModel model in models) await _CRUD.Add(model);
+            return Ok();
         }
+        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+    }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody] List<TModel> models)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] List<TModel> models)
+    {
+        try
         {
-            try
-            {
-                foreach (TModel model in models) await _CRUD.Update(model);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Error message: " + ex.Message);
-            }
+            foreach (TModel model in models) await _CRUD.Update(model);
+            return Ok();
         }
+        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+    }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(List<string> ids)
+    [HttpDelete]
+    public async Task<IActionResult> Delete(List<string> ids)
+    {
+
+        try
         {
-
-            try
-            {
-                foreach (string id in ids) await _CRUD.Delete(id);
-                return Ok($"[{ids}] were permanently deleted");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error message: " + ex.Message);
-            }
+            foreach (string id in ids) await _CRUD.Delete(id);
+            return Ok($"[{ids}] were permanently deleted");
         }
+        catch (Exception ex) { return BadRequest($"Error message: " + ex.Message); }
     }
 }

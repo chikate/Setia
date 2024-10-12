@@ -21,8 +21,9 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
     '/administration/': RouteRecordInfo<'/administration/', '/administration', Record<never, never>, Record<never, never>>,
+    '/code/': RouteRecordInfo<'/code/', '/code', Record<never, never>, Record<never, never>>,
     '/downloads/': RouteRecordInfo<'/downloads/', '/downloads', Record<never, never>, Record<never, never>>,
-    '/login/': RouteRecordInfo<'/login/', '/login', Record<never, never>, Record<never, never>>,
+    '/home/': RouteRecordInfo<'/home/', '/home', Record<never, never>, Record<never, never>>,
     '/meta-data/': RouteRecordInfo<'/meta-data/', '/meta-data', Record<never, never>, Record<never, never>>,
     '/my-space/': RouteRecordInfo<'/my-space/', '/my-space', Record<never, never>, Record<never, never>>,
     '/my-space/friends/': RouteRecordInfo<'/my-space/friends/', '/my-space/friends', Record<never, never>, Record<never, never>>,
@@ -34,7 +35,6 @@ declare module 'vue-router/auto-routes' {
     '/others/vote-creator': RouteRecordInfo<'/others/vote-creator', '/others/vote-creator', Record<never, never>, Record<never, never>>,
     '/profile/': RouteRecordInfo<'/profile/', '/profile', Record<never, never>, Record<never, never>>,
     '/profile/[id]': RouteRecordInfo<'/profile/[id]', '/profile/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
-    '/register/': RouteRecordInfo<'/register/', '/register', Record<never, never>, Record<never, never>>,
     '/servers/': RouteRecordInfo<'/servers/', '/servers', Record<never, never>, Record<never, never>>,
     '/servers/[id]': RouteRecordInfo<'/servers/[id]', '/servers/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/servers/create-server': RouteRecordInfo<'/servers/create-server', '/servers/create-server', Record<never, never>, Record<never, never>>,
@@ -44,5 +44,9 @@ declare module 'vue-router/auto-routes' {
     '/settings/terms-of-service': RouteRecordInfo<'/settings/terms-of-service', '/settings/terms-of-service', Record<never, never>, Record<never, never>>,
     '/tier-list/': RouteRecordInfo<'/tier-list/', '/tier-list', Record<never, never>, Record<never, never>>,
     '/tier-list/[id]': RouteRecordInfo<'/tier-list/[id]', '/tier-list/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/universe/map/': RouteRecordInfo<'/universe/map/', '/universe/map', Record<never, never>, Record<never, never>>,
+    '/universe/wiki/': RouteRecordInfo<'/universe/wiki/', '/universe/wiki', Record<never, never>, Record<never, never>>,
+    '/universe/wiki/characters/': RouteRecordInfo<'/universe/wiki/characters/', '/universe/wiki/characters', Record<never, never>, Record<never, never>>,
+    '/universe/wiki/regions/': RouteRecordInfo<'/universe/wiki/regions/', '/universe/wiki/regions', Record<never, never>, Record<never, never>>,
   }
 }

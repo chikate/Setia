@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import FloatLabel from 'primevue/floatlabel'
 import { useToast } from 'primevue/usetoast'
 import { TOAST_BASE_HP } from '@/constants'
+import { IAuthenticationDTO } from '@/interfaces'
 
 const toast = useToast()
 
@@ -22,11 +22,15 @@ const inputPassword = defineModel('inputPassword', {
   required: false,
   default: ''
 })
-
 const inputRepeatPassword = defineModel('inputRepeatPassword', {
   type: String,
   required: false,
   default: ''
+})
+const inputWidth = defineModel('inputWidth', {
+  type: Number,
+  required: false,
+  default: 110
 })
 
 async function registerClickedHandler() {
@@ -76,7 +80,10 @@ async function registerClickedHandler() {
     .then((succesful: Boolean) => {
       succesful
         ? useAuthStore()
-            .login(inputUsername.value, inputPassword.value)
+            .login({
+              username: inputUsername.value,
+              password: inputPassword.value
+            } as IAuthenticationDTO)
             .then(() =>
               toast.add({
                 severity: 'success',
@@ -98,42 +105,58 @@ async function registerClickedHandler() {
 </script>
 
 <template>
-  <div class="flex flex-column gap-3">
+  <div class="flex flex-column gap-3 w-3">
     <h2>Register</h2>
 
-    <label for="email" class="p-sr-only">Email</label>
-    <FloatLabel>
+    <InputGroup>
       <InlineMessage severity="info" v-if="!inputEmail" class="absolute -translate-x-100">
         {{ 'Email is required' }}
       </InlineMessage>
+      <InputGroupAddon
+        v-if="inputEmail"
+        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+        class="m-0 p-2 px-3 justify-content-start"
+      >
+        Email
+      </InputGroupAddon>
       <InputText
         v-model="inputEmail"
         id="email"
         placeholder="Email"
         :class="inputEmail ? '' : registerClicked ? 'p-invalid' : ''"
       />
-      <label>Email</label>
-    </FloatLabel>
+    </InputGroup>
 
-    <label for="username" class="p-sr-only">Username</label>
-    <FloatLabel>
+    <InputGroup>
       <InlineMessage severity="info" v-if="!inputUsername" class="absolute -translate-x-100">
         {{ 'Username is required' }}
       </InlineMessage>
+      <InputGroupAddon
+        v-if="inputUsername"
+        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+        class="m-0 p-2 px-3 justify-content-start"
+      >
+        Username
+      </InputGroupAddon>
       <InputText
         v-model="inputUsername"
         id="username"
         placeholder="Username"
         :class="inputUsername ? '' : registerClicked ? 'p-invalid' : ''"
       />
-      <label>Username</label>
-    </FloatLabel>
+    </InputGroup>
 
-    <label for="password" class="p-sr-only">Password</label>
-    <FloatLabel>
+    <InputGroup>
       <InlineMessage severity="info" v-if="!inputPassword" class="absolute -translate-x-100">
         {{ 'Password is required' }}
       </InlineMessage>
+      <InputGroupAddon
+        v-if="inputPassword"
+        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+        class="m-0 p-2 px-3 justify-content-start"
+      >
+        Password
+      </InputGroupAddon>
       <Password
         v-model="inputPassword"
         toggleMask
@@ -152,14 +175,19 @@ async function registerClickedHandler() {
           </ul>
         </template>
       </Password>
-      <label>Password</label>
-    </FloatLabel>
+    </InputGroup>
 
-    <label for="repeatPassword" class="p-sr-only">Repeat Password</label>
-    <FloatLabel>
+    <InputGroup>
       <InlineMessage severity="info" v-if="!inputRepeatPassword" class="absolute -translate-x-100">
         {{ 'Repeat Password is required' }}
       </InlineMessage>
+      <InputGroupAddon
+        v-if="inputRepeatPassword"
+        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
+        class="m-0 p-2 px-3 justify-content-start"
+      >
+        Repeat password
+      </InputGroupAddon>
       <Password
         v-model="inputRepeatPassword"
         toggleMask
@@ -168,9 +196,12 @@ async function registerClickedHandler() {
         placeholder="Repeat password"
         :class="inputRepeatPassword ? '' : registerClicked ? 'p-invalid' : ''"
       />
-      <label>Repeat Password</label>
-    </FloatLabel>
+    </InputGroup>
 
-    <Button class="mt-1 align-self-start" label="Register" @click="registerClickedHandler" />
+    <Button
+      class="button-gradient-effect mt-1 align-self-start"
+      label="Register"
+      @click="registerClickedHandler"
+    />
   </div>
 </template>

@@ -1,5 +1,5 @@
-import type { User } from '@/interfaces'
 import { makeApiRequest } from '@/helpers'
+import type { User } from '@/interfaces'
 
 export const useHelperStore = defineStore('Helper', {
   state: (): {

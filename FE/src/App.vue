@@ -58,9 +58,9 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
   <main>
     <Splitter class="flex-row align-items-center overflow-hidden bg-gray-50">
       <SplitterPanel
-        :size="25"
-        :minSize="15"
-        class="shadow-1 bg-white flex overflow-auto"
+        :size="useAppStore().appSplitterDistribution"
+        :minSize="10"
+        class="shadow-1 bg-white flex overflow-auto border-round-right"
         :class="`p-${globalPadding}`"
       >
         <div class="flex-grow-1" />
@@ -75,8 +75,11 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
           @nodeSelect="$router.replace($event.key)"
         />
       </SplitterPanel>
-      <SplitterPanel :size="50" :class="`p-${globalPadding} overflow-auto flex-row`">
-        <router-view v-slot="{ Component }" class="flex-grow-1 overflow-auto">
+      <SplitterPanel
+        :size="100 - useAppStore().appSplitterDistribution"
+        :class="`p-${globalPadding} overflow-auto flex-row`"
+      >
+        <router-view v-slot="{ Component }" class="flex-grow-1 overflow-auto border-round">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
           </transition>
@@ -84,10 +87,8 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
         <!-- <div class="flex-grow-1" /> -->
         <!-- <Button icon="pi pi-times" rounded /> -->
       </SplitterPanel>
-      <SplitterPanel :size="25" :minSize="3" :class="`p-${globalPadding} overflow-auto flex-row`">
-        <Button icon="pi pi-times" rounded @click="$router.go(-1)" />
-      </SplitterPanel>
     </Splitter>
+    <!-- <ScrollBar /> -->
     <main class="fixed vignette pointer-events-none z-5" />
     <Toast group="main" />
   </main>
@@ -118,5 +119,8 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
 }
 .p-inputwrapper-filled.p-treeselect.p-treeselect-chip .p-treeselect-label {
   padding: 0.25rem;
+}
+.p-tree {
+  padding: 0;
 }
 </style>

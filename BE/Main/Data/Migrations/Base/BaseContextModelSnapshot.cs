@@ -19,7 +19,7 @@ namespace Main.Data.Migrations.Base
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("base")
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "hstore");
@@ -33,8 +33,8 @@ namespace Main.Data.Migrations.Base
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid?>("AuthorDataId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("AuthorDataId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
@@ -73,8 +73,8 @@ namespace Main.Data.Migrations.Base
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AuthorDataId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("AuthorDataId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
@@ -104,8 +104,8 @@ namespace Main.Data.Migrations.Base
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ToUserDataId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("ToUserDataId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("ToUserId")
                         .HasColumnType("uuid");
@@ -125,8 +125,8 @@ namespace Main.Data.Migrations.Base
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AuthorDataId")
-                        .HasColumnType("uuid");
+                    b.Property<long?>("AuthorDataId")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
@@ -181,9 +181,9 @@ namespace Main.Data.Migrations.Base
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7b3627a4-0969-4ad3-a7a9-6d4d64f2f122"),
+                            Id = new Guid("97710da1-e06b-4e90-bf82-5f95d58aed50"),
                             Email = "",
-                            ExecutionDate = new DateTime(2024, 8, 3, 15, 30, 52, 710, DateTimeKind.Utc).AddTicks(207),
+                            ExecutionDate = new DateTime(2024, 10, 11, 19, 28, 7, 416, DateTimeKind.Utc).AddTicks(7388),
                             Name = "Dragos",
                             Password = "E7CF3EF4F17C3999A94F2C6F612E8A888E5B1026878E4E19398B23BD38EC221A",
                             Signiture = "",
@@ -194,7 +194,7 @@ namespace Main.Data.Migrations.Base
 
             modelBuilder.Entity("Main.Data.Models.Base.AuditModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.UserModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
@@ -203,11 +203,11 @@ namespace Main.Data.Migrations.Base
 
             modelBuilder.Entity("Main.Data.Models.Base.NotificationModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.UserModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
-                    b.HasOne("Main.Data.Models.Base.UserModel", "ToUserData")
+                    b.HasOne("Main.Data.Models.Base.AuditModel", "ToUserData")
                         .WithMany()
                         .HasForeignKey("ToUserDataId");
 
@@ -218,7 +218,7 @@ namespace Main.Data.Migrations.Base
 
             modelBuilder.Entity("Main.Data.Models.Base.UserModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.UserModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 

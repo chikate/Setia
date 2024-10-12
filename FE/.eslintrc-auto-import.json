@@ -115,6 +115,14 @@
     "Router": true,
     "vue-router": true,
     "ComponentCustomProperties": true,
-    "definePage": true
+    "definePage": true,
+    "DirectiveBinding": true,
+    "MaybeRef": true,
+    "MaybeRefOrGetter": true,
+    "onWatcherCleanup": true,
+    "useId": true,
+    "useModel": true,
+    "useTemplateRef": true,
+    "useAppStore": true
   }
 }
