@@ -21,8 +21,7 @@ async function refresh() {
   await useQuestionAnswersCRUDStore().get()
   answered.value = useQuestionAnswersCRUDStore().allLoadedItems?.find(
     (elem: QuestionAnswer) =>
-      elem.author == useAuthStore().userData?.username &&
-      elem.questionId == thisQuestionData.value.id
+      elem.author == authStore().userData?.username && elem.questionId == thisQuestionData.value.id
   )
 }
 </script>

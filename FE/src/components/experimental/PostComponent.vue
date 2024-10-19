@@ -25,7 +25,7 @@ const icons = ref([
       (post: Post) =>
         (post.tags.indexOf('Positive') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
-        post.author == useAuthStore().userData?.username
+        post.author == authStore().userData?.username
     )
       ? 'pi-thumbs-up-fill'
       : 'pi-thumbs-up'
@@ -35,7 +35,7 @@ const icons = ref([
       (post: Post) =>
         (post.tags.indexOf('Negative') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
-        post.author == useAuthStore().userData?.username
+        post.author == authStore().userData?.username
     )
       ? 'pi-thumbs-down-fill'
       : 'pi-thumbs-down'
@@ -53,7 +53,7 @@ const icons = ref([
 
 onBeforeMount(async () => {
   if (thisPostData.value.author)
-    authorData.value = await useHelperStore().getUserProfile(String(thisPostData.value.author))
+    authorData.value = await helperStore().getUserProfile(String(thisPostData.value.author))
 
   await usePostsCRUDStore().get()
 
@@ -63,7 +63,7 @@ onBeforeMount(async () => {
         (post: Post) =>
           (post.tags.indexOf('Positive') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
-          post.author == useAuthStore().userData?.username
+          post.author == authStore().userData?.username
       )
         ? 'pi-thumbs-up-fill'
         : 'pi-thumbs-up'
@@ -73,7 +73,7 @@ onBeforeMount(async () => {
         (post: Post) =>
           (post.tags.indexOf('Negative') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
-          post.author == useAuthStore().userData?.username
+          post.author == authStore().userData?.username
       )
         ? 'pi-thumbs-down-fill'
         : 'pi-thumbs-down'
@@ -166,7 +166,7 @@ async function addLocalQuestion() {
       </div>
 
       <Button
-        v-if="useAuthStore().userData?.username === authorData.username"
+        v-if="authStore().userData?.username === authorData.username"
         type="button"
         icon="pi pi-ellipsis-v"
         @click="menuRef.toggle($event)"
@@ -302,7 +302,7 @@ async function addLocalQuestion() {
                         (post: Post) =>
                           (post.tags.indexOf('Positive') ?? -1) > -1 &&
                           post.entityId == thisPostData.id &&
-                          post.author == useAuthStore().userData?.username
+                          post.author == authStore().userData?.username
                       )
                     )
                     .then(() => (icon.name = 'pi-thumbs-up'))
@@ -316,7 +316,7 @@ async function addLocalQuestion() {
                             (post: Post) =>
                               (post.tags.indexOf('Negative') ?? -1) > -1 &&
                               post.entityId == thisPostData.id &&
-                              post.author == useAuthStore().userData?.username
+                              post.author == authStore().userData?.username
                           )
                         )
                         .then(() => (icon.name = 'pi-thumbs-down'))

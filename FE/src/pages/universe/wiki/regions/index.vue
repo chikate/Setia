@@ -1,7 +1,7 @@
 <template>
   <!-- style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))" -->
   <div class="flex-column justify-content-center">
-    <a class="text-8xl font-bold"> Hello {{ useAuthStore().userData?.username ?? 'there' }} </a>
+    <a class="text-8xl font-bold"> Hello {{ authStore().userData?.username ?? 'there' }} </a>
     <a class="text-3xl font-bold">We are happy that you are here!</a>
   </div>
 </template>

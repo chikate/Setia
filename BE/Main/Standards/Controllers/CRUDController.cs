@@ -9,18 +9,20 @@ namespace Main.Standards.Controllers;
 [Route("/api/[controller]/[action]")]
 public abstract class CRUDController<TModel> : ControllerBase
 {
+    #region Dependency Injection
     private readonly ICRUD<TModel> _CRUD;
     public CRUDController(ICRUD<TModel> CRUD) { _CRUD = CRUD; }
+    #endregion
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TModel>>> Get([FromQuery] GetFilterDTO<TModel>? filter = null)
+    public async Task<ActionResult<IEnumerable<TModel>>> Get([FromQuery] GetFilterDTO<TModel> filter)
     {
         try
         {
             // await _auth.CheckUserRights([$"{typeof(TModel).Name.Replace("Controller", "").Replace("Model", "")}.Add"]);
             return Ok(await _CRUD.Get(filter));
         }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 
     [HttpPost]
@@ -31,7 +33,7 @@ public abstract class CRUDController<TModel> : ControllerBase
             foreach (TModel model in models) await _CRUD.Add(model);
             return Ok();
         }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 
     [HttpPut]
@@ -42,7 +44,7 @@ public abstract class CRUDController<TModel> : ControllerBase
             foreach (TModel model in models) await _CRUD.Update(model);
             return Ok();
         }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 
     [HttpDelete]

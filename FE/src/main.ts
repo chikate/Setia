@@ -15,10 +15,9 @@ import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
 import ToastService from 'primevue/toastservice'
 
-import { WEB_SOCKET_URL } from '@/constants'
 import { canUserAccessRoute } from '@/helpers'
 
-const app = createApp(App)
+export const app = createApp(App)
 
 // Pinia
 // needs to be declared/instanced
@@ -42,7 +41,9 @@ app.use(router)
 
 // Components
 app.use(PrimeVue)
-app.use(ToastService)
+app.use(ToastService, {
+  life: 3000 // Set global toast lifetime in milliseconds
+})
 app.directive('tooltip', Tooltip)
 app.directive('badge', BadgeDirective)
 app.component('InputGroup', InputGroup)
@@ -52,10 +53,10 @@ app.component('InputGroupAddon', InputGroupAddon)
 app.mount('body')
 
 // WebSocket Connection
-const socket = new WebSocket(WEB_SOCKET_URL)
-socket.onopen = () => {
-  socket.send('Client connected!')
-  console.info('WebSocket connection established!')
-}
-socket.onmessage = (data) => console.log(`Received: ${data}`)
-socket.onerror = (error) => console.error(`WebSocket error: ${error}`)
+// const socket = new WebSocket(WEB_SOCKET_URL)
+// socket.onopen = () => {
+//   socket.send('Client connected!')
+//   console.info('WebSocket connection established!')
+// }
+// socket.onmessage = (data) => console.log(`Received: ${data}`)
+// socket.onerror = (error) => console.error(`WebSocket error: ${error}`)

@@ -35,7 +35,7 @@ Right click on **Base** project > select **"Manage User Secrets"** and paste thi
 }
 ```
 
-# new Migrations
+# Migrations
 
 To add a new migration:
 
@@ -43,7 +43,7 @@ To add a new migration:
 Add-Migration 1 -Context BaseContext -Output Data/Migrations/Base
 ```
 
-# new CRUDs
+# CRUDs Service
 
 Create a new model in the **Models** folder
 Then go to **Program.cs** and to //CRUDs section (you can ctrl + f search for //CRUDs)

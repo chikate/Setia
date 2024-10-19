@@ -1,8 +1,11 @@
 <template>
   <!-- style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))" -->
-  <div class="flex-column justify-content-center">
-    <a class="text-8xl font-bold"> Hello {{ authStore().userData?.username ?? 'there' }} </a>
-    <a class="text-3xl font-bold">We are happy that you are here!</a>
+  <div class="flex-column justify-content-center gap-8 align-items-center">
+    <div class="flex-column text-center"></div>
+
+    <div class="flex-wrap justify-content-around px-5 w-full" style="height: 400px">
+      <ApiTableComponent />
+    </div>
   </div>
 </template>
 

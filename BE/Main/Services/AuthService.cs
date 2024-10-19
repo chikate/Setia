@@ -45,7 +45,7 @@ public class AuthService : IAuth
             if (loginCredentials.Password?.Length < 6 || loginCredentials.Username?.Length < 3)
                 throw new Exception("Invalid Credentials");
 
-            loginCredentials.Password = await CriptPassword(loginCredentials.Password);
+            loginCredentials.Password = CriptPassword(loginCredentials.Password);
 
             UserModel? user = await _context.Users
                 .SingleOrDefaultAsync(u =>
@@ -93,7 +93,7 @@ public class AuthService : IAuth
             if (_context.Users.Any(u => u.Username == registration.Username))
                 throw new Exception("Username already exists");
 
-            registration.Password = await CriptPassword(registration.Password);
+            registration.Password = CriptPassword(registration.Password);
 
             UserModel createdUser = (await _context.Users.AddAsync(new UserModel
             {
@@ -162,7 +162,7 @@ public class AuthService : IAuth
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
     }
-    public async Task<string> CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.Default.GetBytes(password)));
+    public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
     public async Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null)
     {
         try

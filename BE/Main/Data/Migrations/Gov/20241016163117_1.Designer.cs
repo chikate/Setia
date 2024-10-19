@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Main.Data.Migrations.Gov
 {
     [DbContext(typeof(GovContext))]
-    [Migration("20241011162751_1")]
+    [Migration("20241016163117_1")]
     partial class _1
     {
         /// <inheritdoc />
@@ -22,12 +22,12 @@ namespace Main.Data.Migrations.Gov
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gov")
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Main.Data.Models.Base.AuditModel", b =>
+            modelBuilder.Entity("Main.Data.Models.AuditModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,9 +222,9 @@ namespace Main.Data.Migrations.Gov
                     b.ToTable("Questions", "gov");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.AuditModel", b =>
+            modelBuilder.Entity("Main.Data.Models.AuditModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
@@ -233,11 +233,11 @@ namespace Main.Data.Migrations.Gov
 
             modelBuilder.Entity("Main.Data.Models.IntervalModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "UserData")
+                    b.HasOne("Main.Data.Models.AuditModel", "UserData")
                         .WithMany()
                         .HasForeignKey("UserDataId");
 
@@ -248,7 +248,7 @@ namespace Main.Data.Migrations.Gov
 
             modelBuilder.Entity("Main.Data.Models.PostModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
@@ -264,7 +264,7 @@ namespace Main.Data.Migrations.Gov
 
             modelBuilder.Entity("Main.Data.Models.QuestionAnswerModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
@@ -282,7 +282,7 @@ namespace Main.Data.Migrations.Gov
 
             modelBuilder.Entity("Main.Data.Models.QuestionModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 

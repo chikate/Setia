@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TreeNode } from 'primevue/treenode'
 import Toast from 'primevue/toast'
-import { capitalize } from '@/helpers'
+import { capitalizeWords } from '@/helpers'
 
 const globalPadding = defineModel('globalPadding', {
   type: Number,
@@ -24,14 +24,14 @@ const menuItems = defineModel('menuItems', {
 
         const parts = route.path.split('/')
         const [_, root, ...rest] = parts
-        console.log(_)
+
         if (!root) return acc
 
         let node = acc.find((item) => item.key === root) as any
         if (!node) {
           node = {
             key: root,
-            label: capitalize(root.replace(/[-_]/g, ' ')),
+            label: capitalizeWords(root.replace(/[-_]/g, ' ')),
             children: []
           }
           acc.push(node)
@@ -40,7 +40,7 @@ const menuItems = defineModel('menuItems', {
         if (rest.length > 0)
           node.children.push({
             key: parts.slice(1).join('/'),
-            label: capitalize(String(rest).replace(/[-_]/g, ' '))
+            label: capitalizeWords(String(rest).replace(/[-_]/g, ' '))
           })
         else node.leaf = true
 
@@ -90,7 +90,7 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
     </Splitter>
     <!-- <ScrollBar /> -->
     <main class="fixed vignette pointer-events-none z-5" />
-    <Toast group="main" />
+    <Toast />
   </main>
 </template>
 

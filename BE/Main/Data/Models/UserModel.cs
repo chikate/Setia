@@ -11,13 +11,13 @@ public class UserModel : BaseModel
     public string Username { get; set; } = Guid.NewGuid().ToString("d").Substring(1, 8);
     public string Password { get; set; } = Guid.NewGuid().ToString("d").Substring(1, 8);
     public string Email { get; set; } = string.Empty;
-    public string Signiture { get; set; } = string.Empty;
+    public string? Signiture { get; set; } = null;
     #endregion
 
     #region Sensitive Data
     public DateTime? BirthDay { get; set; } = null;
-    public List<Guid>? Friends { get; set; } = null;
-    public Dictionary<string, string>? Saves { get; set; } = null;
+    public List<Guid> Friends { get; set; } = new();
+    public Dictionary<string, string> Saves { get; set; } = new();
     #endregion
 
     #region Public Data

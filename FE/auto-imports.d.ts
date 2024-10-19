@@ -6,11 +6,22 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const CRUDStore: typeof import('./src/stores/CRUDStore')['CRUDStore']
   const EffectScope: typeof import('vue')['EffectScope']
+  const NotificationsCRUDStore: typeof import('./src/stores/CRUDsStore')['NotificationsCRUDStore']
+  const PontajCRUDStore: typeof import('./src/stores/CRUDsStore')['PontajCRUDStore']
+  const PostsCRUDStore: typeof import('./src/stores/CRUDsStore')['PostsCRUDStore']
+  const QuestionAnswersCRUDStore: typeof import('./src/stores/CRUDsStore')['QuestionAnswersCRUDStore']
+  const QuestionsCRUDStore: typeof import('./src/stores/CRUDsStore')['QuestionsCRUDStore']
+  const TagsCRUDStore: typeof import('./src/stores/CRUDsStore')['TagsCRUDStore']
+  const UserCollectionCRUDStore: typeof import('./src/stores/CRUDsStore')['UserCollectionCRUDStore']
+  const UsersCRUDStore: typeof import('./src/stores/CRUDsStore')['UsersCRUDStore']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
+  const authStore: typeof import('./src/stores/authStore')['authStore']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
   const createPinia: typeof import('pinia')['createPinia']
+  const cryptoStore: typeof import('./src/stores/cryptoStore')['cryptoStore']
   const customRef: typeof import('vue')['customRef']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
@@ -20,6 +31,7 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const h: typeof import('vue')['h']
+  const helperStore: typeof import('./src/stores/helperStore')['helperStore']
   const inject: typeof import('vue')['inject']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
@@ -32,6 +44,7 @@ declare global {
   const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const notificationsCRUDStore: typeof import('./src/stores/CRUDsStore')['notificationsCRUDStore']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -48,17 +61,23 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
+  const pontajCRUDStore: typeof import('./src/stores/CRUDsStore')['pontajCRUDStore']
+  const postsCRUDStore: typeof import('./src/stores/CRUDsStore')['postsCRUDStore']
   const provide: typeof import('vue')['provide']
+  const questionAnswersCRUDStore: typeof import('./src/stores/CRUDsStore')['questionAnswersCRUDStore']
+  const questionsCRUDStore: typeof import('./src/stores/CRUDsStore')['questionsCRUDStore']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const setActivePinia: typeof import('pinia')['setActivePinia']
   const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
+  const settingsStore: typeof import('./src/stores/settingsStore')['settingsStore']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
   const storeToRefs: typeof import('pinia')['storeToRefs']
+  const tagsCRUDStore: typeof import('./src/stores/CRUDsStore')['tagsCRUDStore']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
@@ -67,27 +86,17 @@ declare global {
   const unref: typeof import('vue')['unref']
   const useAppStore: typeof import('./src/stores/AppStore')['useAppStore']
   const useAttrs: typeof import('vue')['useAttrs']
-  const useAuthStore: typeof import('./src/stores/AuthStore')['useAuthStore']
-  const useCRUDStore: typeof import('./src/stores/CRUDStore')['useCRUDStore']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
-  const useHelperStore: typeof import('./src/stores/HelperStore')['useHelperStore']
   const useId: typeof import('vue')['useId']
   const useLink: typeof import('vue-router')['useLink']
   const useModel: typeof import('vue')['useModel']
-  const useNotificationsCRUDStore: typeof import('./src/stores/cruds/NotificationsCRUDStore')['useNotificationsCRUDStore']
-  const usePontajCRUDStore: typeof import('./src/stores/cruds/PontajCRUDStore')['usePontajCRUDStore']
-  const usePostsCRUDStore: typeof import('./src/stores/cruds/PostsCRUDStore')['usePostsCRUDStore']
-  const useQuestionAnswersCRUDStore: typeof import('./src/stores/cruds/QuestionAnswersCRUDStore')['useQuestionAnswersCRUDStore']
-  const useQuestionsCRUDStore: typeof import('./src/stores/cruds/QuestionsCRUDStore')['useQuestionsCRUDStore']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
-  const useSettingsStore: typeof import('./src/stores/SettingsStore')['useSettingsStore']
   const useSlots: typeof import('vue')['useSlots']
-  const useTagsCRUDStore: typeof import('./src/stores/cruds/TagsCRUDStore')['useTagsCRUDStore']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const useUserCollectionCRUDStore: typeof import('./src/stores/cruds/UserCollectionCRUDStore')['useUserCollectionCRUDStore']
-  const useUsersCRUDStore: typeof import('./src/stores/cruds/UsersCRUDStore')['useUsersCRUDStore']
+  const userCollectionCRUDStore: typeof import('./src/stores/CRUDsStore')['userCollectionCRUDStore']
+  const usersCRUDStore: typeof import('./src/stores/CRUDsStore')['usersCRUDStore']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -104,11 +113,14 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly CRUDStore: UnwrapRef<typeof import('./src/stores/CRUDStore')['CRUDStore']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
+    readonly authStore: UnwrapRef<typeof import('./src/stores/authStore')['authStore']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
+    readonly cryptoStore: UnwrapRef<typeof import('./src/stores/cryptoStore')['cryptoStore']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
@@ -118,6 +130,7 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly helperStore: UnwrapRef<typeof import('./src/stores/helperStore')['helperStore']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
@@ -130,6 +143,7 @@ declare module 'vue' {
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly notificationsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['notificationsCRUDStore']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
@@ -146,17 +160,23 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly pontajCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['pontajCRUDStore']>
+    readonly postsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['postsCRUDStore']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
+    readonly questionAnswersCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['questionAnswersCRUDStore']>
+    readonly questionsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['questionsCRUDStore']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
+    readonly settingsStore: UnwrapRef<typeof import('./src/stores/settingsStore')['settingsStore']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
+    readonly tagsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['tagsCRUDStore']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
@@ -165,27 +185,17 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly useAppStore: UnwrapRef<typeof import('./src/stores/AppStore')['useAppStore']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
-    readonly useAuthStore: UnwrapRef<typeof import('./src/stores/AuthStore')['useAuthStore']>
-    readonly useCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDStore')['useCRUDStore']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useHelperStore: UnwrapRef<typeof import('./src/stores/HelperStore')['useHelperStore']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
-    readonly useNotificationsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/NotificationsCRUDStore')['useNotificationsCRUDStore']>
-    readonly usePontajCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PontajCRUDStore')['usePontajCRUDStore']>
-    readonly usePostsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/PostsCRUDStore')['usePostsCRUDStore']>
-    readonly useQuestionAnswersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionAnswersCRUDStore')['useQuestionAnswersCRUDStore']>
-    readonly useQuestionsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/QuestionsCRUDStore')['useQuestionsCRUDStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
-    readonly useSettingsStore: UnwrapRef<typeof import('./src/stores/SettingsStore')['useSettingsStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
-    readonly useTagsCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/TagsCRUDStore')['useTagsCRUDStore']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly useUserCollectionCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UserCollectionCRUDStore')['useUserCollectionCRUDStore']>
-    readonly useUsersCRUDStore: UnwrapRef<typeof import('./src/stores/cruds/UsersCRUDStore')['useUsersCRUDStore']>
+    readonly userCollectionCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['userCollectionCRUDStore']>
+    readonly usersCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['usersCRUDStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

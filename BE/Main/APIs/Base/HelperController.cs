@@ -10,6 +10,7 @@ namespace Main.APIs.Base;
 [Route("/api/[controller]/[action]")]
 public class HelperController : ControllerBase
 {
+    #region Dependency Injection
     private readonly BaseContext _context;
     private readonly GovContext _contextGov;
     private readonly IAudit _audit;
@@ -31,6 +32,7 @@ public class HelperController : ControllerBase
         _auth = auth;
         _hostingEnvironment = hostingEnvironment;
     }
+    #endregion
 
     [HttpPost]
     public async Task<IActionResult> Upload(IEnumerable<IFormFile> files)
@@ -77,7 +79,7 @@ public class HelperController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 
@@ -87,7 +89,7 @@ public class HelperController : ControllerBase
         try { return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Username == username)); }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 
@@ -101,12 +103,12 @@ public class HelperController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> UpdateCurentUserAvatar(string avatarUrl)
+    public async Task<IActionResult> GetCurentUserAvatar(string avatarUrl)
     {
         try
         {
@@ -119,7 +121,7 @@ public class HelperController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 
@@ -144,7 +146,7 @@ public class HelperController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 
@@ -170,7 +172,7 @@ public class HelperController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Error message: " + ex.Message);
+            return BadRequest(ex);
         }
     }
 }

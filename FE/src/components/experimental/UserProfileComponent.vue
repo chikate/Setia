@@ -2,16 +2,14 @@
 import type { User } from '@/interfaces'
 
 const profileUserData = ref<User>({} as User)
-const isMyProfile = computed<boolean>(
-  () => profileUserData.value.id === useAuthStore().userData?.id
-)
+const isMyProfile = computed<boolean>(() => profileUserData.value.id === authStore().userData?.id)
 
 const props = defineProps({
   username: { type: String, required: true }
 })
 
 onBeforeMount(async () => {
-  profileUserData.value = await useHelperStore().getUserProfile(String(props.username))
+  profileUserData.value = await helperStore().getUserProfile(String(props.username))
 })
 </script>
 

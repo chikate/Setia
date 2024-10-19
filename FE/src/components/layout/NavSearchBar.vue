@@ -22,14 +22,14 @@ const accountOverlay = ref()
       v-tooltip.bottom="menu.label"
     >
       <i
-        v-if="menu.right ? useAuthStore().checkUserRight(menu.right) : true"
+        v-if="menu.right ? authStore().checkUserRight(menu.right) : true"
         :class="`pi pi-${menu.icon} cursor-pointer`"
       />
     </RouterLink>
     <a
       @click="
-        useAuthStore().userData
-          ? $router.push(`/profile/${useAuthStore().userData?.username}`)
+        authStore().userData
+          ? $router.push(`/profile/${authStore().userData?.username}`)
           : accountOverlay.toggle($event)
       "
       class="cursor-pointer flex-row align-items-center"
@@ -43,7 +43,7 @@ const accountOverlay = ref()
       <div class="pr-2 font-semibold" v-else>
         <i class="pi pi-user" />
         <OverlayPanel ref="accountOverlay" class="p-0 m-0">
-          <LoginComponent v-if="!useAuthStore().token" @close="accountOverlay.hide($event)" />
+          <LoginComponent v-if="!authStore().token" @close="accountOverlay.hide($event)" />
         </OverlayPanel>
       </div>
     </a>

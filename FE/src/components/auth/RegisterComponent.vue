@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast'
-import { TOAST_BASE_HP } from '@/constants'
-import { IAuthenticationDTO } from '@/interfaces'
-
-const toast = useToast()
-
-const registerClicked = ref<boolean>(false)
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength, sameAs } from '@vuelidate/validators'
 
 const inputEmail = defineModel('inputEmail', {
   type: String,
@@ -27,134 +22,85 @@ const inputRepeatPassword = defineModel('inputRepeatPassword', {
   required: false,
   default: ''
 })
-const inputWidth = defineModel('inputWidth', {
-  type: Number,
-  required: false,
-  default: 110
-})
+const registerState = ref<number>(0)
+const v$ = useVuelidate(
+  {
+    inputEmail: { required, email },
+    inputUsername: { required, minLength: minLength(6) },
+    inputPassword: { required, minLength: minLength(6) },
+    inputRepeatPassword: { sameAs: sameAs(inputPassword) }
+  },
+  { inputEmail, inputUsername, inputPassword, inputRepeatPassword }
+)
 
-async function registerClickedHandler() {
-  registerClicked.value = true
-  if (!inputEmail.value) {
-    toast.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'Please enter a valid Email',
-      life: TOAST_BASE_HP,
-      group: 'main'
-    })
-    return
+async function submitRegistration() {
+  registerState.value = 1
+  if (await v$.value.$validate()) {
+    registerState.value = 2
+    if (await authStore().register(inputEmail.value, inputUsername.value, inputPassword.value)) {
+      inputEmail.value = ''
+      inputUsername.value = ''
+      inputPassword.value = ''
+      inputRepeatPassword.value = ''
+
+      registerState.value = 3
+    }
+    setTimeout(() => (registerState.value = 0), 3000)
   }
-  if (inputUsername.value.length < 6) {
-    toast.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'Please enter a valid Username',
-      life: TOAST_BASE_HP,
-      group: 'main'
-    })
-    return
-  }
-  if (inputPassword.value.length < 6) {
-    toast.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'Enter a longer Password',
-      life: TOAST_BASE_HP,
-      group: 'main'
-    })
-    return
-  }
-  if (inputPassword.value !== inputRepeatPassword.value) {
-    toast.add({
-      severity: 'info',
-      summary: 'Info',
-      detail: 'Please make sure the Repeat Password is the same as Password',
-      life: TOAST_BASE_HP,
-      group: 'main'
-    })
-    return
-  }
-  await useAuthStore()
-    .register(inputEmail.value, inputUsername.value, inputPassword.value)
-    .then((succesful: Boolean) => {
-      succesful
-        ? useAuthStore()
-            .login({
-              username: inputUsername.value,
-              password: inputPassword.value
-            } as IAuthenticationDTO)
-            .then(() =>
-              toast.add({
-                severity: 'success',
-                summary: 'Success',
-                detail: 'Account created!',
-                life: TOAST_BASE_HP,
-                group: 'main'
-              })
-            )
-        : toast.add({
-            severity: 'error',
-            summary: 'ERROR',
-            detail: 'Something is wrong',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          })
-    })
 }
 </script>
 
 <template>
-  <div class="flex flex-column gap-3 w-3">
-    <h2>Register</h2>
+  <div v-if="registerState < 3" class="flex flex-column gap-3 w-4 border-round align-self-start">
+    <h2 class="m-0 p-0">Register</h2>
 
     <InputGroup>
-      <InlineMessage severity="info" v-if="!inputEmail" class="absolute -translate-x-100">
-        {{ 'Email is required' }}
-      </InlineMessage>
-      <InputGroupAddon
-        v-if="inputEmail"
-        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-        class="m-0 p-2 px-3 justify-content-start"
+      <InlineMessage
+        severity="info"
+        v-if="v$.inputEmail.$error"
+        class="absolute -translate-x-100 -ml-5"
       >
+        {{ v$.inputEmail.$errors[0].$message }}
+      </InlineMessage>
+      <InputGroupAddon v-if="inputEmail" :class="settingsStore().INPUT_CLASS">
         Email
       </InputGroupAddon>
       <InputText
         v-model="inputEmail"
         id="email"
         placeholder="Email"
-        :class="inputEmail ? '' : registerClicked ? 'p-invalid' : ''"
+        :class="inputEmail ? '' : registerState > 0 ? 'p-invalid' : ''"
       />
     </InputGroup>
 
     <InputGroup>
-      <InlineMessage severity="info" v-if="!inputUsername" class="absolute -translate-x-100">
-        {{ 'Username is required' }}
-      </InlineMessage>
-      <InputGroupAddon
-        v-if="inputUsername"
-        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-        class="m-0 p-2 px-3 justify-content-start"
+      <InlineMessage
+        severity="info"
+        v-if="v$.inputUsername.$error"
+        class="absolute -translate-x-100 -ml-5"
       >
+        {{ v$.inputUsername.$errors[0].$message }}
+      </InlineMessage>
+      <InputGroupAddon v-if="inputUsername" :class="settingsStore().INPUT_CLASS">
         Username
       </InputGroupAddon>
       <InputText
         v-model="inputUsername"
         id="username"
         placeholder="Username"
-        :class="inputUsername ? '' : registerClicked ? 'p-invalid' : ''"
+        :class="inputUsername ? '' : registerState > 0 ? 'p-invalid' : ''"
       />
     </InputGroup>
 
     <InputGroup>
-      <InlineMessage severity="info" v-if="!inputPassword" class="absolute -translate-x-100">
-        {{ 'Password is required' }}
-      </InlineMessage>
-      <InputGroupAddon
-        v-if="inputPassword"
-        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-        class="m-0 p-2 px-3 justify-content-start"
+      <InlineMessage
+        severity="info"
+        v-if="v$.inputPassword.$error"
+        class="absolute -translate-x-100 -ml-5"
       >
+        {{ v$.inputPassword.$errors[0].$message }}
+      </InlineMessage>
+      <InputGroupAddon v-if="inputPassword" :class="settingsStore().INPUT_CLASS">
         Password
       </InputGroupAddon>
       <Password
@@ -162,30 +108,29 @@ async function registerClickedHandler() {
         toggleMask
         id="password"
         placeholder="Password"
-        :class="inputPassword ? '' : registerClicked ? 'p-invalid' : ''"
+        :class="inputPassword ? '' : registerState > 0 ? 'p-invalid' : ''"
       >
         <template #footer>
-          <Divider class="my-3 p-0" />
-          <p class="m-0 mb-2 p-0">Suggestions</p>
-          <ul class="px-4 m-0">
-            <li>At least one lowercase</li>
-            <li>At least one uppercase</li>
-            <li>At least one numeric</li>
-            <li>Minimum 8 characters</li>
-          </ul>
+          <Divider />
+          <div class="flex-wrap gap-2">
+            <Chip class="text-white bg-red-300">one lowercase</Chip>
+            <Chip class="text-white bg-red-300">one uppercase</Chip>
+            <Chip class="text-white bg-red-300">one numeric</Chip>
+            <Chip class="text-white bg-red-300">8 characters</Chip>
+          </div>
         </template>
       </Password>
     </InputGroup>
 
     <InputGroup>
-      <InlineMessage severity="info" v-if="!inputRepeatPassword" class="absolute -translate-x-100">
-        {{ 'Repeat Password is required' }}
-      </InlineMessage>
-      <InputGroupAddon
-        v-if="inputRepeatPassword"
-        :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-        class="m-0 p-2 px-3 justify-content-start"
+      <InlineMessage
+        severity="info"
+        v-if="v$.inputRepeatPassword.$error"
+        class="absolute -translate-x-100 -ml-5"
       >
+        {{ v$.inputPassword.$errors[0].$message }}
+      </InlineMessage>
+      <InputGroupAddon v-if="inputRepeatPassword" :class="settingsStore().INPUT_CLASS">
         Repeat password
       </InputGroupAddon>
       <Password
@@ -194,14 +139,22 @@ async function registerClickedHandler() {
         :feedback="false"
         id="repeatPassword"
         placeholder="Repeat password"
-        :class="inputRepeatPassword ? '' : registerClicked ? 'p-invalid' : ''"
+        :class="inputRepeatPassword ? '' : registerState > 0 ? 'p-invalid' : ''"
       />
     </InputGroup>
 
     <Button
-      class="button-gradient-effect mt-1 align-self-start"
       label="Register"
-      @click="registerClickedHandler"
+      class="button-gradient-effect"
+      :loading="registerState > 1"
+      @click="submitRegistration"
     />
   </div>
+  <div v-else class="align-items-center h-full">Welcome</div>
 </template>
+
+<style scoped>
+:deep(.p-button:hover .p-button-label) {
+  font-size: 1.5rem;
+}
+</style>

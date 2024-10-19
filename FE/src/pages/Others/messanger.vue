@@ -10,7 +10,7 @@ const message = ref('')
       <InputText
         v-model="userToSendRequestTo"
         @keydown.enter="
-          useHelperStore()
+          helperStore()
             .sendFriendRequest(userToSendRequestTo)
             .then(() => (userToSendRequestTo = ''))
         "

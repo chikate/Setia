@@ -2,16 +2,28 @@
 import * as htmlToImage from 'html-to-image'
 import { download } from '@/helpers'
 
-const tierListSize = defineModel('tierListSize', {
+const tierListDimension = defineModel('tierListDimension', {
   type: Number,
   required: false,
   default: 100
 })
-
 const tierListUniformGap = defineModel('tierListUniformGap', {
   type: Number,
   required: false,
   default: 0
+})
+const tierListitems = defineModel('tierListitems', {
+  type: Array<string>,
+  required: false,
+  default: [
+    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmDwycVzCsWaZx5AaCTeqz6e8qLbt8UaQz7g&s',
+    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?cs=srgb&dl=pexels-jaime-reimer-1376930-2662116.jpg&fm=jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WcdjgQXfUoz7afVYi53uNYsamoIvoWZpDg&s',
+    //'https://upload.wikimedia.org/wikipedia/commons/c/c9/Napa_Valley.jpg',
+    'https://images.unsplash.com/photo-1446308386271-523272773b92?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://media.post.rvohealth.io/wp-content/uploads/2020/08/banana-pink-background-thumb-1-732x549.jpg'
+  ]
 })
 
 const loadingImage = ref<boolean>(false)
@@ -26,10 +38,12 @@ async function saveImage() {
 }
 
 async function dragStart(ev: any) {
-  ev.dataTransfer.setData('text', ev.target.id)
+  ev.dataTransfer.setData('text', ev.target.src)
+  ev.dataTransfer?.setData('sourceId', ev.target.id)
   ev.target.classList.add('opacity-05')
 }
 async function dragOver(ev: any) {
+  ev.stopPropagation()
   ev.preventDefault()
 }
 async function dragEnd(ev: any) {
@@ -37,34 +51,29 @@ async function dragEnd(ev: any) {
 }
 // Needs improvement !!!!
 async function drop(ev: any) {
+  ev.stopPropagation()
   ev.preventDefault()
 
-  const target = ev.target.id.includes('droptarget')
-    ? ev.target
-    : ev.target.id.includes('drag')
-      ? ev.target.parentNode
-      : undefined
+  const imageLink = ev.dataTransfer?.getData('text')
+  if (imageLink) {
+    const element = document.createElement('img') as HTMLImageElement
+    element.id = 'drag'
+    element.className = 'cursor-grab'
+    element.crossOrigin = 'anonymous'
+    element.src = imageLink
+    element.height = tierListDimension.value
+    element.ondrop = drop
 
-  if (!target) return
+    // Insert the image in the correct location
+    if (ev.target.id == 'drag') ev.target.insertBefore(element, ev.target.firstChild)
+    else ev.target.appendChild(element)
 
-  const offsetX = ev.clientX - target.getBoundingClientRect().left
-  const offsetY = ev.clientY - target.getBoundingClientRect().top
-
-  let children = Array.from(target.children)
-
-  let insertionIndex = children.findIndex((child: any) => {
-    const childRect = child.getBoundingClientRect()
-    const childMidX = (childRect.left + childRect.right) / 2
-    const childMidY = (childRect.top + childRect.bottom) / 2
-    return offsetX < childMidX && offsetY < childMidY
-  })
-
-  if (insertionIndex < 0) insertionIndex = children.length
-
-  const element = document.getElementById(ev.dataTransfer.getData('text'))
-  insertionIndex < children.length
-    ? target.insertBefore(element, children[insertionIndex])
-    : target.appendChild(element)
+    const sourceId = ev.dataTransfer?.getData('sourceId')
+    if (sourceId) {
+      const sourceElement = document.getElementById(sourceId)
+      if (sourceElement) sourceElement.remove()
+    }
+  }
 }
 
 // async function extractTierListOrder(): Promise<string[][]> {
@@ -85,7 +94,7 @@ async function drop(ev: any) {
         :loading="loadingImage"
         @click="saveImage"
       />
-      <Slider :min="64" :max="256" v-model="tierListSize" class="w-full mx-3" />
+      <Slider :min="64" :max="256" v-model="tierListDimension" class="w-full mx-3" />
     </div>
 
     <!-- <div id="tierListWithContent" :class="`flex-column overflow-auto gap-${tierListUniformGap}`"> -->
@@ -128,7 +137,7 @@ async function drop(ev: any) {
         <div
           :id="`tier-${tierRowIndex}`"
           class="tier text-xl flex-column justify-content-center"
-          :style="`min-height: ${tierListSize}px; min-width: ${tierListSize}px; max-width: ${tierListSize}px; width: ${tierListSize}px; background-color: #${tierRowData.color}`"
+          :style="`min-height: ${tierListDimension}px; min-width: ${tierListDimension}px; max-width: ${tierListDimension}px; width: ${tierListDimension}px; background-color: #${tierRowData.color}`"
         >
           <Textarea auto-resize v-model="tierRowData.title" class="bg-transparent text-center" />
         </div>
@@ -144,24 +153,16 @@ async function drop(ev: any) {
     <div
       :id="`droptarget-container`"
       :class="`flex-wrap w-full min-h-max gap-${tierListUniformGap}`"
-      :style="`min-height: ${tierListSize}px;`"
+      :style="`min-height: ${tierListDimension}px;`"
       :ondragover="dragOver"
       :ondrop="drop"
     >
       <img
-        v-for="(tierItem, tierItemIndex) in [
-          'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmDwycVzCsWaZx5AaCTeqz6e8qLbt8UaQz7g&s',
-          'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?cs=srgb&dl=pexels-jaime-reimer-1376930-2662116.jpg&fm=jpg',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WcdjgQXfUoz7afVYi53uNYsamoIvoWZpDg&s',
-          'https://images.unsplash.com/photo-1446308386271-523272773b92?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          'https://media.post.rvohealth.io/wp-content/uploads/2020/08/banana-pink-background-thumb-1-732x549.jpg'
-        ]"
+        v-for="(tierItem, tierItemIndex) in tierListitems"
         :key="tierItemIndex"
-        :id="`drag-${tierItemIndex}`"
         :ondragstart="dragStart"
         :src="tierItem"
-        :height="`${tierListSize}px`"
+        :height="tierListDimension"
         class="cursor-grab"
         crossorigin="anonymous"
       />
@@ -175,8 +176,9 @@ async function drop(ev: any) {
   border-style: none;
   border-radius: 0;
   box-shadow: none;
+  vertical-align: middle;
 }
-#tier-0 {
+#tierList > *:first-child > .tier {
   border-radius: 5px 0 0;
 }
 #tierList > *:last-child > .tier {

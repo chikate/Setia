@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast'
-import { TOAST_BASE_HP } from '@/constants'
 import { IAuthenticationDTO } from '@/interfaces'
 
-const toast = useToast()
-const showLoginSpinner = ref<boolean>(false)
+const loginState = ref<number>(0)
 
 const inputUsername = defineModel('inputUsername', {
   type: String,
@@ -21,91 +18,75 @@ const staySignedIn = defineModel('staySignedIn', {
   required: false,
   default: false
 })
-const inputWidth = defineModel('inputWidth', {
-  type: Number,
-  required: false,
-  default: 110
-})
 
 async function submitLogin() {
-  if (inputUsername.value.length < 6 || inputPassword.value.length < 6) return
-  showLoginSpinner.value = true
-  await useAuthStore()
+  loginState.value = 1
+  if (inputUsername.value.length < 6 || inputPassword.value.length < 6)
+    return (loginState.value = 0)
+  loginState.value = 2
+  await authStore()
     .login({
       username: inputUsername.value,
       password: inputPassword.value
     } as IAuthenticationDTO)
     .then((successful: Boolean) => {
-      successful
-        ? toast.add({
-            severity: 'success',
-            summary: 'Succesful login',
-            detail: '',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          })
-        : toast.add({
-            severity: 'error',
-            summary: 'Invalid account',
-            detail: '',
-            life: TOAST_BASE_HP,
-            group: 'main'
-          })
+      console.log(successful)
+      if (successful) {
+        inputUsername.value = ''
+        loginState.value = 3
+      } else loginState.value = 0
+      inputPassword.value = ''
     })
-  showLoginSpinner.value = false
 }
 </script>
 
 <template>
-  <div class="flex flex-column gap-3" style="width: 18rem">
-    <lable class="font-bold">Login</lable>
+  <div
+    v-if="loginState < 3 && !authStore().token"
+    class="flex flex-column gap-3 border-round w-3 align-self-start"
+  >
+    <h2 class="m-0 p-0">Login</h2>
 
-    <div class="flex flex-column gap-2">
-      <InputGroup>
-        <InputGroupAddon
-          v-if="inputUsername"
-          :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-          class="m-0 p-2 px-3 justify-content-start"
-        >
-          Username
-        </InputGroupAddon>
-        <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
-      </InputGroup>
+    <InputGroup>
+      <InputGroupAddon v-if="inputUsername" :class="settingsStore().INPUT_CLASS">
+        Username
+      </InputGroupAddon>
+      <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
+    </InputGroup>
 
-      <InputGroup>
-        <InputGroupAddon
-          v-if="inputPassword"
-          :style="`width: ${inputWidth}px; min-width: ${inputWidth}px`"
-          class="m-0 p-2 px-3 justify-content-start"
-        >
-          Password
-        </InputGroupAddon>
-        <Password
-          placeholder="Password"
-          v-model="inputPassword"
-          :feedback="false"
-          @keydown.enter="submitLogin"
-        />
-      </InputGroup>
-    </div>
+    <InputGroup>
+      <InputGroupAddon v-if="inputPassword" :class="settingsStore().INPUT_CLASS">
+        Password
+      </InputGroupAddon>
+      <Password
+        placeholder="Password"
+        v-model="inputPassword"
+        @keydown.enter="submitLogin"
+        :feedback="false"
+      />
+    </InputGroup>
 
     <div class="flex-row gap-2 align-items-center">
       <Checkbox v-model="staySignedIn" binary />
       <label>Stay signed in</label>
     </div>
 
-    <div class="text-xs font-semibold text-white-alpha-600 text-center">
+    <div
+      class="flex-wrap justify-content-center text-xs font-semibold text-white-alpha-600 text-center"
+    >
       By continuing you accept the
       <RouterLink to="/terms-of-service" class="font-medium">Terms of Service</RouterLink>,
-      <RouterLink to="/privacy-policy" class="font-medium"
-        >Privacy Policy and Cookie Policy</RouterLink
-      >.
+      <div>
+        <RouterLink to="/privacy-policy" class="font-medium"
+          >Privacy Policy and Cookie Policy</RouterLink
+        >.
+      </div>
     </div>
 
     <Button
       label="Login"
-      :loading="showLoginSpinner"
       class="button-gradient-effect"
+      :loading="loginState > 0"
       @click="submitLogin"
     />
 
@@ -114,4 +95,15 @@ async function submitLogin() {
       <RouterLink to="/register">Create Account</RouterLink>
     </div>
   </div>
+  <div v-else class="flex-column justify-content-between">
+    Profile
+
+    <Button label="Log Out" class="button-gradient-effect" @click="authStore().logOut" />
+  </div>
 </template>
+
+<style scoped>
+:deep(.p-button:hover .p-button-label) {
+  font-size: 1.5rem;
+}
+</style>

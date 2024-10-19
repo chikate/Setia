@@ -28,26 +28,34 @@ public class AuthController : ControllerBase
     }
     #endregion
 
-    [HttpPost]
+    [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] AuthenticationDTO loginCredentials)
+    public async Task<IActionResult> Login([FromQuery] AuthenticationDTO loginCredentials)
     {
         try { return Ok(await _auth.Login(loginCredentials)); }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 
-    [HttpPost]
+    [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegistrationDTO registration)
+    public async Task<IActionResult> Register([FromQuery] RegistrationDTO registration)
     {
         try { return Ok(await _auth.Register(registration)); }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> RecoverAccount([FromQuery] string email)
+    {
+        try { return Ok(email); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 
     [HttpGet]
     public async Task<IActionResult> CheckUserRights([FromQuery] IEnumerable<string> rightsToCeck, Guid? user = null)
     {
         try { return Ok(await _auth.CheckUserRights(rightsToCeck, user)); }
-        catch (Exception ex) { return BadRequest("Error message: " + ex.Message); }
+        catch (Exception ex) { return BadRequest(ex); }
     }
 }

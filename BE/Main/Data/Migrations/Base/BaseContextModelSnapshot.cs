@@ -19,13 +19,13 @@ namespace Main.Data.Migrations.Base
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("base")
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "hstore");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Main.Data.Models.Base.AuditModel", b =>
+            modelBuilder.Entity("Main.Data.Models.AuditModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,6 +58,7 @@ namespace Main.Data.Migrations.Base
                         .HasColumnType("text");
 
                     b.Property<List<string>>("Tags")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.HasKey("Id");
@@ -67,7 +68,7 @@ namespace Main.Data.Migrations.Base
                     b.ToTable("Audit", "base");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.NotificationModel", b =>
+            modelBuilder.Entity("Main.Data.Models.NotificationModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -98,6 +99,7 @@ namespace Main.Data.Migrations.Base
                         .HasColumnType("text");
 
                     b.Property<List<string>>("Tags")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Title")
@@ -119,7 +121,84 @@ namespace Main.Data.Migrations.Base
                     b.ToTable("Notifications", "base");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.UserModel", b =>
+            modelBuilder.Entity("Main.Data.Models.SettingsModel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("AuthorDataId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExecutionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("Tags")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorDataId");
+
+                    b.ToTable("Settings", "base");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Description = "",
+                            ExecutionDate = new DateTime(2024, 10, 16, 20, 12, 4, 242, DateTimeKind.Utc).AddTicks(4102),
+                            Key = "Client Name",
+                            Tags = new List<string>(),
+                            Value = "DragosClient"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Description = "",
+                            ExecutionDate = new DateTime(2024, 10, 16, 20, 12, 4, 242, DateTimeKind.Utc).AddTicks(4146),
+                            Key = "Client BE URL",
+                            Tags = new List<string>(),
+                            Value = "https://localhost:44381"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Description = "",
+                            ExecutionDate = new DateTime(2024, 10, 16, 20, 12, 4, 242, DateTimeKind.Utc).AddTicks(4185),
+                            Key = "Client Environment",
+                            Tags = new List<string>(),
+                            Value = "Development"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Description = "",
+                            ExecutionDate = new DateTime(2024, 10, 16, 20, 12, 4, 242, DateTimeKind.Utc).AddTicks(4214),
+                            Key = "Client Colors",
+                            Tags = new List<string>(),
+                            Value = "2f42a6,845dbb"
+                        });
+                });
+
+            modelBuilder.Entity("Main.Data.Models.UserModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,6 +227,7 @@ namespace Main.Data.Migrations.Base
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<List<Guid>>("Friends")
+                        .IsRequired()
                         .HasColumnType("uuid[]");
 
                     b.Property<string>("Name")
@@ -159,13 +239,14 @@ namespace Main.Data.Migrations.Base
                         .HasColumnType("text");
 
                     b.Property<Dictionary<string, string>>("Saves")
+                        .IsRequired()
                         .HasColumnType("hstore");
 
                     b.Property<string>("Signiture")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<List<string>>("Tags")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Username")
@@ -177,37 +258,24 @@ namespace Main.Data.Migrations.Base
                     b.HasIndex("AuthorDataId");
 
                     b.ToTable("Users", "base");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("97710da1-e06b-4e90-bf82-5f95d58aed50"),
-                            Email = "",
-                            ExecutionDate = new DateTime(2024, 10, 11, 19, 28, 7, 416, DateTimeKind.Utc).AddTicks(7388),
-                            Name = "Dragos",
-                            Password = "E7CF3EF4F17C3999A94F2C6F612E8A888E5B1026878E4E19398B23BD38EC221A",
-                            Signiture = "",
-                            Tags = new List<string> { "Dragos", "Admin" },
-                            Username = "Dragos"
-                        });
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.AuditModel", b =>
+            modelBuilder.Entity("Main.Data.Models.AuditModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
                     b.Navigation("AuthorData");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.NotificationModel", b =>
+            modelBuilder.Entity("Main.Data.Models.NotificationModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "ToUserData")
+                    b.HasOne("Main.Data.Models.AuditModel", "ToUserData")
                         .WithMany()
                         .HasForeignKey("ToUserDataId");
 
@@ -216,9 +284,18 @@ namespace Main.Data.Migrations.Base
                     b.Navigation("ToUserData");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.Base.UserModel", b =>
+            modelBuilder.Entity("Main.Data.Models.SettingsModel", b =>
                 {
-                    b.HasOne("Main.Data.Models.Base.AuditModel", "AuthorData")
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
+                        .WithMany()
+                        .HasForeignKey("AuthorDataId");
+
+                    b.Navigation("AuthorData");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.UserModel", b =>
+                {
+                    b.HasOne("Main.Data.Models.AuditModel", "AuthorData")
                         .WithMany()
                         .HasForeignKey("AuthorDataId");
 

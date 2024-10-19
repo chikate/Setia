@@ -2,7 +2,6 @@
   <div class="banner">
     <div class="slider">
       <img
-        @click="console.log"
         v-for="(tierItem, tierItemIndex) in [
           'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg'
           // 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmDwycVzCsWaZx5AaCTeqz6e8qLbt8UaQz7g&s',

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { DEFAULT_ROWS_OPTIONS, DEFAULT_ROWS_INDEX } from '@/constants'
 import { FilterMatchMode } from 'primevue/api'
 
 const props = defineProps({
@@ -7,6 +6,7 @@ const props = defineProps({
   readonly: { type: Boolean, required: false }
 })
 
+const allLoadedItems = ref()
 const showDialog = ref<boolean>()
 const showMultipleDelete = ref<boolean>(false)
 const showFilters = ref<boolean>(false)
@@ -41,6 +41,7 @@ const exposedData = ref(
 
 onBeforeMount(init)
 async function init() {
+  allLoadedItems.value = await props.store.getItems()
   exposedData.value.forEach(async (elem, index) => {
     if (
       typeof elem.type == typeof Object() &&
@@ -83,11 +84,10 @@ const filters = ref({
 </script>
 
 <template>
-  <div :id="store.$id" class="card p-1" style="min-width: 300px">
+  <div class="card p-1" style="min-width: 300px">
     <DataTable
-      @vue:before-mount="store.get()"
-      :value="store.allLoadedItems"
-      :loading="!store.allLoadedItems"
+      :value="allLoadedItems"
+      :loading="!allLoadedItems"
       stripedRows
       rowHover
       scrollable
@@ -98,10 +98,10 @@ const filters = ref({
       v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="[exposedData[0].field]"
-      :paginator="store.allLoadedItems?.length ?? 0 > DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
-      :rows="DEFAULT_ROWS_OPTIONS[DEFAULT_ROWS_INDEX]"
-      :rowsPerPageOptions="DEFAULT_ROWS_OPTIONS"
-      :totalRecords="store.allLoadedItems?.length ?? 0"
+      :paginator="(allLoadedItems?.length ?? 0) > 5"
+      :rows="5"
+      :rowsPerPageOptions="[5, 10]"
+      :totalRecords="allLoadedItems?.length ?? 0"
       reorderableColumns
       @row-dblclick="showDialog = !showDialog && !readonly"
       @row-click="
@@ -112,13 +112,13 @@ const filters = ref({
       <template #header>
         <div class="flex-row gap-2 align-items-center px-2">
           <h2 class="w-full m-0 p-0 font-bold">
-            {{
+            <!-- {{
               store.$id[0].toUpperCase() +
               store.$id
                 .substring(1)
                 .replaceAll(/([A-Z])/g, ' $1')
                 .toLowerCase()
-            }}
+            }} -->asd
           </h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
@@ -173,7 +173,7 @@ const filters = ref({
       <template #empty>
         <div class="flex-grow-1 text-center">
           Empty
-          {{ store.$id.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }}
+          <!-- {{ store.$id.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }} -->
         </div>
       </template>
       <template #expansion>
@@ -211,6 +211,7 @@ const filters = ref({
       <Column
         v-for="(col, i) in exposedData.filter((item: any) => !selectedColumns.includes(item))"
         :key="col.field + '_' + i"
+        :id="col.field + '_' + i"
         :header="col.header"
         :field="col.field"
         :filterField="col.field"
@@ -226,7 +227,8 @@ const filters = ref({
             :class="`pi ${data[field] ? 'pi-verified' : 'pi-circle'}`"
           />
           <div v-else>
-            {{
+            {{ data[field].toString() }}
+            <!-- {{
               (() => {
                 const value = field
                   .split('.')
@@ -235,7 +237,7 @@ const filters = ref({
                   ? (new Date(value).toUTCString().replaceAll(' GMT', '') ?? value.toString())
                   : value.toString()
               })()
-            }}
+            }} -->
           </div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
@@ -251,8 +253,8 @@ const filters = ref({
 
       <!-- <Column
         v-if="
-          !(selectedColumns.length == exposedData.length) && store.allLoadedItems
-            ? store.allLoadedItems[0].active
+          !(selectedColumns.length == exposedData.length) && store.getItems
+            ? store.getItems[0].active
             : false
         "
         header="Active"
@@ -283,14 +285,11 @@ const filters = ref({
     >
       <template #header>
         <h3 class="flex-grow-1 font-bold m-0 p-0">
-          {{ (!editOrAdd ? 'Add new ' : 'Edit ') + store.$id.toLocaleLowerCase() }}
+          {{ !editOrAdd ? 'Add new ' : 'Edit ' }}
+          <!-- + store.$id.toLocaleLowerCase() -->
         </h3>
         <div class="flex-row gap-3 font-bold">
-          <Button
-            class="bg-primary-reverse"
-            label="Back"
-            @click="(showDialog = false), store.get()"
-          />
+          <Button class="bg-primary-reverse" label="Back" @click="showDialog = false" />
           <SplitButton
             v-if="editOrAdd"
             label="Save"
@@ -312,39 +311,27 @@ const filters = ref({
       </template>
       <div class="flex flex-column gap-4">
         <InputGroup v-for="key in exposedData" :key="key.field">
-          <InputGroupAddon class="py-0 text-left" style="min-width: 7rem">
-            {{ key.header }}
+          <InputGroupAddon style="min-width: 8rem" v-if="(store as any).editItem[key.field][0]">
+            <div class="py-0 text-right w-full">
+              {{ key.header }}
+            </div>
           </InputGroupAddon>
 
-          <div
-            class="flex flex-column"
-            v-if="key.field.toLowerCase().includes('tag') && !(store.$id.toLowerCase() == 'tags')"
-          >
-            <Chips
-              :placeholder="key.header"
-              v-model="(store as any).editItem[key.field]"
-              class="w-full"
-              filter
-            />
-            <Listbox
-              :placeholder="`Select ${key.header}`"
-              v-model="(store as any).editItem[key.field]"
-              :options="useTagsCRUDStore().allLoadedItems"
-              option-label="tag"
-              option-value="tag"
-              multiple
-              :filter="(useTagsCRUDStore().allLoadedItems?.length ?? 0) > 20"
-              class="w-full"
-              listStyle="height:20.28rem"
-            />
-            <!-- :virtualScrollerOptions="{ itemSize: 38 }" -->
-          </div>
+          <!-- && !(store.$id.toLowerCase() == 'tags') -->
+          <AutoComplete
+            v-if="key.field.toLowerCase().includes('tag')"
+            multiple
+            :placeholder="key.header"
+            v-model="(store as any).editItem[key.field]"
+            class="w-full"
+            filter
+          />
 
           <Dropdown
             v-else-if="key.field.toLowerCase() == 'user'"
             :placeholder="`Select a ${key.header}`"
             v-model="(store as any).editItem[key.field]"
-            :options="useUsersCRUDStore().allLoadedItems"
+            :options="useUsersCRUDStore().getItems"
             optionLabel="username"
             optionValue="username"
             editable
@@ -401,11 +388,11 @@ const filters = ref({
 </template>
 
 <style scoped>
-::v-deep(.p-datatable-tbody) {
+:deep(.p-datatable-tbody) {
   cursor: alias;
 }
 
-::v-deep(ul) {
+:deep(ul) {
   flex-wrap: wrap !important;
 }
 </style>

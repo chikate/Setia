@@ -29,7 +29,11 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000
+    port: 3000,
+    strictPort: true,
+    proxy: {
+      '/api': { target: 'https://localhost:44381', secure: false }
+    }
     // hmr: {
     //   host: import.meta.env.VITE_SERVER_IP,
     //   protocol: 'ws',

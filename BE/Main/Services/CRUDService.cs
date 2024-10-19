@@ -32,7 +32,7 @@ public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : BaseMo
     }
     #endregion
 
-    public async Task<IEnumerable<TModel>> Get(GetFilterDTO<TModel>? filter)
+    public async Task<IEnumerable<TModel>> Get(GetFilterDTO<TModel> filter)
     {
         try
         {

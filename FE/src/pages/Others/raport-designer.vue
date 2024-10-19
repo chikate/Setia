@@ -17,23 +17,19 @@
                   parameters.push(event.target.value as never)
                   event.target.value = ''
                 } else {
-                  toast.add({
+                  $toast.add({
                     severity: 'info',
                     summary: 'Info',
-                    detail: 'The parameter already exists!',
-                    life: TOAST_BASE_HP,
-                    group: 'main'
+                    detail: 'The parameter already exists!'
                   })
                   event.target.loading = true
-                  setTimeout(TOAST_BASE_HP / 1.5, () => (event.target.loading = false))
+                  setTimeout(3000, () => (event.target.loading = false))
                 }
               else
-                toast.add({
+                $toast.add({
                   severity: 'info',
                   summary: 'Info',
-                  detail: 'Invalid parameter!',
-                  life: TOAST_BASE_HP,
-                  group: 'main'
+                  detail: 'Invalid parameter!'
                 })
             }
           "
@@ -89,11 +85,6 @@
 </template>
 
 <script setup lang="ts">
-import { TOAST_BASE_HP } from '@/constants'
-
-import { useToast } from 'primevue/usetoast'
-const toast = useToast()
-
 const parameters = ref([])
 // const show = ref<boolean>(true)
 // const useFooter = ref<boolean>(true)

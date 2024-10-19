@@ -4,16 +4,14 @@ import type { Post, User } from '@/interfaces'
 const profileUserData = ref<User>({} as User)
 const showUploadAvatar = ref()
 const avatarUrl = ref<string>('')
-const isMyProfile = computed<boolean>(
-  () => profileUserData.value.id === useAuthStore().userData?.id
-)
+const isMyProfile = computed<boolean>(() => profileUserData.value.id === authStore().userData?.id)
 
 const loadingComplete = ref<boolean>(false)
 
 onBeforeMount(init)
 async function init() {
   try {
-    profileUserData.value = await useHelperStore().getUserProfile(
+    profileUserData.value = await helperStore().getUserProfile(
       String((useRoute().params as any).name)
     )
 
@@ -30,7 +28,7 @@ mode="basic"
 name="demo[]"
 accept="image/*"
 customUpload
-@uploader="useHelperStore().uploadFiles($event.files)"
+@uploader="helperStore().uploadFiles($event.files)"
 :maxFileSize="1000000"
 /> -->
 
@@ -55,7 +53,7 @@ customUpload
         </div>
       </div>
       <PostComponent
-        v-if="profileUserData.id == useAuthStore().userData?.id"
+        v-if="profileUserData.id == authStore().userData?.id"
         :post-data="usePostsCRUDStore().editItem"
       />
     </div>
@@ -80,7 +78,7 @@ customUpload
           @vue:beforeMount="avatarUrl = profileUserData.avatar"
           v-model="avatarUrl"
           @keypress.enter="
-            useHelperStore().setUserAvatar(avatarUrl),
+            helperStore().getCurentUserAvatar(avatarUrl),
               (profileUserData.avatar = avatarUrl),
               (showUploadAvatar = false)
           "
