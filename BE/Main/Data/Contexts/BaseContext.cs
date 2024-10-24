@@ -1,7 +1,7 @@
-﻿using Main.Data.Models;
+﻿#pragma warning disable CS8604, CS8601
+
+using Main.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Main.Data.Contexts;
 
@@ -9,10 +9,20 @@ public partial class BaseContext : DbContext
 {
     #region Dependency Injection
     private readonly IConfiguration _config;
+    //private readonly IAuditService _audit;
+    //private readonly IAuthService _auth;
 
-    public BaseContext(DbContextOptions<BaseContext> options, IConfiguration config) : base(options)
+    public BaseContext
+    (
+        DbContextOptions<BaseContext> options,
+        IConfiguration config
+    //IAuditService audit,
+    //IAuthService auth
+    ) : base(options)
     {
         _config = config;
+        //_audit = audit;
+        //_auth = auth;
     }
     #endregion
 
@@ -23,37 +33,33 @@ public partial class BaseContext : DbContext
     public DbSet<SettingsModel> Settings { get; set; }
     #endregion
 
-    private static string HashPassword(string plainTextPassword) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(plainTextPassword)));
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("base");
 
-//        #region Default Users
-//#pragma warning disable CS8604, CS8601 
-//        foreach (UserModel defaultUser in new List<UserModel> {
-//        new UserModel
-//        {
-//            Name = _config["AdminAccount:Username"],
-//            Username = _config["AdminAccount:Username"],
-//            Password = HashPassword(_config["AdminAccount:Password"]),
-//            Tags = [
-//                _config["AdminAccount:Username"],
-//                "Admin"
-//            ]
-//        },
-//        new UserModel
-//        {
-//            Name = _config["AdminAccount:Username"] + "2",
-//            Username = _config["AdminAccount:Username"] + "2",
-//            Password = HashPassword(_config["AdminAccount:Password"]),
-//            Tags = [
-//                _config["AdminAccount:Username"] + "2",
-//                "Admin"
-//            ]
-//        }}) modelBuilder.Entity<UserModel>().HasData(defaultUser);
-//#pragma warning restore CS8604, CS8601
-//        #endregion
+        #region Default Users
+        foreach (UserModel defaultUser in new List<UserModel> {
+        new UserModel
+        {
+            Name = _config["AdminAccount:Username"],
+            Username = _config["AdminAccount:Username"],
+            Password = _config["AdminAccount:Password"], //_auth.CriptPassword(_config["AdminAccount:Password"]),
+            Tags = [
+                _config["AdminAccount:Username"],
+                "Admin"
+            ]
+        },
+        new UserModel
+        {
+            Name = _config["AdminAccount:Username"] + "ADM",
+            Username = _config["AdminAccount:Username"] + "ADM",
+            Password = _config["AdminAccount:Password"], //_auth.CriptPassword(_config["AdminAccount:Password"]),
+            Tags = [
+                _config["AdminAccount:Username"] + "ADM",
+                "Admin"
+            ]
+        }}) modelBuilder.Entity<UserModel>().HasData(defaultUser);
+        #endregion
 
         #region Default Tags
         //modelBuilder.Entity<TagModel>().HasData(new TagModel { Tag = $"Role.Admin" });
@@ -76,35 +82,42 @@ public partial class BaseContext : DbContext
         #endregion
 
         #region Default Settings
-#pragma warning disable CS8604, CS8601
-        int defaultSettingIndex = 1;
+        int settingIndex = 1;
         foreach (SettingsModel defaultSetting in new List<SettingsModel> {
         new SettingsModel
         {
+            Id = settingIndex++,
             Key = "Client Name",
             Value = "DragosClient",
         },
         new SettingsModel
         {
+            Id = settingIndex++,
             Key = "Client BE URL",
             Value = _config["Server"],
         },
         new SettingsModel
         {
+            Id = settingIndex++,
             Key = "Client Environment",
             Value = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
         },
         new SettingsModel
         {
+            Id = settingIndex++,
             Key = "Client Colors",
             Value = "2f42a6,845dbb",
-        }})
-        {
-            defaultSetting.Id = defaultSettingIndex;
-            defaultSettingIndex++;
-            modelBuilder.Entity<SettingsModel>().HasData(defaultSetting);
-        }
-#pragma warning restore CS8604, CS8601
+        }}) { modelBuilder.Entity<SettingsModel>().HasData(defaultSetting); }
         #endregion
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+        {
+            entry.Property("ExecutionDate").CurrentValue = DateTime.Now;
+            entry.Property("AuthorId").CurrentValue = 1;//(await _auth.GetCurrentUser())?.Id;
+        }
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

@@ -13,17 +13,9 @@ const inputPassword = defineModel('inputPassword', {
   required: false,
   default: ''
 })
-const staySignedIn = defineModel('staySignedIn', {
-  type: Boolean,
-  required: false,
-  default: false
-})
 
 async function submitLogin() {
   loginState.value = 1
-  if (inputUsername.value.length < 6 || inputPassword.value.length < 6)
-    return (loginState.value = 0)
-  loginState.value = 2
   await authStore()
     .login({
       username: inputUsername.value,
@@ -65,11 +57,6 @@ async function submitLogin() {
         :feedback="false"
       />
     </InputGroup>
-
-    <div class="flex-row gap-2 align-items-center">
-      <Checkbox v-model="staySignedIn" binary />
-      <label>Stay signed in</label>
-    </div>
 
     <div
       class="flex-wrap justify-content-center text-xs font-semibold text-white-alpha-600 text-center"

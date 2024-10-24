@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@primevue/themes": "^4.1.1",
     "@tiptap/pm": "^2.8.0",
     "@tiptap/starter-kit": "^2.8.0",
     "@tiptap/vue-3": "^2.8.0",
@@ -23,7 +24,7 @@
     "pinia-plugin-persistedstate": "^4.1.1",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
-    "primevue": "3.53.0",
+    "primevue": "^4.1.1",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "vue3-emoji-picker": "^1.1.8"

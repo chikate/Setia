@@ -11,7 +11,7 @@ export const apiRequest = async (
   }
 ): Promise<any> =>
   await fetch(
-    `https://${import.meta.env.VITE_SERVER}/api/${path}` +
+    `https://${import.meta.env.VITE_SERVER ?? 'localhost:44381'}/api/${path}` +
       (body ? '?' + new URLSearchParams(body) : ''),
     {
       method,
@@ -55,7 +55,11 @@ export function isValidISODate(dateString: string): boolean {
 
 export function download(url: any, name?: string) {
   const a: HTMLAnchorElement = document.createElement('a')
-  a.href = url
+  if (url.fileContents) {
+    a.href = url.fileContents
+  } else {
+    a.href = url
+  }
   a.download = String(name ?? url?.split('/')?.pop() ?? 'download').replace(/[^0-9A-Z]+/gi, '')
   document.body.appendChild(a).click()
   document.body.removeChild(a)

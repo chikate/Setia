@@ -1,6 +1,6 @@
 using Main.Data.Contexts;
 using Main.Data.Models;
-using Main.Services.Interfaces;
+using Main.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,16 +13,16 @@ public class HelperController : ControllerBase
     #region Dependency Injection
     private readonly BaseContext _context;
     private readonly GovContext _contextGov;
-    private readonly IAudit _audit;
-    private readonly IAuth _auth;
+    private readonly IAuditService _audit;
+    private readonly IAuthService _auth;
     private readonly IWebHostEnvironment _hostingEnvironment;
 
     public HelperController
     (
         BaseContext context,
         GovContext contextGov,
-        IAudit audit,
-        IAuth auth,
+        IAuditService audit,
+        IAuthService auth,
         IWebHostEnvironment hostingEnvironment
     )
     {
@@ -34,63 +34,18 @@ public class HelperController : ControllerBase
     }
     #endregion
 
-    [HttpPost]
-    public async Task<IActionResult> Upload(IEnumerable<IFormFile> files)
-    {
-        try
-        {
-            Guid? AuthorId = (await _auth.GetCurrentUser())?.Id;
-            if (AuthorId != null)
-            {
-                string userDirectory = Path.Combine(_hostingEnvironment.WebRootPath, AuthorId.ToString());
-                if (!Directory.Exists(userDirectory)) Directory.CreateDirectory(userDirectory);
-
-                foreach (IFormFile file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        using (FileStream stream = new FileStream(Path.Combine(userDirectory, file.FileName), FileMode.Create))
-                        {
-                            await file.CopyToAsync(stream);
-                            await _audit.LogAuditTrail(stream);
-                        }
-                    }
-                }
-
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Invalid author ID");
-            }
-        }
-        catch (Exception ex)
-        {
-            return BadRequest("An error occurred while uploading files.");
-        }
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetUserTags(string? specific = null, Guid? userId = null)
     {
-        try
-        {
-            return Ok(await _auth.GetUserTags(specific, userId));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        try { return Ok(await _auth.GetUserTags(specific, userId)); }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUserProfile(string username)
     {
-        try { return Ok(await _context.Users.FirstOrDefaultAsync(u => u.Username == username)); }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        try { return Ok(await _context.Set<UserModel>().FirstOrDefaultAsync(u => u.Username == username)); }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
@@ -98,13 +53,11 @@ public class HelperController : ControllerBase
     {
         try
         {
-            UserModel? user = await _context.Users.Where(u => u.Username == username).SingleOrDefaultAsync();
-            return Ok(await _contextGov.Posts.Where(u => u.AuthorId == user.Id && !u.Tags.Any(t => t.Contains("Deleted"))).ToListAsync());
+            UserModel? user = await _context.Set<UserModel>().Where(u => u.Username == username).SingleOrDefaultAsync();
+            if (user == null) throw new Exception("User Not Found");
+            return Ok(await _contextGov.Set<PostModel>().Where(u => u.AuthorId == user.Id && !u.Tags.Any(t => t.Contains("Deleted"))).ToListAsync());
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
@@ -112,17 +65,14 @@ public class HelperController : ControllerBase
     {
         try
         {
-            UserModel? user = await _context.Users.FindAsync((await _auth.GetCurrentUser())?.Id);
+            UserModel? user = await _context.Set<UserModel>().FindAsync((await _auth.GetCurrentUser())?.Id);
             if (user == null) throw new Exception("User Not Found");
             user.Avatar = avatarUrl;
-            _context.Users.Update(user);
+            _context.Set<UserModel>().Update(user);
             await _context.SaveChangesAsync();
             return Ok();
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
@@ -130,10 +80,10 @@ public class HelperController : ControllerBase
     {
         try
         {
-            UserModel? toUser = await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+            UserModel? toUser = await _context.Set<UserModel>().SingleOrDefaultAsync(u => u.Username == username);
             if (toUser == null) throw new Exception("There is no user with this username");
 
-            await _context.Notifications.AddAsync(new NotificationModel
+            await _context.Set<NotificationModel>().AddAsync(new NotificationModel
             {
                 ToUserId = toUser.Id,
                 Title = $"{(await _auth.GetCurrentUser())?.Username} wants to be your friend",
@@ -144,10 +94,7 @@ public class HelperController : ControllerBase
 
             return Ok("Friend request sent");
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
@@ -155,24 +102,22 @@ public class HelperController : ControllerBase
     {
         try
         {
-            NotificationModel? notification = await _context.Notifications.Where(u => u.Id == notificationId).SingleOrDefaultAsync();
+            NotificationModel? notification = await _context.Set<NotificationModel>().Where(u => u.Id == notificationId).SingleOrDefaultAsync();
             if (notification == null) throw new Exception("Invalid notification");
 
-            UserModel? fromUser = await _context.Users.Where(u => u.Id == notification.AuthorId).SingleOrDefaultAsync();
+            UserModel? fromUser = await _context.Set<UserModel>().Where(u => u.Id == notification.AuthorId).SingleOrDefaultAsync();
             if (fromUser == null) throw new Exception("There is no user with this username");
 
             UserModel? currentUser = await _auth.GetCurrentUser();
+            if (currentUser == null) throw new Exception("User Not Found");
             fromUser.Friends.Add(currentUser.Id);
             currentUser.Friends.Add(fromUser.Id);
 
-            _context.Users.Update(fromUser);
-            _context.Users.Update(currentUser);
+            _context.Set<UserModel>().Update(fromUser);
+            _context.Set<UserModel>().Update(currentUser);
 
             return Ok($"You are now friends with {fromUser.Username}");
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 }

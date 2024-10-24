@@ -4,7 +4,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>4b7b0449-8c07-4174-a83d-658d923b74b7</UserSecretsId>
+		<UserSecretsId Condition="Configuration == 'Release'">4b7b0449-8c07-4174-a83d-658d923b74b7</UserSecretsId>
+		<UserSecretsId Condition="">4b7b0449-8c07-4174-a83d-658d923b74b7</UserSecretsId>
+		<NoWin32Manifest>true</NoWin32Manifest>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -12,9 +14,9 @@
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<TreatAsUsed>true</TreatAsUsed>
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
@@ -27,12 +29,8 @@
 	  <Folder Include="Data\Migrations\Gov\" />
 	</ItemGroup>
 
-	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="cd &quot;C:\Users\Dragos\source\repos\Setia\FE&quot; &amp;&amp; start npm run dev" />
-	</Target>
-
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="cd &quot;C:\Users\Dragos\source\repos\Setia\FE&quot; &amp;&amp; start npm run dev" />
-	</Target>-->
+	  <Exec Command="cd &quot;C:\Users\Dragos\source\repos\Setia\FE&quot; &amp;&amp; npm run dev &amp;" />
+	</Target>
 
 </Project>

@@ -6,6 +6,10 @@
 </template>
 
 <script setup lang="ts">
+onBeforeMount(init)
+async function init() {
+  console.log(await cryptoStore().getCoinCapCoin())
+}
 // function scrollTo(elem: string, offset: number = 70) {
 //   const element = document.getElementById(elem)
 //   if (element) {

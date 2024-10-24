@@ -1,10 +1,32 @@
-﻿using Main.Data.Models;
+﻿#pragma warning disable CS8604, CS8601
+
+using Main.Data.Models;
+using Main.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Main.Data.Contexts;
 
-public partial class GovContext(DbContextOptions<GovContext> options) : DbContext(options)
+public partial class GovContext : DbContext
 {
+    #region Dependency Injection
+    private readonly IConfiguration _config;
+    private readonly IAuditService _audit;
+    private readonly IAuthService _auth;
+
+    public GovContext
+    (
+        DbContextOptions<GovContext> options,
+        IConfiguration config,
+        IAuditService audit,
+        IAuthService auth
+    ) : base(options)
+    {
+        _config = config;
+        _audit = audit;
+        _auth = auth;
+    }
+    #endregion
+
     #region SQL Tables
     public DbSet<IntervalModel> Pontaj { get; set; }
     public DbSet<QuestionModel> Questions { get; set; }
@@ -45,22 +67,14 @@ public partial class GovContext(DbContextOptions<GovContext> options) : DbContex
         //}
     }
 
-    //private void ApplyCommonConfigurations(dynamic entityBuilder, Type entityType)
-    //{
-    //    ApplyPropertyConfigurations(entityBuilder, entityType, "Author");
-    //    ApplyPropertyConfigurations(entityBuilder, entityType, "User");
-    //    ApplyPropertyConfigurations(entityBuilder, entityType, "Question");
-    //}
-
-    //private void ApplyPropertyConfigurations(dynamic entityBuilder, Type entityType, string properyName)
-    //{
-    //    PropertyInfo? dynProperty = entityType.GetProperty(properyName);
-    //    PropertyInfo? dynDataProperty = entityType.GetProperty(properyName + "Data");
-    //    if (dynProperty != null && dynDataProperty != null)
-    //    {
-    //        entityBuilder.HasOne(dynDataProperty.PropertyType, properyName + "Data")
-    //                     .WithMany()
-    //                     .HasForeignKey(properyName);
-    //    }
-    //}
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+        {
+            entry.Property("ExecutionDate").CurrentValue = DateTime.Now;
+            entry.Property("AuthorId").CurrentValue = (await _auth.GetCurrentUser())?.Id;
+            await _audit.LogAuditTrail(entry);
+        }
+        return await base.SaveChangesAsync(cancellationToken);
+    }
 }

@@ -1,11 +1,15 @@
 using Main.Data.DTOs;
-using Main.Services.Interfaces;
 using System.Net;
 using System.Net.Mail;
 
 namespace Main.Services;
 
-public class SenderService : ISender
+public interface ISenderService
+{
+    void SendMail(EmailDTO emailData);
+}
+
+public class SenderService : ISenderService
 {
     #region Dependency Injection 
     private readonly ILogger<SenderService> _logger;
@@ -22,7 +26,7 @@ public class SenderService : ISender
     }
     #endregion
 
-    public async Task SendMail(EmailDTO emailData)
+    public void SendMail(EmailDTO emailData)
     {
         try
         {
@@ -40,5 +44,4 @@ public class SenderService : ISender
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
     }
-    public Task UploadFile(IFormFile file, string description) => throw new();
 }

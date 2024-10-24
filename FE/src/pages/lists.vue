@@ -3,11 +3,36 @@
   <div class="flex-column justify-content-center gap-8 align-items-center">
     <div class="flex-column text-center"></div>
 
-    <div class="flex-wrap justify-content-around px-5 w-full" style="height: 400px">
+    <!-- <div class="flex-wrap justify-content-around px-5 w-full" style="height: 400px">
       <ApiTableComponent />
-    </div>
+    </div> -->
+
+    <DataTable :value="loadedItems" paginator :rows-per-page-options="[10, 20]" :rows="10">
+      <Column
+        v-for="field in Object.keys(loadedItems[0])"
+        :key="field"
+        :field
+        :header="capitalizeString(field)"
+      >
+        <template #body="{ data, field }">
+          {{ isNaN(data[field]) ? data[field].toString() : parseInt(data[field]) }}
+        </template>
+      </Column>
+    </DataTable>
   </div>
 </template>
+
+<script setup lang="ts">
+import { capitalizeString } from '@/helpers'
+import type { IStandardCoinData } from '@/stores/cryptoStore'
+
+const loadedItems = ref()
+
+onBeforeMount(init)
+async function init() {
+  loadedItems.value = await cryptoStore().getCoinCapCoin()
+}
+</script>
 
 <style scoped>
 .p-treeselect-label {

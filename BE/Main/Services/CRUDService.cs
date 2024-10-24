@@ -1,31 +1,36 @@
 using Main.Data.DTOs;
 using Main.Data.Models;
-using Main.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Main.Services;
 
-public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : BaseModel where TContext : DbContext
+public interface ICRUDService<TModel> where TModel : BaseModel
+{
+    Task<TModel> Add(TModel model);
+    Task<bool> Delete(string id);
+    Task<IEnumerable<TModel>> Get(GetFilterDTO<TModel> filter);
+    Task<TModel> Update(TModel model);
+}
+
+public class CRUDService<TModel, TContext> : ICRUDService<TModel> where TModel : BaseModel where TContext : DbContext
 {
     #region Dependency Injection 
     private readonly TContext _context;
-    private readonly DbSet<TModel> _dbTableData;
     private readonly ILogger<CRUDService<TModel, TContext>> _logger;
-    private readonly IAudit _audit;
-    private readonly IAuth _auth;
+    private readonly IAuditService _audit;
+    private readonly IAuthService _auth;
 
     public CRUDService
     (
         TContext context,
         ILogger<CRUDService<TModel, TContext>> logger,
-        IAudit audit,
-        IAuth auth
+        IAuditService audit,
+        IAuthService auth
     )
     {
         _context = context;
-        _dbTableData = context.Set<TModel>();
         _logger = logger;
         _audit = audit;
         _auth = auth;
@@ -37,7 +42,7 @@ public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : BaseMo
         try
         {
             // Step 1: Start with the base query, excluding "Deleted" tagged. // Soft Delete
-            IQueryable<TModel> query = _dbTableData
+            IQueryable<TModel> query = _context.Set<TModel>()
                 .Where(e => !e.Tags.Any(t => t.Contains("Deleted")))
                 .AsNoTracking();
 
@@ -67,17 +72,13 @@ public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : BaseMo
     {
         try
         {
-            model.GetType().GetProperty("ExecutionDate")?.SetValue(model, DateTime.Now);
-            model.GetType().GetProperty("AuthorId")?.SetValue(model, _auth.GetCurrentUser()?.Id);
-
             #region Tests
             //PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
             //passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
             #endregion
 
-            TModel addedEntity = (await _dbTableData.AddAsync(model)).Entity;
+            TModel addedEntity = (await _context.Set<TModel>().AddAsync(model)).Entity;
             await _context.SaveChangesAsync();
-            await _audit.LogAuditTrail(addedEntity);
             return addedEntity;
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
@@ -86,24 +87,21 @@ public class CRUDService<TModel, TContext> : ICRUD<TModel> where TModel : BaseMo
     {
         try
         {
-            model.GetType().GetProperty("ExecutionDate")?.SetValue(model, DateTime.Now);
-            model.GetType().GetProperty("AuthorId")?.SetValue(model, _auth.GetCurrentUser()?.Id);
 
             TModel updatedEntity = (_context.Update(model)).Entity;
             await _context.SaveChangesAsync();
-            await _audit.LogAuditTrail(updatedEntity, model);
             return updatedEntity;
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
     }
-    public async Task Delete(string id)
+    public async Task<bool> Delete(string id)
     {
         try
         {
-            TModel removedEntity = (_context.Remove(await _dbTableData.FindAsync(id))).Entity;
+            _context.Remove(await _context.Set<TModel>().FindAsync(id));
             await _context.SaveChangesAsync();
-            await _audit.LogAuditTrail(removedEntity);
+            return true;
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); return false; throw; }
     }
 }

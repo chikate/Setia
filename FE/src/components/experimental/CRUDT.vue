@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { FilterMatchMode } from 'primevue/api'
-
 const props = defineProps({
   store: { type: Object, required: true },
   readonly: { type: Boolean, required: false }
@@ -65,22 +63,6 @@ async function init() {
     }
   })
 }
-
-// add column filters here otherwhise it will brake, we need to make this runtime depending push values
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  'user.email': { value: null, matchMode: FilterMatchMode.CONTAINS },
-  active: { value: null, matchMode: FilterMatchMode.EQUALS },
-  email: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  beginTime: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  endTime: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  description: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  username: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  statusCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  authorityCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  rights: { value: null, matchMode: FilterMatchMode.EQUALS }
-})
 </script>
 
 <template>
@@ -95,7 +77,6 @@ const filters = ref({
       size="small"
       v-model:selection="(store as any).selectedItems"
       v-model:expandedRows="expandedRows"
-      v-model:filters="filters"
       :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="[exposedData[0].field]"
       :paginator="(allLoadedItems?.length ?? 0) > 5"
@@ -130,7 +111,7 @@ const filters = ref({
             />
           </div>
           <div>
-            <InputText v-model="filters['global'].value" placeholder="Search..." />
+            <InputText placeholder="Search..." />
           </div>
           <SplitButton
             v-if="!readonly"

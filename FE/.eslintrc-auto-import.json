@@ -108,6 +108,7 @@
     "questionsCRUDStore": true,
     "tagsCRUDStore": true,
     "userCollectionCRUDStore": true,
-    "usersCRUDStore": true
+    "usersCRUDStore": true,
+    "driveStore": true
   }
 }

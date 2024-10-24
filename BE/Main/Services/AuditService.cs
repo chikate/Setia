@@ -1,23 +1,28 @@
 using Main.Data.Contexts;
 using Main.Data.Models;
-using Main.Services.Interfaces;
 using System.Reflection;
 using System.Text.Json;
 
 namespace Main.Services;
 
-public class AuditService : IAudit
+public interface IAuditService
+{
+    Task<string> CompareObjects<T>(T obj1, T obj2);
+    Task LogAuditTrail<T>(T model, T? oldModel = default);
+}
+
+public class AuditService : IAuditService
 {
     #region Dependency Injection 
     private readonly BaseContext _context;
     private readonly ILogger<AuditService> _logger;
-    private readonly IAuth _auth;
+    private readonly IAuthService _auth;
 
     public AuditService
     (
         BaseContext context,
         ILogger<AuditService> logger,
-        IAuth auth
+        IAuthService auth
     )
     {
         _context = context;
@@ -38,13 +43,13 @@ public class AuditService : IAudit
                 Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
             };
 
-            await _context.Audit.AddAsync(auditModel);
+            await _context.Set<AuditModel>().AddAsync(auditModel);
             await _context.SaveChangesAsync();
 
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
     }
-    public string CompareObjects<T>(T obj1, T obj2)
+    public async Task<string> CompareObjects<T>(T obj1, T obj2)
     {
         Type type = typeof(T);
         PropertyInfo[] properties = type.GetProperties();
@@ -62,6 +67,8 @@ public class AuditService : IAudit
             }
         }
 
+        // Simulate async operation
+        await Task.CompletedTask;
         return differences.ToString() ?? "";
     }
     private IDictionary<string, Dictionary<string, string>> CompareModels<T>(T oldModel, T newModel)

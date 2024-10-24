@@ -1,10 +1,10 @@
 using Main.Data.Contexts;
 using Main.Data.DTOs;
 using Main.Data.Models;
-using Main.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,13 +12,26 @@ using System.Text.RegularExpressions;
 
 namespace Main.Services;
 
-public class AuthService : IAuth
+public interface IAuthService
+{
+    Task ChangePassword(string email, string username, string currentPassword, string newPassword);
+    Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null);
+    Task<string> CriptPassword(string password);
+    Task<List<string>> GetAllRights();
+    Task<UserModel?> GetCurrentUser();
+    Task<IEnumerable<string>?> GetUserTags(string? specific = ".", Guid? userId = null);
+    Task<object> Login(AuthenticationDTO loginCredentials);
+    Task<UserModel> Register(RegistrationDTO registration);
+    Task CheckUserRight(Guid? userId = null, [CallerMemberName] string? methodName = "", [CallerFilePath] string? filePath = "");
+}
+
+public class AuthService : IAuthService
 {
     #region Dependency Injection 
     private readonly BaseContext _context;
     private readonly ILogger<AuthService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ISender _sender;
+    private readonly ISenderService _sender;
     private readonly IConfiguration _config;
 
     public AuthService
@@ -26,7 +39,7 @@ public class AuthService : IAuth
         BaseContext context,
         ILogger<AuthService> logger,
         IHttpContextAccessor httpContextAccessor,
-        ISender sender,
+        ISenderService sender,
         IConfiguration config
     )
     {
@@ -42,18 +55,18 @@ public class AuthService : IAuth
     {
         try
         {
-            if (loginCredentials.Password?.Length < 6 || loginCredentials.Username?.Length < 3)
+            if (string.IsNullOrEmpty(loginCredentials.Password) || loginCredentials.Password.Length < 6 ||
+                string.IsNullOrEmpty(loginCredentials.Username) || loginCredentials.Username.Length < 3)
                 throw new Exception("Invalid Credentials");
 
-            loginCredentials.Password = CriptPassword(loginCredentials.Password);
+            loginCredentials.Password = await CriptPassword(loginCredentials.Password);
 
-            UserModel? user = await _context.Users
+            UserModel? user = await _context.Set<UserModel>()
                 .SingleOrDefaultAsync(u =>
                     u.Username == loginCredentials.Username &&
                     u.Password == loginCredentials.Password);
 
-            if (user == null)
-                throw new Exception("User Not Found");
+            if (user == null) throw new Exception("User Not Found");
 
             return new
             {
@@ -90,12 +103,12 @@ public class AuthService : IAuth
             if (registration.Password == null || registration.Password.Length < 6)
                 throw new Exception("Invalid password");
 
-            if (_context.Users.Any(u => u.Username == registration.Username))
+            if (_context.Set<UserModel>().Any(u => u.Username == registration.Username))
                 throw new Exception("Username already exists");
 
-            registration.Password = CriptPassword(registration.Password);
+            registration.Password = await CriptPassword(registration.Password);
 
-            UserModel createdUser = (await _context.Users.AddAsync(new UserModel
+            UserModel createdUser = (await _context.Set<UserModel>().AddAsync(new UserModel
             {
                 Username = registration.Username,
                 Password = registration.Password,
@@ -116,17 +129,22 @@ public class AuthService : IAuth
     }
     public async Task<UserModel?> GetCurrentUser() =>
         _httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity
-        ? await _context.Users.SingleOrDefaultAsync(u =>
+        ? await _context.Set<UserModel>().SingleOrDefaultAsync(u =>
             u.Email == identity.FindFirst(ClaimTypes.Email).Value &&
             u.Username == identity.FindFirst(ClaimTypes.NameIdentifier).Value)
         : null;
-    public async Task<List<string>> GetAllRights() => [];
+    public async Task<List<string>> GetAllRights()
+    {
+        // Simulate async operation
+        await Task.CompletedTask;
+        return [];
+    }
     public async Task<IEnumerable<string>?> GetUserTags(string? specific = ".", Guid? userId = null)
     {
         try
         {
             userId = userId ?? (await GetCurrentUser())?.Id;
-            return await _context.Users
+            return await _context.Set<UserModel>()
                 .Where(u => u.Id == userId)
                 .Select(p => p.Tags)
                 .SingleOrDefaultAsync();
@@ -142,7 +160,7 @@ public class AuthService : IAuth
             if (currentPassword == null || currentPassword.Length < 6) throw new Exception("Invalid Password");
             if (newPassword == null || newPassword.Length < 6) throw new Exception("Invalid new Passowrd");
 
-            UserModel? user = await _context.Users
+            UserModel? user = await _context.Set<UserModel>()
                 .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)
                 .SingleOrDefaultAsync();
             if (user != null)
@@ -150,7 +168,7 @@ public class AuthService : IAuth
                 user.Password = newPassword;
                 await _context.SaveChangesAsync();
                 string recoveryLink = "https://www.google.com";
-                await _sender.SendMail(new EmailDTO
+                _sender.SendMail(new EmailDTO
                 {
                     To = email,
                     Subject = "Password changed",
@@ -162,17 +180,29 @@ public class AuthService : IAuth
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
     }
-    public string CriptPassword(string password) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
+    public async Task<string> CriptPassword(string password)
+    {
+        // Simulate async operation
+        await Task.CompletedTask;
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
+    }
     public async Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null)
     {
         try
         {
             userId = userId ?? (await GetCurrentUser())?.Id;
-            UserModel? user = await _context.Users.Where(p => p.Id == userId).SingleOrDefaultAsync();
+            UserModel? user = await _context.Set<UserModel>().Where(p => p.Id == userId).SingleOrDefaultAsync();
+            if (user == null) throw new Exception("User Not Found");
             List<string> userRights = new();
             foreach (string rightToCheck in rightsToCeck) if (user.Tags.Any(t => t.ToString().Contains(rightToCheck))) userRights.Add(rightToCheck);
             return userRights;
         }
         catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+    }
+    public async Task CheckUserRight(Guid? userId = null, [CallerMemberName] string? methodName = "", [CallerFilePath] string? filePath = "")
+    {
+        UserModel? user = await _context.Set<UserModel>().FindAsync(userId ?? (await GetCurrentUser())?.Id);
+        if (user?.Tags.Any(t => t.Contains("Dragos") || t.Contains("Role.Admin") || t.Contains($"{Path.GetFileNameWithoutExtension(filePath)}.{methodName}")) == false)
+            throw new UnauthorizedAccessException($"User: {user?.Name}, does not have the required right: {Path.GetFileNameWithoutExtension(filePath)}.{methodName}");
     }
 }

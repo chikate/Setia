@@ -11,6 +11,8 @@ declare module 'vue' {
     AccordionTab: typeof import('primevue/accordiontab')['default']
     ApiTableComponent: typeof import('./src/components/experimental/ApiTableComponent.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
+    Avatar: typeof import('primevue/avatar')['default']
+    Badge: typeof import('primevue/badge')['default']
     BetterCheckBox: typeof import('./src/components/better/BetterCheckBox.vue')['default']
     BookingComp: typeof import('./src/components/experimental/BookingComp.vue')['default']
     Button: typeof import('primevue/button')['default']

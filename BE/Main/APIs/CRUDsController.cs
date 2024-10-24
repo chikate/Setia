@@ -1,27 +1,28 @@
 using Main.Data.Contexts;
 using Main.Data.Models;
-using Main.Services.Interfaces;
+using Main.Services;
 using Main.Standards.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Main.APIs;
 
-public class PostsController(ICRUD<PostModel> CRUD) : CRUDController<PostModel>(CRUD);
-public class UsersController(ICRUD<UserModel> CRUD) : CRUDController<UserModel>(CRUD);
+public class PostsController(ICRUDService<PostModel> CRUD, IAuthService auth) : CRUDController<PostModel>(CRUD, auth);
+public class UsersController(ICRUDService<UserModel> CRUD, IAuthService auth) : CRUDController<UserModel>(CRUD, auth);
 public class QuestionAnswersController : CRUDController<QuestionAnswerModel>
 {
     #region Dependency Injection
-    private readonly IAuth _auth;
+
     private readonly GovContext _context;
 
-    public QuestionAnswersController(ICRUD<QuestionAnswerModel> CRUD,
+    public QuestionAnswersController
+    (
         GovContext context,
-        IAuth auth
-    ) : base(CRUD)
+        ICRUDService<QuestionAnswerModel> CRUD,
+        IAuthService auth
+    ) : base(CRUD, auth)
     {
         _context = context;
-        _auth = auth;
     }
     #endregion
 
@@ -38,6 +39,6 @@ public class QuestionAnswersController : CRUDController<QuestionAnswerModel>
 
             return Ok(responseCounts);
         }
-        catch (Exception ex) { return BadRequest(ex); }
+        catch (Exception ex) { return BadRequest(ex.Message); }
     }
 }

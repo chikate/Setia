@@ -9,6 +9,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
 
 import PrimeVue from 'primevue/config'
+import Aura from '@primevue/themes/aura'
+
 import Tooltip from 'primevue/tooltip'
 import BadgeDirective from 'primevue/badgedirective'
 import InputGroup from 'primevue/inputgroup'
@@ -40,7 +42,14 @@ router.beforeEach(async (to, from, next) => {
 app.use(router)
 
 // Components
-app.use(PrimeVue)
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: 'none'
+    }
+  }
+})
 app.use(ToastService, {
   life: 3000 // Set global toast lifetime in milliseconds
 })

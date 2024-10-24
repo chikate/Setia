@@ -1,36 +1,54 @@
-import { apiRequest } from '@/helpers'
-
 // Standard Data Structure for Ticker Price
 export interface IStandardTickerPrice {
   name: string
   price: number
 }
-
-// Binance's Data Structure for Ticker Price
-export interface IBinanceTickerPrice {
-  symbol: string // 'BTCUSDT'
-  price: string // '50000.00' - Binance returns price as a string
+export interface IStandardCoinData {
+  id: string
+  rank: string
+  symbol: string
+  name: string
+  supply: string
+  maxSupply?: string
+  marketCapUsd: string
+  volumeUsd24Hr: string
+  priceUsd: string
+  changePercent24Hr: string
+  vwap24Hr: string
+  explorer?: string
 }
 
-const API_CALL = 'https://api.binance.com/api/v3/ticker/price'
-
 export const cryptoStore = defineStore('cryptoStore', () => {
-  const BINANCE_API_KEY = 'put your own API Key here'
+  // CoinCap's Data Structure for Ticker Price
+  interface ICoinCapCoinData {
+    id: string
+    rank: string
+    symbol: string
+    name: string
+    supply: string
+    maxSupply?: string
+    marketCapUsd: string
+    volumeUsd24Hr: string
+    priceUsd: string
+    changePercent24Hr: string
+    vwap24Hr: string
+    explorer?: string
+  }
+  interface ICoinCapTickerPrice {
+    data: ICoinCapCoinData[]
+    timestamp: number
+  }
 
-  const getCoin = async (symbol: string): Promise<IStandardTickerPrice> =>
-    await (
-      await apiRequest(`${API_CALL}`, { symbol })
-    ).map(
-      (BinanceTickerPrice: IBinanceTickerPrice) =>
-        ({
-          name: BinanceTickerPrice.symbol,
-          symbol: BinanceTickerPrice.symbol,
-          asset: BinanceTickerPrice.symbol,
-          price: parseFloat(BinanceTickerPrice.price)
-        }) as IStandardTickerPrice
-    )
+  const getCoinCapCoin = (symbolFilter?: string): Promise<IStandardCoinData[]> =>
+    fetch(`https://api.coincap.io/v2/assets`)
+      .then((response: Response) => response.json())
+      .then((elem: ICoinCapTickerPrice) =>
+        symbolFilter
+          ? elem.data.filter((coin: ICoinCapCoinData) => coin.symbol == symbolFilter)
+          : elem.data
+      )
 
   return {
-    getCoin
+    getCoinCapCoin
   }
 })

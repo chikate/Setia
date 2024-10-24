@@ -17,7 +17,7 @@ public class UserModel : BaseModel
     #region Sensitive Data
     public DateTime? BirthDay { get; set; } = null;
     public List<Guid> Friends { get; set; } = new();
-    public Dictionary<string, string> Saves { get; set; } = new();
+    public List<Guid> Saves { get; set; } = new();
     #endregion
 
     #region Public Data
