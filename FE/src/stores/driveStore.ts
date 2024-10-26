@@ -10,18 +10,22 @@ export const driveStore = defineStore('driveStore', () => {
     await apiRequest(`${storeName}/Download`, { filePath })
 
   const getFolderContent = async (filePath?: string) =>
-    await apiRequest(`${storeName}/GetFolderContent`, filePath)
+    await apiRequest(`${storeName}/GetFolderContent`, { filePath })
 
   const getAllPartitions = async () => await apiRequest(`${storeName}/GetAllPartitions`)
 
-  const getRegistryNumberFromFile = async (filePath: string) =>
-    await apiRequest(`${storeName}/GetRegistryNumberFromFile`, filePath)
+  const GetFileRegistryNumber = async (filePath: string) =>
+    await apiRequest(`${storeName}/GetFileRegistryNumber`, { filePath })
+
+  const GetFileFromRegistryNumber = async (regestryNumber: string) =>
+    await apiRequest(`${storeName}/GetFileFromRegistryNumber`, { regestryNumber })
 
   return {
     upload,
     download,
     getFolderContent,
     getAllPartitions,
-    getRegistryNumberFromFile
+    GetFileRegistryNumber,
+    GetFileFromRegistryNumber
   }
 })

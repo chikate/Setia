@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-row gap-2 overflow-hidden">
+  <div class="flex-row gap-2">
     <div class="flex-column gap-2">
       <div class="card font-medium p-2 gap-2 flex-column">
         Parameters
@@ -23,7 +23,9 @@
                     detail: 'The parameter already exists!'
                   })
                   event.target.loading = true
-                  setTimeout(3000, () => (event.target.loading = false))
+                  setTimeout(() => {
+                    event.target.loading = false
+                  }, 3000)
                 }
               else
                 $toast.add({

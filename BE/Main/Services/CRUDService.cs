@@ -21,6 +21,7 @@ public class CRUDService<TModel, TContext> : ICRUDService<TModel> where TModel :
     private readonly ILogger<CRUDService<TModel, TContext>> _logger;
     private readonly IAuditService _audit;
     private readonly IAuthService _auth;
+    private readonly DbSet<TModel> _dbTable;
 
     public CRUDService
     (
@@ -31,6 +32,7 @@ public class CRUDService<TModel, TContext> : ICRUDService<TModel> where TModel :
     )
     {
         _context = context;
+        _dbTable = _context.Set<TModel>();
         _logger = logger;
         _audit = audit;
         _auth = auth;
@@ -42,9 +44,9 @@ public class CRUDService<TModel, TContext> : ICRUDService<TModel> where TModel :
         try
         {
             // Step 1: Start with the base query, excluding "Deleted" tagged. // Soft Delete
-            IQueryable<TModel> query = _context.Set<TModel>()
+            IQueryable<TModel> query = _dbTable
                 .Where(e => !e.Tags.Any(t => t.Contains("Deleted")))
-                .AsNoTracking();
+                .AsQueryable();
 
             // Step 2: Include necessary navigation properties based on ForeignKey attributes.
             foreach (PropertyInfo property in typeof(TModel).GetProperties().Where(p => p.GetCustomAttributes(typeof(ForeignKeyAttribute), false).Any()))
@@ -66,42 +68,36 @@ public class CRUDService<TModel, TContext> : ICRUDService<TModel> where TModel :
 
             return await query.ToListAsync();
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
     public async Task<TModel> Add(TModel model)
     {
         try
         {
-            #region Tests
-            //PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
-            //passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
-            #endregion
-
-            TModel addedEntity = (await _context.Set<TModel>().AddAsync(model)).Entity;
+            TModel addedEntity = (await _dbTable.AddAsync(model)).Entity;
             await _context.SaveChangesAsync();
             return addedEntity;
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
     public async Task<TModel> Update(TModel model)
     {
         try
         {
-
             TModel updatedEntity = (_context.Update(model)).Entity;
             await _context.SaveChangesAsync();
             return updatedEntity;
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
     public async Task<bool> Delete(string id)
     {
         try
         {
-            _context.Remove(await _context.Set<TModel>().FindAsync(id));
+            _context.Remove(await _dbTable.FindAsync(id));
             await _context.SaveChangesAsync();
             return true;
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); return false; throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
 }

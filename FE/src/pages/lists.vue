@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 import { capitalizeString } from '@/helpers'
-import type { IStandardCoinData } from '@/stores/cryptoStore'
 
 const loadedItems = ref()
 

@@ -1,3 +1,5 @@
+#pragma warning disable CS8604 // Possible null reference argument.
+
 using Main.Data.DTOs;
 using System.Net;
 using System.Net.Mail;
@@ -6,7 +8,7 @@ namespace Main.Services;
 
 public interface ISenderService
 {
-    void SendMail(EmailDTO emailData);
+    Task SendMail(EmailDTO emailData);
 }
 
 public class SenderService : ISenderService
@@ -26,22 +28,24 @@ public class SenderService : ISenderService
     }
     #endregion
 
-    public void SendMail(EmailDTO emailData)
+    public async Task SendMail(EmailDTO emailData)
     {
         try
         {
-            new SmtpClient("", 3)
+            using (var smtpClient = new SmtpClient(_config["Email:SmtpServer"], int.Parse(_config["Email:Port"])))
             {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(_config["Email:User"], _config["Email:Password"])
+                smtpClient.EnableSsl = true;
+                smtpClient.Credentials = new NetworkCredential(_config["Email:User"], _config["Email:Password"]);
+                await smtpClient.SendMailAsync(new MailMessage
+                {
+                    From = new MailAddress(_config["Email:User"]),
+                    //To = emailData.To,
+                    Subject = emailData.Subject,
+                    Body = emailData.Body,
+                    IsBodyHtml = true // Set to true if your email body is HTML
+                });
             }
-            ?.SendMailAsync(new MailMessage(
-               from: "",
-               to: emailData.To,
-               subject: emailData.Subject,
-               body: emailData.Body
-             ));
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
 }

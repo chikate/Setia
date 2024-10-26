@@ -21,13 +21,12 @@ export const CRUDStore = (storeName: string, defaultValues: any) => {
       return response
     })
 
-  const getDefaults = () => defaultValues
-
   return {
     getItems,
     addItems,
     updateItems,
     deleteItems,
-    getDefaults
+    storeName,
+    defaultValues
   }
 }

@@ -109,6 +109,18 @@
     "tagsCRUDStore": true,
     "userCollectionCRUDStore": true,
     "usersCRUDStore": true,
-    "driveStore": true
+    "driveStore": true,
+    "DEFAULT_ROWS_INDEX": true,
+    "DEFAULT_ROWS_OPTIONS": true,
+    "FILE_ICONS": true,
+    "INPUT_CLASS": true,
+    "apiRequest": true,
+    "app": true,
+    "canUserAccessRoute": true,
+    "capitalizeString": true,
+    "capitalizeWords": true,
+    "download": true,
+    "isValidISODate": true,
+    "downloadInBrowser": true
   }
 }

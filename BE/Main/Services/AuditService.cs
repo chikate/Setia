@@ -47,7 +47,7 @@ public class AuditService : IAuditService
             await _context.SaveChangesAsync();
 
         }
-        catch (Exception ex) { _logger.LogError(ex.Message, GetType().FullName); throw; }
+        catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
     public async Task<string> CompareObjects<T>(T obj1, T obj2)
     {
@@ -67,7 +67,6 @@ public class AuditService : IAuditService
             }
         }
 
-        // Simulate async operation
         await Task.CompletedTask;
         return differences.ToString() ?? "";
     }

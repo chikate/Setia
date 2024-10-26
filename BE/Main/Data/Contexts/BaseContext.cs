@@ -115,6 +115,8 @@ public partial class BaseContext : DbContext
     {
         foreach (var entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
         {
+            //PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
+            //passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
             entry.Property("ExecutionDate").CurrentValue = DateTime.Now;
             entry.Property("AuthorId").CurrentValue = 1;//(await _auth.GetCurrentUser())?.Id;
         }

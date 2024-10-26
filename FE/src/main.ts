@@ -36,20 +36,22 @@ const router = createRouter({
   //   return { top: 0 }
   // }
 })
-router.beforeEach(async (to, from, next) => {
-  if (await canUserAccessRoute(to.fullPath)) return next()
-})
+router.beforeEach(async (to, from, next) =>
+  (await canUserAccessRoute(to.fullPath)) ? next() : undefined
+)
+
 app.use(router)
 
 // Components
-app.use(PrimeVue, {
-  theme: {
-    preset: Aura,
-    options: {
-      darkModeSelector: 'none'
-    }
-  }
-})
+app.use(PrimeVue)
+// , {
+//   theme: {
+//     preset: Aura,
+//     options: {
+//       darkModeSelector: 'none'
+//     }
+//   }
+// })
 app.use(ToastService, {
   life: 3000 // Set global toast lifetime in milliseconds
 })

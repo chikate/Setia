@@ -5,41 +5,52 @@
       multiple
       :activeIndex="[0, 1, 2, 3, 4]"
       collapseIcon="pi pi-minus text-gray-200"
-      class="custom-shadow-1"
+      class="custom-shadow-1 border-1 border-round border-gray-200"
     >
       <AccordionTab header="Exports">
         <div class="flex-wrap gap-2">
           <Button
+            v-tooltip.top="'PDF'"
             :loading="loadingExport"
             icon="pi pi-file-pdf"
             class="bg-red-500"
             @click="exporter('pdf')"
           />
           <Button
+            v-tooltip.top="'DOC'"
             :loading="loadingExport"
             icon="pi pi-file-word"
             class="bg-blue-600"
             @click="exporter('doc')"
           />
           <Button
+            v-tooltip.top="'PNG'"
             :loading="loadingExport"
             icon="pi pi-image"
             class="bg-purple-500"
             @click="exporter('png')"
           />
           <Button
+            v-tooltip.top="'CSV'"
             :loading="loadingExport"
             icon="pi pi-file-excel"
             class="bg-green-600"
             @click="exporter('xls')"
           />
+          <Button
+            v-tooltip.top="'Save to Cloud'"
+            :loading="loadingExport"
+            icon="pi pi-cloud-upload"
+            class="bg-blue-300"
+            @click="exporter('xls')"
+          />
         </div>
       </AccordionTab>
-      <AccordionTab header="Tools">
+      <!-- <AccordionTab header="Tools">
         <div class="flex-wrap gap-2">
           <Button icon="pi pi-at" :draggable="true" />
         </div>
-      </AccordionTab>
+      </AccordionTab> -->
       <AccordionTab header="Properties">
         <div class="flex-row gap-2">
           <Checkbox v-model="autoPagination" binary />
@@ -62,7 +73,11 @@
     </Accordion>
 
     <div class="flex-column gap-2 align-items-center justify-content-center">
-      <EditorComponent v-model="pages[pageNumber - 1]" />
+      <EditorComponent
+        style="max-height: 90vh"
+        class="border-1 border-gray-200"
+        v-model="pages[pageNumber - 1]"
+      />
 
       <div class="flex-row align-items-center gap-2">
         <InputNumber
@@ -103,7 +118,7 @@
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
 import { jsPDF } from 'jspdf'
-import { download } from '@/helpers'
+import { downloadInBrowser } from '@/helpers'
 
 import EditorComponent from '@/components/better/EditorComponent.vue'
 
@@ -132,7 +147,7 @@ async function exporter(extenstion: string) {
   if (extenstion.includes('png'))
     await htmlToImage
       .toPng(paperToDownload)
-      .then((url: string) => download(url, exportFileName.value + '.png'))
+      .then((url: string) => downloadInBrowser(url, exportFileName.value + '.png'))
 
   if (extenstion.includes('pdf'))
     await new jsPDF({
@@ -144,7 +159,7 @@ async function exporter(extenstion: string) {
       .save(exportFileName.value + '.pdf')
 
   if (extenstion.includes('doc'))
-    download(
+    downloadInBrowser(
       URL.createObjectURL(
         new Blob(
           [
@@ -166,7 +181,9 @@ async function exporter(extenstion: string) {
       exportFileName.value + '.doc'
     )
 
-  setTimeout(() => (loadingExport.value = false), 300)
+  setTimeout(() => {
+    loadingExport.value = false
+  }, 300)
 }
 </script>
 

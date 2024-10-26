@@ -15,7 +15,7 @@ export default defineConfig({
     Vue(),
     AutoImport({
       imports: ['vue', VueRouterAutoImports, 'vue-router', 'pinia'],
-      dirs: ['./src/stores/**'],
+      dirs: ['./src/stores/**', './src/*'],
       vueTemplate: true,
       eslintrc: {
         enabled: true
@@ -28,16 +28,20 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  publicDir: 'D:/Dragos/Downloads/0Test',
   server: {
     port: 3000,
     strictPort: true,
     proxy: {
-      '/api': { target: 'https://localhost:44381', secure: false }
+      // string shorthand: /foo -> http://localhost:4567/foo
+      '/foo': 'http://localhost:4567',
+      // with options
+      '/api': {
+        target: 'https://localhost:44381',
+        secure: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     }
-    // hmr: {
-    //   host: import.meta.env.VITE_SERVER_IP,
-    //   protocol: 'ws',
-    //   clientPort: 3000
-    // }
   }
 })

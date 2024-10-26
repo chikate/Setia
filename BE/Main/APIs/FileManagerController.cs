@@ -1,7 +1,7 @@
 using Main.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.APIs.Base;
+namespace Main.APIs;
 
 [ApiController]
 [Route("/api/[controller]/[action]")]
@@ -28,7 +28,7 @@ public class FileManagerController : ControllerBase
         try
         {
             await _auth.CheckUserRight();
-            return Ok(await _archiveService.Upload(formFile, compressIt));
+            return Ok(await _archiveService.UploadFFC(formFile, compressIt));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
@@ -39,7 +39,19 @@ public class FileManagerController : ControllerBase
         try
         {
             await _auth.CheckUserRight();
-            return Ok(await _archiveService.Download(filePath));
+            return Ok(await _archiveService.DownloadFFC(filePath));
+        }
+        catch (Exception ex) { return BadRequest(ex.Message); }
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(string filePath)
+    {
+        try
+        {
+            await _auth.CheckUserRight();
+            await _archiveService.DeleteFFC(filePath);
+            return Ok("Deleted");
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
@@ -67,25 +79,25 @@ public class FileManagerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetRegistryNumberFromFile([FromQuery] string filePath)
+    public async Task<IActionResult> GetFileRegistryNumber([FromQuery] string filePath)
     {
         try
         {
             await _auth.CheckUserRight();
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-            return Ok(await _archiveService.GetRegistryNumberFromFile(filePath));
+            return Ok(await _archiveService.GetFileRegistryNumber(filePath));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> Delete(string filePath)
+    [HttpGet]
+    public async Task<IActionResult> GetFile([FromQuery] string input)
     {
         try
         {
             await _auth.CheckUserRight();
-            await _archiveService.DeleteFile(filePath);
-            return Ok("Deleted");
+            if (Guid.TryParse(input, out var registryNumber)) return Ok(await _archiveService.GetFileFromRegistryNumber(registryNumber));
+            else return BadRequest("Invalid GUID format.");
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }

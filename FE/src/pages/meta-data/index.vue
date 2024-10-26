@@ -23,7 +23,9 @@
                     detail: 'The parameter already exists!'
                   })
                   event.target.loading = true
-                  setTimeout(() => (event.target.loading = false), 3000)
+                  setTimeout(() => {
+                    event.target.loading = false
+                  }, 3000)
                 }
               else
                 $toast.add({

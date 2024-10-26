@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
-import { download } from '@/helpers'
 
 const tierListDimension = defineModel('tierListDimension', {
   type: Number,
@@ -84,8 +83,8 @@ async function drop(ev: any) {
 </script>
 
 <template>
-  <div class="flex-column gap-2 w-full align-items-start">
-    <div class="flex-row align-items-center w-full">
+  <div class="flex-column gap-2">
+    <div class="flex-row align-items-center">
       <Button
         class="button-gradient-effect"
         style="min-height: 3rem"
@@ -97,7 +96,7 @@ async function drop(ev: any) {
       <Slider :min="64" :max="256" v-model="tierListDimension" class="w-full mx-3" />
     </div>
 
-    <!-- <div id="tierListWithContent" :class="`flex-column overflow-auto gap-${tierListUniformGap}`"> -->
+    <!-- <div id="tierListWithContent" :class="`flex-column  gap-${tierListUniformGap}`"> -->
 
     <div
       id="tierList"

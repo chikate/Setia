@@ -1,6 +1,6 @@
 ﻿namespace Main.Data.DTOs;
 
-public class DriveInfoDto
+public class DriveInfoDTO
 {
     public required string Name { get; set; }
     public required string VolumeLabel { get; set; }

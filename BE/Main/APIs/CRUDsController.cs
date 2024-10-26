@@ -13,16 +13,16 @@ public class QuestionAnswersController : CRUDController<QuestionAnswerModel>
 {
     #region Dependency Injection
 
-    private readonly GovContext _context;
+    private readonly GovContext _govContext;
 
     public QuestionAnswersController
     (
-        GovContext context,
         ICRUDService<QuestionAnswerModel> CRUD,
-        IAuthService auth
+        IAuthService auth,
+        GovContext govContext
     ) : base(CRUD, auth)
     {
-        _context = context;
+        _govContext = govContext;
     }
     #endregion
 
@@ -31,7 +31,7 @@ public class QuestionAnswersController : CRUDController<QuestionAnswerModel>
     {
         try
         {
-            var responseCounts = await _context.QuestionAnswers
+            var responseCounts = await _govContext.QuestionAnswers
                 .Where(q => q.QuestionId == questionId)
                 .GroupBy(q => q.AuthorId)
                 .Select(g => g.Count())

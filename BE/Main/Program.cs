@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IFileManagerService, FileManagerService>();
 
 builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, BaseContext>>();
+builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, BaseContext>>();
 builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
 #endregion
 

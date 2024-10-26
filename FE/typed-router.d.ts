@@ -45,6 +45,7 @@ declare module 'vue-router/auto-routes' {
     '/settings/privacy-policy': RouteRecordInfo<'/settings/privacy-policy', '/settings/privacy-policy', Record<never, never>, Record<never, never>>,
     '/settings/recovery': RouteRecordInfo<'/settings/recovery', '/settings/recovery', Record<never, never>, Record<never, never>>,
     '/settings/terms-of-service': RouteRecordInfo<'/settings/terms-of-service', '/settings/terms-of-service', Record<never, never>, Record<never, never>>,
+    '/tasks': RouteRecordInfo<'/tasks', '/tasks', Record<never, never>, Record<never, never>>,
     '/tier-list/': RouteRecordInfo<'/tier-list/', '/tier-list', Record<never, never>, Record<never, never>>,
     '/tier-list/[id]': RouteRecordInfo<'/tier-list/[id]', '/tier-list/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/universe/map/': RouteRecordInfo<'/universe/map/', '/universe/map', Record<never, never>, Record<never, never>>,

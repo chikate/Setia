@@ -25,15 +25,15 @@ export const postsCRUDStore = CRUDStore('Posts', {
 export const questionAnswersCRUDStore = CRUDStore('QuestionAnswers', {
   author: '',
   questionData: { title: '' },
-  answer: ['']
-} as QuestionAnswer)
+  answer: []
+} as unknown as QuestionAnswer)
 
 export const questionsCRUDStore = CRUDStore('Questions', {
   title: 'Title',
-  options: [''],
-  selection: [''],
+  options: [],
+  selection: [],
   author: undefined
-} as Question)
+} as unknown as Question)
 
 export const tagsCRUDStore = CRUDStore('Tags', {
   tag: '',
@@ -44,5 +44,5 @@ export const usersCRUDStore = CRUDStore('Users', {
   username: '',
   email: '',
   name: '',
-  tags: ['']
-} as User)
+  tags: []
+} as unknown as User)

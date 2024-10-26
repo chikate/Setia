@@ -1,8 +1,8 @@
 <template>
   <!-- style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))" -->
-  <div class="flex-column justify-content-center gap-8 align-items-center">
+  <div class="flex-column gap-8">
     <div class="flex-column text-center">
-      <a class="text-8xl font-bold"> Hello {{ authStore().userData?.username ?? 'there' }} </a>
+      <!-- <a class="text-8xl font-bold"> Hello {{ authStore().userData?.username ?? 'there' }} </a> -->
       <a class="text-3xl"> We are happy that you are here! </a>
     </div>
 
@@ -12,6 +12,10 @@
     </div>
 
     <RecoveryComponent class="custom-shadow-2 p-3" />
+
+    <BaseCardComponent label="Voronoi Texture Generator">
+      <VoronoiTextureComponent />
+    </BaseCardComponent>
 
     <!-- <div>
       <label>We are glat thet you decided to join us</label>
