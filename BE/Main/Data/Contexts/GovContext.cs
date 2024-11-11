@@ -1,8 +1,7 @@
-﻿#pragma warning disable CS8604, CS8601
-
-using Main.Data.Models;
+﻿using Main.Data.Models;
 using Main.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Main.Data.Contexts;
 
@@ -69,11 +68,11 @@ public partial class GovContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+        foreach (EntityEntry entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
         {
-            entry.Property("ExecutionDate").CurrentValue = DateTime.Now;
+            entry.Property("ExecutionDate").CurrentValue = DateTime.Now.ToUniversalTime();
             entry.Property("AuthorId").CurrentValue = (await _auth.GetCurrentUser())?.Id;
-            await _audit.LogAuditTrail(entry);
+            await _audit.LogAuditTrail(entry.Entity);
         }
         return await base.SaveChangesAsync(cancellationToken);
     }

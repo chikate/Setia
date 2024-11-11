@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import EmojiPicker from 'vue3-emoji-picker'
-import type { Post, User, UserCollection, Question } from '@/interfaces'
+import type { Post, User, UserCollection, Question } from '@/global/interfaces'
 
 defineProps({
   // postData: { type: Object as PropType<Post>, required: false },
@@ -17,25 +17,26 @@ const showActions = ref<number>()
 const authorData = ref<User>({} as User)
 const localMessage = ref(thisPostData.value.message)
 const menuRef = ref()
+const user = ref(JSON.parse(localStorage.getItem('user') ?? 'null')?.username)
 const inEdit = ref<boolean>(false)
 
 const icons = ref([
   {
-    name: usePostsCRUDStore().allLoadedItems?.find(
+    name: postsCRUDService.loadedItems?.find(
       (post: Post) =>
         (post.tags.indexOf('Positive') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
-        post.author == authStore().userData?.username
+        post.author == user.value
     )
       ? 'pi-thumbs-up-fill'
       : 'pi-thumbs-up'
   },
   {
-    name: usePostsCRUDStore().allLoadedItems?.find(
+    name: postsCRUDService.loadedItems?.find(
       (post: Post) =>
         (post.tags.indexOf('Negative') ?? -1) > -1 &&
         post.entityId == thisPostData.value.id &&
-        post.author == authStore().userData?.username
+        post.author == user.value
     )
       ? 'pi-thumbs-down-fill'
       : 'pi-thumbs-down'
@@ -43,7 +44,7 @@ const icons = ref([
   { name: 'pi-comments' },
   // { name: 'pi-send' },
   {
-    name: useUserCollectionCRUDStore().allLoadedItems?.find(
+    name: userCollectionCRUDService.loadedItems?.find(
       (elem: UserCollection) => elem.postId == thisPostData.value.id
     )
       ? 'pi-star-fill'
@@ -53,27 +54,27 @@ const icons = ref([
 
 onBeforeMount(async () => {
   if (thisPostData.value.author)
-    authorData.value = await helperStore().getUserProfile(String(thisPostData.value.author))
+    authorData.value = await helperService.getUserProfile(String(thisPostData.value.author))
 
-  await usePostsCRUDStore().get()
+  await postsCRUDService.getItems()
 
   icons.value = [
     {
-      name: usePostsCRUDStore().allLoadedItems?.find(
+      name: postsCRUDService.loadedItems?.find(
         (post: Post) =>
           (post.tags.indexOf('Positive') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
-          post.author == authStore().userData?.username
+          post.author == authService.user?.username
       )
         ? 'pi-thumbs-up-fill'
         : 'pi-thumbs-up'
     },
     {
-      name: usePostsCRUDStore().allLoadedItems?.find(
+      name: postsCRUDService.loadedItems?.find(
         (post: Post) =>
           (post.tags.indexOf('Negative') ?? -1) > -1 &&
           post.entityId == thisPostData.value.id &&
-          post.author == authStore().userData?.username
+          post.author == authService.user?.username
       )
         ? 'pi-thumbs-down-fill'
         : 'pi-thumbs-down'
@@ -81,7 +82,7 @@ onBeforeMount(async () => {
     { name: 'pi-comments' },
     // { name: 'pi-send' },
     {
-      name: useUserCollectionCRUDStore().allLoadedItems?.find(
+      name: userCollectionCRUDService.loadedItems?.find(
         (elem: UserCollection) => elem.postId == thisPostData.value.id
       )
         ? 'pi-star-fill'
@@ -112,9 +113,9 @@ async function post(tags?: string[]) {
   let questionsData: Question | undefined = undefined
   if (thisPostData.value.questionData)
     questionsData = (
-      await useQuestionsCRUDStore().add([thisPostData.value.questionData] as Question[])
+      await questionsCRUDService.addItems([thisPostData.value.questionData] as Question[])
     )[0]
-  await usePostsCRUDStore().add([
+  await postsCRUDService.addItems([
     {
       ...usePostsCRUDStore().editItem,
       message: localMessage.value,
@@ -166,7 +167,7 @@ async function addLocalQuestion() {
       </div>
 
       <Button
-        v-if="authStore().userData?.username === authorData.username"
+        v-if="authService.user?.username === authorData.username"
         type="button"
         icon="pi pi-ellipsis-v"
         @click="menuRef.toggle($event)"
@@ -184,7 +185,7 @@ async function addLocalQuestion() {
               {
                 label: 'Delete',
                 icon: 'pi pi-trash',
-                command: () => usePostsCRUDStore().delete([thisPostData])
+                command: () => postsCRUDService.delete([thisPostData])
               },
               {
                 label: 'Edit',
@@ -249,10 +250,10 @@ async function addLocalQuestion() {
           {
             label: 'News',
             command: () => {
-              if (usePostsCRUDStore().editItem.tags) {
-                usePostsCRUDStore().editItem.tags.push('News')
+              if (postsCRUDService.editItem.tags) {
+                postsCRUDService.editItem.tags.push('News')
               } else {
-                usePostsCRUDStore().editItem.tags = ['News']
+                postsCRUDService.editItem.tags = ['News']
               }
               post(['Post', 'News'])
             }
@@ -274,17 +275,17 @@ async function addLocalQuestion() {
           :icon="icon.name"
           :count="
             icon.name.includes('pi-thumbs-up')
-              ? usePostsCRUDStore().allLoadedItems?.filter(
+              ? postsCRUDService.allLoadedItems?.filter(
                   (post: Post) =>
                     (post.tags.indexOf('Positive') ?? -1) > -1 && post.entityId == thisPostData.id
                 ).length
               : icon.name.includes('pi-thumbs-down')
-                ? usePostsCRUDStore().allLoadedItems?.filter(
+                ? postsCRUDService.allLoadedItems?.filter(
                     (post: Post) =>
                       (post.tags.indexOf('Negative') ?? -1) > -1 && post.entityId == thisPostData.id
                   ).length
                 : icon.name.includes('pi-comments')
-                  ? usePostsCRUDStore().allLoadedItems?.filter(
+                  ? postsCRUDService.allLoadedItems?.filter(
                       (post: Post) =>
                         (post.tags.indexOf('Comment') ?? -1) > -1 &&
                         post.entityId == thisPostData.id
@@ -296,13 +297,13 @@ async function addLocalQuestion() {
             icon.name == 'pi-thumbs-up'
               ? (showActions = index)
               : icon.name == 'pi-thumbs-up-fill'
-                ? usePostsCRUDStore()
+                ? postsCRUDService
                     .delete(
-                      usePostsCRUDStore().allLoadedItems?.filter(
+                      postsCRUDService.allLoadedItems?.filter(
                         (post: Post) =>
                           (post.tags.indexOf('Positive') ?? -1) > -1 &&
                           post.entityId == thisPostData.id &&
-                          post.author == authStore().userData?.username
+                          post.author == authService.user?.username
                       )
                     )
                     .then(() => (icon.name = 'pi-thumbs-up'))
@@ -310,13 +311,13 @@ async function addLocalQuestion() {
                   icon.name == 'pi-thumbs-down'
                   ? (showActions = index)
                   : icon.name == 'pi-thumbs-down-fill'
-                    ? usePostsCRUDStore()
+                    ? postsCRUDService
                         .delete(
-                          usePostsCRUDStore().allLoadedItems?.filter(
+                          postsCRUDService.loadedItems?.filter(
                             (post: Post) =>
                               (post.tags.indexOf('Negative') ?? -1) > -1 &&
                               post.entityId == thisPostData.id &&
-                              post.author == authStore().userData?.username
+                              post.author == authService.user?.username
                           )
                         )
                         .then(() => (icon.name = 'pi-thumbs-down'))
@@ -328,13 +329,13 @@ async function addLocalQuestion() {
                         ? (showActions = showActions == index ? undefined : index)
                         : // Star
                           icon.name == 'pi-star'
-                          ? useUserCollectionCRUDStore()
-                              .add([{ postId: thisPostData.id }] as UserCollection[])
+                          ? userCollectionCRUDService
+                              .addItems([{ postId: thisPostData.id }] as UserCollection[])
                               .then(() => (icon.name = 'pi-star-fill'))
                           : icon.name == 'pi-star-fill'
-                            ? useUserCollectionCRUDStore()
+                            ? userCollectionCRUDService
                                 .delete(
-                                  useUserCollectionCRUDStore().allLoadedItems?.filter(
+                                  userCollectionCRUDService.loadedItems?.filter(
                                     (elem: UserCollection) => elem.postId == thisPostData.id
                                   )
                                 )
@@ -351,8 +352,8 @@ async function addLocalQuestion() {
         native
         class="w-full"
         @select="
-          usePostsCRUDStore()
-            .add([
+          postsCRUDService
+            .addItems([
               {
                 entityId: thisPostData.id,
                 message: $event.i,
@@ -373,7 +374,7 @@ async function addLocalQuestion() {
       <div v-if="showActions == 2" class="h-8">
         <PostComponent :postData="{ entityId: thisPostData.id }" />
         <PostComponent
-          v-for="(postData, i) in usePostsCRUDStore().allLoadedItems?.filter(
+          v-for="(postData, i) in postsCRUDService.loadedItems?.filter(
             (post: Post) => post.entityId == thisPostData.id
           )"
           :key="i"

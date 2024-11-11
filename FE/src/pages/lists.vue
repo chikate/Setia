@@ -6,8 +6,14 @@
     <!-- <div class="flex-wrap justify-content-around px-5 w-full" style="height: 400px">
       <ApiTableComponent />
     </div> -->
-
-    <DataTable :value="loadedItems" paginator :rows-per-page-options="[10, 20]" :rows="10">
+    Test
+    <DataTable
+      v-if="loadedItems[0]"
+      :value="loadedItems"
+      paginator
+      :rows-per-page-options="[10, 20]"
+      :rows="10"
+    >
       <Column
         v-for="field in Object.keys(loadedItems[0])"
         :key="field"
@@ -23,14 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { capitalizeString } from '@/helpers'
+import { capitalizeString } from '@/global/helpers'
 
-const loadedItems = ref()
+const loadedItems = ref([])
 
 onBeforeMount(init)
-async function init() {
-  loadedItems.value = await cryptoStore().getCoinCapCoin()
-}
+async function init() {}
 </script>
 
 <style scoped>

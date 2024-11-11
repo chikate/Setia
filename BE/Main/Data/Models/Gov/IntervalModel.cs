@@ -12,8 +12,8 @@ namespace Main.Data.Models
         public Guid? UserId { get; set; } = null;
         public AuditModel? UserData { get; set; } = null;
 
-        public DateTime BeginTime { get; set; } = DateTime.SpecifyKind(DateTime.Now!, DateTimeKind.Utc);
-        public DateTime? EndTime { get; set; } = DateTime.SpecifyKind(DateTime.Now.AddDays(8)!, DateTimeKind.Utc);
+        public DateTime BeginTime { get; set; } = DateTime.Now.ToUniversalTime();
+        public DateTime? EndTime { get; set; } = DateTime.Now.ToUniversalTime().AddDays(8);
         public string? Description { get; set; } = string.Empty;
     }
 }

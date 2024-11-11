@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Question, QuestionAnswer } from '@/interfaces'
+import type { Question, QuestionAnswer } from '@/global/interfaces'
 
 const answerMode = defineModel('answerMode', { type: Boolean, default: false })
 const customAnswere = defineModel('customAnswere', {

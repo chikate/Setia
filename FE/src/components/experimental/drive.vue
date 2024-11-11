@@ -1,11 +1,11 @@
 <template>
   <div class="flex-column gap-2">
-    <div class="flex-wrap gap-2">
-      <Button
+    <div class="border-round border-1 flex-wrap gap-2 px-2 align-items-center">
+      <label class="cursor-pointer p-2" @click="goToFolderLocation()"> Home </label>
+      <label
         v-for="(folderName, index) in folderLocation.split('/')"
+        v-show="folderName"
         :key="index"
-        text
-        :label="folderName"
         class="cursor-pointer p-2"
         @click="
           goToFolderLocation(
@@ -15,7 +15,9 @@
               .join('/')
           )
         "
-      />
+      >
+        > {{ folderName }}
+      </label>
     </div>
     <InputText placeholder="Search after name, path, regestry number" @keyup.enter="searchFile" />
     <div class="container gap-2 w-full align-items-start">
@@ -24,15 +26,11 @@
         :key="file"
         :label="file"
         :icon="getFileIcon(file)"
-        class="border-round border-1"
-        :class="file.includes('.') ? '' : 'bg-yellow-200'"
-        style="max-height: 400px"
-        aria-haspopup
-        aria-controls="overlay_menu"
-        @detailsClick="$refs.menuu?.toggle($event)"
         @click="file.includes('.') ? undefined : goToFolderLocation(`${folderLocation}/${file}`)"
+        @detailsClick="clickButtonDetails(file, $event)"
         @click.middle="openPublicFile(`${folderLocation}/${file}`)"
         @dblclick="file.includes('.') ? openPublicFile(`${folderLocation}/${file}`) : undefined"
+        style="max-height: 400px"
       >
         <div v-if="getFileIcon(file) == 'pi pi-image'" class="overflow-hidden align-self-center">
           <img
@@ -51,16 +49,18 @@
           loading="lazy"
         />
       </BaseCardComponent>
-      <Menu ref="menuu" id="overlay_menu" popup :model="menuActions" />
+      <Menu ref="menu" popup :model="menuActions" />
     </div>
+    <!-- <ContextMenu ref="menu" :model="menuActions" /> -->
   </div>
 </template>
 
 <script setup lang="ts">
 const folderLocation = defineModel('folderLocation', { type: String, default: '' })
 const folderContet = ref()
-const fileInFocus = ref() // urmeaza
+const fileInFocus = ref()
 
+const menu = ref()
 const menuActions = ref([
   {
     label: 'Actions',
@@ -69,7 +69,7 @@ const menuActions = ref([
       {
         label: 'Download',
         icon: 'pi pi-download',
-        command: async () => await fileManager.download(fileInFocus.value).then(downloadInBrowser)
+        command: () => fileManager.download(fileInFocus.value).then(downloadInBrowser)
       },
       { label: 'Share', icon: 'pi pi-link' }
     ]
@@ -93,16 +93,26 @@ async function goToFolderLocation(folderPath = '') {
   folderContet.value = await fileManager.getFolderContent(folderLocation.value)
 }
 
+async function clickButtonDetails(file: string, event: MouseEvent) {
+  fileInFocus.value = file
+  menu.value.toggle(event)
+  menuActions.value[1].items[0].label = await fileManager.GetFileRegistryNumber(fileInFocus.value)
+}
+
 onBeforeMount(goToFolderLocation)
 
 const getFileIcon = (file: string) => FILE_ICONS[file.split('.')?.pop() ?? 'folder'] ?? 'pi pi-file'
-const openPublicFile = async (file: string) => window.open(file, '_blank')
+
+async function openPublicFile(file: string) {
+  window.open(file, '_blank')
+}
 
 async function searchFile(event: KeyboardEvent) {
   const target = event.target as HTMLInputElement
-  // if (target.value)
-  //   [folderLocation.value, fileInFocus.value] = await fileManager.SearchAndGetFile(target.value)
-  console.log(await fileManager.SearchAndGetFile(target.value))
+  if (target.value)
+    [folderLocation.value, fileInFocus.value] = await fileManager.GetFileFromRegistryNumber(
+      target.value
+    )
 }
 </script>
 

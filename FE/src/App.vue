@@ -1,95 +1,83 @@
 <script setup lang="ts">
 import type { TreeNode } from 'primevue/treenode'
-import Toast from 'primevue/toast'
-import { capitalizeWords } from '@/helpers'
 
-const globalPadding = defineModel('globalPadding', {
-  type: Number,
-  required: false,
-  default: 1
-})
-const menuItems = defineModel('menuItems', {
-  type: Array as PropType<TreeNode[]>,
-  required: false,
-  default: () =>
-    useRouter()
-      .getRoutes()
-      .reduce((acc, route) => {
-        if (
-          route.path.includes(':') ||
-          route.path.includes('register') ||
-          route.path.includes('login')
-        )
-          return acc
+const route = useRoute()
+const menuItems = ref(
+  useRouter()
+    .getRoutes()
+    .reduce((acc, route) => {
+      if ([':', 'register', 'login'].some((path) => route.path.includes(path))) return acc
 
-        const parts = route.path.split('/')
-        const [_, root, ...rest] = parts
+      const [_, root, ...children] = route.path.split('/')
 
-        if (!root) return acc
+      if (!root) return acc
 
-        let node = acc.find((item) => item.key === root) as any
-        if (!node) {
-          node = {
-            key: root,
-            label: capitalizeWords(root.replace(/[-_]/g, ' ')),
-            children: []
-          }
-          acc.push(node)
-        }
+      const node = acc.find((item) => item.key === root) ?? {
+        key: root,
+        label: capitalizeWords(root.replace(/[-_]/g, ' ')),
+        children: []
+      }
 
-        if (rest.length > 0)
-          node.children.push({
-            key: parts.slice(1).join('/'),
-            label: capitalizeWords(String(rest).replace(/[-_]/g, ' '))
+      if (!acc.includes(node)) acc.push(node)
+
+      if (node.label == 'Drive') node.children = [{} as TreeNode]
+
+      children.length
+        ? node.children?.push({
+            key: route.path.slice(1),
+            label: capitalizeWords(children.join(' '))
           })
-        else node.leaf = true
+        : (node.leaf = true)
+      return acc
+    }, [] as TreeNode[])
+)
+const selectedMenuItems = computed(() =>
+  menuItems.value.find((elem: TreeNode) =>
+    elem.label?.includes(capitalizeWords(String(route.name).replace(/[-_]/g, ' ')))
+  )
+)
 
-        return acc
-      }, [] as TreeNode[])
-})
-const selectedMenuItems = defineModel('selectedMenuItems', {
-  type: Object,
-  required: false,
-  default: {}
-})
+const onNodeSelect = async (event: any) => (window.location = event.key)
+
+const onNodeExpand = async (event: any) =>
+  event.key.startsWith('drive')
+    ? (event.children = await fileContentToTreeNode(event.leaf ? '' : event.key, 2))
+    : undefined
+
+const fileContentToTreeNode = async (key: string, level: number): Promise<TreeNode[]> =>
+  Promise.all(
+    (await fileManager.getFolderContent(key)).map(async (elem: string) => ({
+      key: `${key}${key != '' ? '/' : ''}${elem}`,
+      label: elem,
+      children:
+        !elem.includes('.') && level > 1
+          ? await fileContentToTreeNode(`${key}/${elem}`, level - 1)
+          : undefined,
+      icon: FILE_ICONS[elem.split('.')[1] ?? 'folder']
+    }))
+  )
 </script>
 
 <template>
-  <div class="flex-row overflow-none gap-2 p-2 h-full">
-    <!-- <SplitterPanel
-        :size="useAppStore().appSplitterDistribution"
-        :minSize="10"
-        class="shadow-1 bg-white flex  border-round-right"
-        :class="`p-${globalPadding}`"
-      >
-        <div class="flex-grow-1" /> -->
+  <div class="flex-row gap-2 p-2 h-full overflow-hidden">
     <Tree
       :value="menuItems"
-      class="fixed w-30px"
+      class="fixed"
+      style="min-width: 300px; max-width: 300px; width: 300px"
       selectionMode="single"
-      v-model:selectionKeys="selectedMenuItems"
-      :metaKeySelection="false"
+      :selectionKeys="selectedMenuItems"
       filter
       filterMode="strict"
       loadingMode="icon"
-      @nodeSelect="$router.replace($event.key)"
+      @nodeSelect="onNodeSelect"
+      @nodeExpand="onNodeExpand"
     />
-    <!-- </SplitterPanel>
-      <SplitterPanel
-        :size="100 - useAppStore().appSplitterDistribution"
-        :class="`p-${globalPadding}  flex-row h-full`"
-      > -->
     <div style="min-width: 300px; max-width: 300px; width: 300px" />
     <router-view v-slot="{ Component }" class="w-full h-full border-round overflow-auto">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
-    <!-- <div class="flex-grow-1" />
-        <Button icon="pi pi-times" rounded />
-      </SplitterPanel>
-    </Splitter>
-    <ScrollBar /> -->
   </div>
   <main class="fixed vignette pointer-events-none z-5" />
   <Toast />
@@ -106,16 +94,15 @@ const selectedMenuItems = defineModel('selectedMenuItems', {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.1s ease;
+  transition: opacity 0.1s ease;
 }
 
-.p-treeselect-label {
-  white-space: wrap !important;
-  flex-wrap: wrap !important;
-  display: flex !important;
-  row-gap: 0.25rem !important;
-}
+.p-treeselect-label,
 .p-treeselect.p-treeselect-chip .p-treeselect-token {
+  white-space: wrap !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  row-gap: 0.25rem !important;
   margin-right: 0.25rem;
 }
 .p-inputwrapper-filled.p-treeselect.p-treeselect-chip .p-treeselect-label {

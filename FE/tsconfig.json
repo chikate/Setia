@@ -1,28 +1,16 @@
 {
-  // "extends": ["@vue/tsconfig/tsconfig.dom.json", "@tsconfig/node20/tsconfig.json"],
+  "extends": ["@vue/tsconfig/tsconfig.dom.json", "@tsconfig/node20/tsconfig.json"],
+  "exclude": ["dist", "node_modules"],
   "compilerOptions": {
-    "target": "ESNext",
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "lib": ["ESNext", "ES2023", "DOM", "DOM.Iterable"],
-    "types": ["node", "unplugin-vue-router/client", "vite/client"],
-    "skipLibCheck": true,
-
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
+    "types": ["node", "vite/client", "vue", "unplugin-vue-router/client", "vue-router"],
 
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    /* Bundler mode */
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "noEmit": true,
 
     /* Linting */
     "strict": true,
@@ -30,6 +18,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
-  },
-  "exclude": ["dist", "node_modules"]
+  }
 }

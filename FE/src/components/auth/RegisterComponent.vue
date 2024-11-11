@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, sameAs } from '@vuelidate/validators'
+import { INPUT_CLASS } from '@/global/constants'
 
 const inputEmail = defineModel('inputEmail', {
   type: String,
@@ -37,7 +38,7 @@ async function submitRegistration() {
   registerState.value = 1
   if (await v$.value.$validate()) {
     registerState.value = 2
-    if (await authStore().register(inputEmail.value, inputUsername.value, inputPassword.value)) {
+    if (await authService.register(inputEmail.value, inputUsername.value, inputPassword.value)) {
       inputEmail.value = ''
       inputUsername.value = ''
       inputPassword.value = ''
@@ -62,9 +63,7 @@ async function submitRegistration() {
       >
         {{ v$.inputEmail.$errors[0].$message }}
       </InlineMessage>
-      <InputGroupAddon v-if="inputEmail" :class="settingsStore().INPUT_CLASS">
-        Email
-      </InputGroupAddon>
+      <InputGroupAddon v-if="inputEmail" :class="INPUT_CLASS"> Email </InputGroupAddon>
       <InputText
         v-model="inputEmail"
         id="email"
@@ -81,9 +80,7 @@ async function submitRegistration() {
       >
         {{ v$.inputUsername.$errors[0].$message }}
       </InlineMessage>
-      <InputGroupAddon v-if="inputUsername" :class="settingsStore().INPUT_CLASS">
-        Username
-      </InputGroupAddon>
+      <InputGroupAddon v-if="inputUsername" :class="INPUT_CLASS"> Username </InputGroupAddon>
       <InputText
         v-model="inputUsername"
         id="username"
@@ -100,9 +97,7 @@ async function submitRegistration() {
       >
         {{ v$.inputPassword.$errors[0].$message }}
       </InlineMessage>
-      <InputGroupAddon v-if="inputPassword" :class="settingsStore().INPUT_CLASS">
-        Password
-      </InputGroupAddon>
+      <InputGroupAddon v-if="inputPassword" :class="INPUT_CLASS"> Password </InputGroupAddon>
       <Password
         v-model="inputPassword"
         toggleMask
@@ -130,7 +125,7 @@ async function submitRegistration() {
       >
         {{ v$.inputPassword.$errors[0].$message }}
       </InlineMessage>
-      <InputGroupAddon v-if="inputRepeatPassword" :class="settingsStore().INPUT_CLASS">
+      <InputGroupAddon v-if="inputRepeatPassword" :class="INPUT_CLASS">
         Repeat password
       </InputGroupAddon>
       <Password
@@ -154,7 +149,7 @@ async function submitRegistration() {
 </template>
 
 <style scoped>
-:deep(.p-button:hover .p-button-label) {
+:deep().p-button:hover .p-button-label {
   font-size: 1.5rem;
 }
 </style>

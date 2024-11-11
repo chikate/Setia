@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { Post, User } from '@/interfaces'
+import type { Post, User } from '@/global/interfaces'
 
 const profileUserData = ref<User>({} as User)
 const showUploadAvatar = ref()
 const avatarUrl = ref<string>('')
-const isMyProfile = computed<boolean>(() => profileUserData.value.id === authStore().userData?.id)
+
+const isMyProfile = computed<boolean>(() => profileUserData.value.id === authService.user?.id)
 
 const loadingComplete = ref<boolean>(false)
 
 onBeforeMount(init)
 async function init() {
   try {
-    profileUserData.value = await helperStore().getUserProfile(
+    profileUserData.value = await helperService.getUserProfile(
       String((useRoute().params as any).name)
     )
 
@@ -78,7 +79,7 @@ customUpload
           @vue:beforeMount="avatarUrl = profileUserData.avatar"
           v-model="avatarUrl"
           @keypress.enter="
-            helperStore().getCurentUserAvatar(avatarUrl),
+            helperService.getCurentUserAvatar(avatarUrl),
               (profileUserData.avatar = avatarUrl),
               (showUploadAvatar = false)
           "

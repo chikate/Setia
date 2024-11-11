@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { IAuthenticationDTO } from '@/interfaces'
+import type { IAuthenticationDTO } from '@/global/interfaces'
+import { INPUT_CLASS } from '@/global/constants'
 
-const loginState = ref<number>(0)
+const loginState = ref(localStorage.getItem('token') ? 3 : 0)
 
 const inputUsername = defineModel('inputUsername', {
   type: String,
@@ -16,13 +17,12 @@ const inputPassword = defineModel('inputPassword', {
 
 async function submitLogin() {
   loginState.value = 1
-  await authStore()
+  await authService
     .login({
       username: inputUsername.value,
       password: inputPassword.value
     } as IAuthenticationDTO)
     .then((successful: Boolean) => {
-      console.log(successful)
       if (successful) {
         inputUsername.value = ''
         loginState.value = 3
@@ -33,23 +33,16 @@ async function submitLogin() {
 </script>
 
 <template>
-  <div
-    v-if="loginState < 3 && !authStore().token"
-    class="flex flex-column gap-3 border-round w-3 align-self-start"
-  >
+  <div v-if="loginState < 3" class="flex flex-column gap-3 border-round w-3 align-self-start">
     <h2 class="m-0 p-0">Login</h2>
 
     <InputGroup>
-      <InputGroupAddon v-if="inputUsername" :class="settingsStore().INPUT_CLASS">
-        Username
-      </InputGroupAddon>
+      <InputGroupAddon v-if="inputUsername" :class="INPUT_CLASS"> Username </InputGroupAddon>
       <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
     </InputGroup>
 
     <InputGroup>
-      <InputGroupAddon v-if="inputPassword" :class="settingsStore().INPUT_CLASS">
-        Password
-      </InputGroupAddon>
+      <InputGroupAddon v-if="inputPassword" :class="INPUT_CLASS"> Password </InputGroupAddon>
       <Password
         placeholder="Password"
         v-model="inputPassword"
@@ -64,8 +57,8 @@ async function submitLogin() {
       By continuing you accept the
       <RouterLink to="/terms-of-service" class="font-medium">Terms of Service</RouterLink>,
       <div>
-        <RouterLink to="/privacy-policy" class="font-medium"
-          >Privacy Policy and Cookie Policy</RouterLink
+        <RouterLink to="/privacy-policy" class="font-medium">
+          Privacy Policy and Cookie Policy </RouterLink
         >.
       </div>
     </div>
@@ -85,12 +78,12 @@ async function submitLogin() {
   <div v-else class="flex-column justify-content-between">
     Profile
 
-    <Button label="Log Out" class="button-gradient-effect" @click="authStore().logOut" />
+    <Button label="Log Out" class="button-gradient-effect" @click="authService.logOut()" />
   </div>
 </template>
 
 <style scoped>
-:deep(.p-button:hover .p-button-label) {
+:deep().p-button:hover .p-button-label {
   font-size: 1.5rem;
 }
 </style>

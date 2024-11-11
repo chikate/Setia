@@ -489,3 +489,7 @@ input {
 }
 
 /* // */
+
+iframe {
+  border: none;
+}

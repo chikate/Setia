@@ -1,9 +1,11 @@
 using Main.Data.Contexts;
 using Main.Data.DTOs;
 using Main.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -18,12 +20,13 @@ public interface IAuthService
     Task CheckUserRight(Guid? userId = null, [CallerMemberName] string? methodName = "", [CallerFilePath] string? filePath = "");
     Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null);
     Task<string> CriptPassword(string password);
-    Task<List<string>> GetAllRights();
+    Task<Dictionary<string, List<string>>> GetAllAPIs();
     Task<UserModel?> GetCurrentUser();
     Task<IEnumerable<string>?> GetUserTags(string? specific = ".", Guid? userId = null);
-    Task<object> Login(AuthenticationDTO loginCredentials);
+    Task<string> Login(AuthenticationDTO loginCredentials);
     Task<string> RecoverAccount(string email);
     Task<UserModel> Register(RegistrationDTO registration);
+    Task<bool> ValidateCredentials(object obj);
 }
 
 public class AuthService : IAuthService
@@ -52,13 +55,11 @@ public class AuthService : IAuthService
     }
     #endregion
 
-    public async Task<object> Login(AuthenticationDTO loginCredentials)
+    public async Task<string> Login(AuthenticationDTO loginCredentials)
     {
         try
         {
-            if (string.IsNullOrEmpty(loginCredentials.Password) || loginCredentials.Password.Length < 6 ||
-                string.IsNullOrEmpty(loginCredentials.Username) || loginCredentials.Username.Length < 3)
-                throw new Exception("Invalid Credentials");
+            await ValidateCredentials(loginCredentials);
 
             loginCredentials.Password = await CriptPassword(loginCredentials.Password);
 
@@ -67,27 +68,25 @@ public class AuthService : IAuthService
                     u.Username == loginCredentials.Username &&
                     u.Password == loginCredentials.Password);
 
-            if (user == null) throw new Exception("User Not Found");
+            if (user == null) 
+                throw new Exception("User Not Found");
 
-            return new
-            {
-                Token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+            return new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
                 issuer: _config["Server"],
                 audience: _config["Origin"],
                 claims: new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.GivenName, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.NameIdentifier, user.Username),
-                    new Claim(ClaimTypes.Role, "Default"),
+                    //new Claim(ClaimTypes.Role, user.Tags.Find("Dragos") ? "Admin" : "Default"),
                 },
-                expires: DateTime.SpecifyKind(DateTime.Now.AddDays(1)!, DateTimeKind.Utc),
+                expires: DateTime.Now.ToUniversalTime().AddDays(1)!,
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_config["CryptKey"] ?? "")),
-                        SecurityAlgorithms.HmacSha256))),
-                User = user
-            };
+                        Encoding.UTF8.GetBytes(_config["CryptKey"]!)),
+                        SecurityAlgorithms.HmacSha256)));
         }
         catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
@@ -95,21 +94,17 @@ public class AuthService : IAuthService
     {
         try
         {
-            if (registration.Email == null || !Regex.IsMatch(registration.Email, _config["RegexValidator:Email"] ?? ""))
-                throw new Exception("Invalid email");
-
-            if (registration.Username == null || registration.Username.Length < 6)
-                throw new Exception("Invalid username");
-
-            if (registration.Password == null || registration.Password.Length < 6)
-                throw new Exception("Invalid password");
-
-            if (_baseContext.Set<UserModel>().Any(u => u.Username == registration.Username))
-                throw new Exception("Username already exists");
+            await ValidateCredentials(registration);
 
             registration.Password = await CriptPassword(registration.Password);
 
-            UserModel createdUser = (await _baseContext.Set<UserModel>().AddAsync(new UserModel
+            UserModel? userCheck = await _baseContext.Set<UserModel>()
+                .SingleOrDefaultAsync(u => u.Username == registration.Username);
+
+            if (userCheck != null) 
+                throw new Exception("User Already Exists");
+
+            UserModel newUser = new UserModel
             {
                 Username = registration.Username,
                 Password = registration.Password,
@@ -118,13 +113,14 @@ public class AuthService : IAuthService
                 BirthDay = registration.BirthDay,
                 Name = registration.Name,
                 Avatar = registration.Avatar,
-            })).Entity;
+            };
 
+            await _baseContext.Set<UserModel>().AddAsync(newUser);
             await _baseContext.SaveChangesAsync();
 
-            return createdUser;
+            // _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: https://www.google.ro");
 
-            // _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: {"https://www.google.ro"}");
+            return newUser;
         }
         catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
@@ -132,13 +128,13 @@ public class AuthService : IAuthService
     {
         try
         {
-#pragma warning disable CS8604 // Possible null reference argument.
-            if (!Regex.IsMatch(email, _config["RegexValidator:Email"])) throw new Exception("Invalid email format.");
-#pragma warning restore CS8604 // Possible null reference argument.
+            if (!Regex.IsMatch(email, _config["RegexValidator:Email"]!)) 
+                throw new Exception("Invalid email format.");
 
             List<UserModel> usersWithThisEmail = await _baseContext.Set<UserModel>().Where(p => p.Email == email).ToListAsync();
 
-            if (usersWithThisEmail.Count == 0) throw new EntryPointNotFoundException($"No account found for email: {email}");
+            if (usersWithThisEmail.Count == 0) 
+                throw new EntryPointNotFoundException($"No account found for email: {email}");
 
             //_sender.SendMail(new EmailDTO
             //{
@@ -156,16 +152,9 @@ public class AuthService : IAuthService
     public async Task<UserModel?> GetCurrentUser() =>
         _httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity
         ? await _baseContext.Set<UserModel>().SingleOrDefaultAsync(u =>
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            u.Email == identity.FindFirst(ClaimTypes.Email).Value &&
-            u.Username == identity.FindFirst(ClaimTypes.NameIdentifier).Value)
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            u.Email == identity.FindFirst(ClaimTypes.Email)!.Value &&
+            u.Username == identity.FindFirst(ClaimTypes.NameIdentifier)!.Value)
         : null;
-    public async Task<List<string>> GetAllRights()
-    {
-        await Task.CompletedTask;
-        return [];
-    }
     public async Task<IEnumerable<string>?> GetUserTags(string? specific = ".", Guid? userId = null)
     {
         try
@@ -199,7 +188,8 @@ public class AuthService : IAuthService
                 .Where(u => u.Email == email && u.Username == username && u.Password == currentPassword)
                 .SingleOrDefaultAsync();
 
-            if (user == null) throw new Exception("User not found with provided credentials.");
+            if (user == null) 
+                throw new Exception("User not found with provided credentials.");
 
             user.Password = await CriptPassword(newPassword);
             await _baseContext.SaveChangesAsync();
@@ -215,20 +205,21 @@ public class AuthService : IAuthService
         }
         catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
-    public async Task<string> CriptPassword(string password)
-    {
-        await Task.CompletedTask;
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
-    }
     public async Task<List<string>> CheckUserRights(IEnumerable<string> rightsToCeck, Guid? userId = null)
     {
         try
         {
             userId = userId ?? (await GetCurrentUser())?.Id;
             UserModel? user = await _baseContext.Set<UserModel>().Where(p => p.Id == userId).SingleOrDefaultAsync();
-            if (user == null) throw new Exception("User Not Found");
+
+            if (user == null) 
+                throw new Exception("User Not Found");
+
             List<string> userRights = new();
-            foreach (string rightToCheck in rightsToCeck) if (user.Tags.Any(t => t.ToString().Contains(rightToCheck))) userRights.Add(rightToCheck);
+            foreach (string rightToCheck in rightsToCeck) 
+                if (user.Tags.Any(t => t.ToString().Contains(rightToCheck))) 
+                    userRights.Add(rightToCheck);
+
             return userRights;
         }
         catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
@@ -238,5 +229,39 @@ public class AuthService : IAuthService
         UserModel? user = await _baseContext.Set<UserModel>().FindAsync(userId ?? (await GetCurrentUser())?.Id);
         if (user?.Tags.Any(t => t.Contains("Dragos") || t.Contains("Role.Admin") || t.Contains($"{Path.GetFileNameWithoutExtension(filePath)}.{methodName}")) == false)
             throw new UnauthorizedAccessException($"User: {user?.Name}, does not have the required right: {Path.GetFileNameWithoutExtension(filePath)}.{methodName}");
+    }
+    public async Task<string> CriptPassword(string password) => await Task.Run(() => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(password))));
+    public async Task<Dictionary<string, List<string>>> GetAllAPIs() => await Task.Run(() =>
+        Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.Namespace == "Main.Gateway" && t.IsClass && !t.Name.Contains("<") && !t.GetCustomAttributes(typeof(AllowAnonymousAttribute), true).Any())
+                .ToDictionary(
+                    t => t.Name,
+                    t => t.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                            .Where(m => !m.GetCustomAttributes(typeof(AllowAnonymousAttribute), true).Any())
+                            .Select(m => m.Name)
+                            .Concat(t.BaseType?.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                                .Where(m => !m.GetCustomAttributes(typeof(AllowAnonymousAttribute), true).Any()) // Exclude base class methods with [AllowAnonymous]
+                                .Select(m => m.Name) ?? Enumerable.Empty<string>())
+                            .ToList()));
+    public async Task<bool> ValidateCredentials(object obj)
+    {
+        // Check if 'obj' has the 'Email' property
+        PropertyInfo? emailProperty = obj.GetType().GetProperty("Email");
+        if (emailProperty != null && (emailProperty?.GetValue(obj) == null || !Regex.IsMatch(emailProperty.GetValue(obj)?.ToString()!, _config["RegexValidator:Email"]!)))
+            throw new Exception("Invalid email");
+
+        // Check if 'obj' has the 'Username' property
+        PropertyInfo? usernameProperty = obj.GetType().GetProperty("Username");
+        if (usernameProperty != null && (usernameProperty?.GetValue(obj) == null || usernameProperty.GetValue(obj)?.ToString()?.Length < 6))
+            throw new Exception("Invalid username");
+
+        // Check if 'obj' has the 'Password' property
+        PropertyInfo? passwordProperty = obj.GetType().GetProperty("Password");
+        if (passwordProperty != null && (passwordProperty?.GetValue(obj) == null || passwordProperty.GetValue(obj)?.ToString()?.Length < 6))
+            throw new Exception("Invalid password");
+
+        await Task.CompletedTask;
+        return true;
     }
 }

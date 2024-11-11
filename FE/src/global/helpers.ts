@@ -11,7 +11,7 @@ export const apiRequest = async (
   }
 ): Promise<any> =>
   await fetch(
-    `https://${import.meta.env.VITE_SERVER ?? 'localhost:44381'}/api/${path}` +
+    `https://${import.meta.env.DEV ? 'localhost:44381' : import.meta.env.VITE_SERVER}/api/${path}` +
       (body && Object.values(body).every((value) => value != undefined)
         ? '?' + new URLSearchParams(body)
         : ''),
@@ -20,7 +20,7 @@ export const apiRequest = async (
       headers,
       body: method == 'GET' ? undefined : body instanceof FormData ? body : JSON.stringify(body)
     }
-  ).then((response: Response) => {
+  ).then(async (response: Response) => {
     if (response.statusText)
       app.config.globalProperties.$toast?.add({
         summary: 'Server',
@@ -32,7 +32,15 @@ export const apiRequest = async (
               ? 'error'
               : 'info'
       })
-    return response.json()
+    const contentType = response.headers.get('Content-Type') ?? ''
+    switch (true) {
+      case contentType.includes('application/json'):
+        return await response.json()
+      case contentType.includes('text/plain'):
+        return await response.text()
+      default:
+        return await response.blob()
+    }
   })
 
 export const capitalizeString = (input: string) => input.charAt(0).toUpperCase() + input.slice(1)

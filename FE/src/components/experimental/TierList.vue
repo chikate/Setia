@@ -1,186 +1,168 @@
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
 
-const tierListDimension = defineModel('tierListDimension', {
-  type: Number,
-  required: false,
-  default: 100
-})
-const tierListUniformGap = defineModel('tierListUniformGap', {
-  type: Number,
-  required: false,
-  default: 0
-})
-const tierListitems = defineModel('tierListitems', {
-  type: Array<string>,
-  required: false,
+const tierListDimension = 128
+const tierData = defineModel('tierData', {
+  type: Array<{
+    tier: string
+    color: string
+    content?: string[]
+  }>,
   default: [
-    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmDwycVzCsWaZx5AaCTeqz6e8qLbt8UaQz7g&s',
-    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?cs=srgb&dl=pexels-jaime-reimer-1376930-2662116.jpg&fm=jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WcdjgQXfUoz7afVYi53uNYsamoIvoWZpDg&s',
-    //'https://upload.wikimedia.org/wikipedia/commons/c/c9/Napa_Valley.jpg',
-    'https://images.unsplash.com/photo-1446308386271-523272773b92?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://media.post.rvohealth.io/wp-content/uploads/2020/08/banana-pink-background-thumb-1-732x549.jpg'
+    {
+      tier: 'S',
+      color: '#ff7f7e',
+      content: [
+        'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg'
+      ]
+    },
+    { tier: 'A', color: '#ffbf7f' },
+    { tier: 'B', color: '#ffdf80' },
+    { tier: 'C', color: '#feff7f' },
+    { tier: 'D', color: '#beff7f' },
+    { tier: 'F', color: '#7eff80' },
+    {
+      content: [
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmDwycVzCsWaZx5AaCTeqz6e8qLbt8UaQz7g&s',
+        'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?cs=srgb&dl=pexels-jaime-reimer-1376930-2662116.jpg&fm=jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6WcdjgQXfUoz7afVYi53uNYsamoIvoWZpDg&s',
+        //'https://upload.wikimedia.org/wikipedia/commons/c/c9/Napa_Valley.jpg',
+        'https://images.unsplash.com/photo-1446308386271-523272773b92?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://media.post.rvohealth.io/wp-content/uploads/2020/08/banana-pink-background-thumb-1-732x549.jpg'
+      ]
+    }
   ]
 })
 
-const loadingImage = ref<boolean>(false)
+const tableData = computed(() => {
+  if (!tierData.value) return []
+  return tierData.value.flatMap((t) => {
+    if (!t.content) return []
+    return t.content.map((img) => ({
+      tier: t.tier,
+      color: t.color,
+      name: '',
+      content: img
+    }))
+  })
+})
 
-document.addEventListener('dragend', dragEnd)
+const saving = ref(false)
+const mode = ref(0)
 
-async function saveImage() {
-  loadingImage.value = true
-  await htmlToImage.toPng(document.getElementById('tierList') as HTMLElement).then(download)
-  // $el.children[1]
-  setTimeout(() => (loadingImage.value = false), 300)
+async function saveAsImage() {
+  saving.value = true
+  await htmlToImage
+    .toPng(document.getElementById('tierList') as HTMLElement)
+    .then(downloadInBrowser)
+  saving.value = false
 }
-
-async function dragStart(ev: any) {
-  ev.dataTransfer.setData('text', ev.target.src)
-  ev.dataTransfer?.setData('sourceId', ev.target.id)
-  ev.target.classList.add('opacity-05')
+function handleDrag(event: DragEvent, type: 'start' | 'end') {
+  if (event.target instanceof HTMLElement)
+    event.target.classList.toggle('opacity-05', type === 'start')
 }
-async function dragOver(ev: any) {
-  ev.stopPropagation()
+function drop(ev: DragEvent) {
   ev.preventDefault()
-}
-async function dragEnd(ev: any) {
-  ev.target.classList.remove('opacity-05')
-}
-// Needs improvement !!!!
-async function drop(ev: any) {
-  ev.stopPropagation()
-  ev.preventDefault()
-
   const imageLink = ev.dataTransfer?.getData('text')
-  if (imageLink) {
-    const element = document.createElement('img') as HTMLImageElement
-    element.id = 'drag'
-    element.className = 'cursor-grab'
-    element.crossOrigin = 'anonymous'
-    element.src = imageLink
-    element.height = tierListDimension.value
-    element.ondrop = drop
-
-    // Insert the image in the correct location
-    if (ev.target.id == 'drag') ev.target.insertBefore(element, ev.target.firstChild)
-    else ev.target.appendChild(element)
-
-    const sourceId = ev.dataTransfer?.getData('sourceId')
-    if (sourceId) {
-      const sourceElement = document.getElementById(sourceId)
-      if (sourceElement) sourceElement.remove()
-    }
+  if (imageLink && ev.target instanceof HTMLElement) {
+    const img = document.createElement('img')
+    img.src = imageLink
+    ev.target.appendChild(img)
+    document.getElementById(ev.dataTransfer?.getData('sourceId') ?? '')?.remove()
   }
 }
-
-// async function extractTierListOrder(): Promise<string[][]> {
-//   return Array.from(
-//     document.getElementById('tierList').querySelectorAll('[id^="droptarget-"]') || []
-//   ).map((tier) => Array.from(tier.querySelectorAll('img')).map((img) => img.src))
-// }
 </script>
 
 <template>
   <div class="flex-column gap-2">
-    <div class="flex-row align-items-center">
+    <div class="flex-row gap-2 align-items-center">
       <Button
-        class="button-gradient-effect"
-        style="min-height: 3rem"
-        icon="pi pi-save"
         label="Save / See the result in console log"
-        :loading="loadingImage"
-        @click="saveImage"
+        class="button-gradient-effect"
+        :loading="saving"
+        @click="saveAsImage"
       />
-      <Slider :min="64" :max="256" v-model="tierListDimension" class="w-full mx-3" />
+      <SelectButton
+        :options="[
+          { label: 'Tier List', value: 0 },
+          { label: 'Leaderboard', value: 1 }
+        ]"
+        option-label="label"
+        option-value="value"
+        v-model="mode"
+      />
     </div>
 
-    <!-- <div id="tierListWithContent" :class="`flex-column  gap-${tierListUniformGap}`"> -->
-
-    <div
-      id="tierList"
-      :class="`flex-column bg-primary w-full border-round gap-${tierListUniformGap} p-${tierListUniformGap}`"
-    >
+    <div v-if="mode == 0" id="tierList" class="flex-column border-round overflow-auto">
       <div
-        :id="`tierRow-${tierRowIndex}`"
-        :class="`tierRow flex-row gap-${tierListUniformGap}`"
-        v-for="(tierRowData, tierRowIndex) in [
-          {
-            title: 'S',
-            color: 'ff7f7e'
-          },
-          {
-            title: 'A',
-            color: 'ffbf7f'
-          },
-          {
-            title: 'B',
-            color: 'ffdf80'
-          },
-          {
-            title: 'C',
-            color: 'feff7f'
-          },
-          {
-            title: 'D',
-            color: 'beff7f'
-          },
-          {
-            title: 'F',
-            color: '7eff80'
-          }
-        ]"
+        v-for="(tierRow, tierRowIndex) in tierData"
+        :id="'tierRow-' + tierRowIndex"
+        :style="{ minHeight: tierListDimension + 'px' }"
+        class="flex-row"
         :key="tierRowIndex"
       >
-        <div
-          :id="`tier-${tierRowIndex}`"
-          class="tier text-xl flex-column justify-content-center"
-          :style="`min-height: ${tierListDimension}px; min-width: ${tierListDimension}px; max-width: ${tierListDimension}px; width: ${tierListDimension}px; background-color: #${tierRowData.color}`"
-        >
-          <Textarea auto-resize v-model="tierRowData.title" class="bg-transparent text-center" />
-        </div>
-        <div
-          :id="`droptarget-${tierRowIndex}`"
-          :class="`droptarget flex-wrap w-full gap-${tierListUniformGap}`"
-          :ondragover="dragOver"
-          :ondrop="drop"
+        <Textarea
+          v-if="tierRow.tier != undefined"
+          v-model="tierRow.tier"
+          auto-resize
+          class="tier text-xl flex-column text-center"
+          :style="{ backgroundColor: tierRow.color, maxWidth: tierListDimension + 'px' }"
         />
+        <div
+          :id="'droptarget-' + tierRowIndex"
+          class="droptarget flex-wrap w-full"
+          :class="{ 'bg-primary': tierRow.tier != undefined }"
+          @dragover.prevent
+          @drop="drop"
+        >
+          <img
+            v-for="tierItem in tierRow.content"
+            :src="tierItem"
+            :key="tierItem"
+            :height="tierListDimension"
+            class="cursor-grab"
+            @dragstart="handleDrag($event, 'start')"
+            @dragend="handleDrag($event, 'end')"
+          />
+        </div>
       </div>
     </div>
 
-    <div
-      :id="`droptarget-container`"
-      :class="`flex-wrap w-full min-h-max gap-${tierListUniformGap}`"
-      :style="`min-height: ${tierListDimension}px;`"
-      :ondragover="dragOver"
-      :ondrop="drop"
-    >
-      <img
-        v-for="(tierItem, tierItemIndex) in tierListitems"
-        :key="tierItemIndex"
-        :ondragstart="dragStart"
-        :src="tierItem"
-        :height="tierListDimension"
-        class="cursor-grab"
-        crossorigin="anonymous"
-      />
-    </div>
-    <!-- </div> -->
+    <DataTable v-else-if="mode == 1" :value="tableData" striped-rows>
+      <Column header="Rank" style="width: 10px" class="text-center">
+        <template #body="{ index }">
+          {{ index + 1 }}
+        </template>
+      </Column>
+      <Column header="Content">
+        <template #body="{ data }">
+          <img height="64" width="64" style="object-fit: cover" :src="data.content" />
+          {{ data.name }}
+        </template>
+      </Column>
+      <Column header="Tier" style="width: 10px" class="text-center font-bold">
+        <template #body="{ data }">
+          <div :style="{ color: data.color }">
+            {{ data.tier ?? '🤷‍♂️' }}
+          </div>
+        </template>
+      </Column>
+      <Column class="w-full" />
+    </DataTable>
   </div>
 </template>
 
 <style scoped>
-.p-inputtext {
+:deep().p-inputtext {
   border-style: none;
   border-radius: 0;
   box-shadow: none;
   vertical-align: middle;
 }
-#tierList > *:first-child > .tier {
-  border-radius: 5px 0 0;
+:deep().p-datatable .p-datatable-tbody > tr > td {
+  padding: 1px;
 }
-#tierList > *:last-child > .tier {
-  border-radius: 0 0 0 5px;
+:deep()td {
+  line-height: 0 !important;
 }
 </style>

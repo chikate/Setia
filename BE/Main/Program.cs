@@ -1,5 +1,3 @@
-#pragma warning disable CS8604 // Possible null reference argument. For configs can be null but the app will not run anyways without the configs
-
 using Main.Data.Contexts;
 using Main.Data.Models;
 using Main.Services;
@@ -10,12 +8,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-//WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    WebRootPath = "D:\\Dragos\\Downloads\\0Test"
-});
-ConfigurationManager config = builder.Configuration;
+IConfiguration config = new ConfigurationManager()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .AddUserSecrets<Program>()
+    .Build();
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions { WebRootPath = config["StoragePath"] });
 
 #region DB Connection & Setup
 Action<DbContextOptionsBuilder> dbOptions = options =>
@@ -26,7 +25,6 @@ Action<DbContextOptionsBuilder> dbOptions = options =>
         case "PgSQL": options.UseNpgsql(config["DBConnectionStrings"]); break;
         default: throw new NotSupportedException($"Unsupported database technology: {config["DBTech"]}");
     }
-    options.LogTo(Console.WriteLine, LogLevel.Information);
 };
 
 builder.Services.AddDbContext<BaseContext>(dbOptions);
@@ -36,6 +34,7 @@ builder.Services.AddDbContext<GovContext>(dbOptions);
 #region Services
 builder.Services.AddTransient<ISenderService, SenderService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdmService, AdmService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IFileManagerService, FileManagerService>();
 
@@ -44,7 +43,7 @@ builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsMode
 builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
 #endregion
 
-#region Dependency Services
+#region Dependency Services & Authentication
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
@@ -55,9 +54,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     ValidateIssuerSigningKey = true,
     ValidIssuer = config["Server"],
     ValidAudience = config["Origin"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]))
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
 });
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -78,22 +76,22 @@ builder.Services.AddSwaggerGen(options =>
 
 WebApplication app = builder.Build();
 
-// Setup CORS
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
-// Run Migrations
 app.Services.CreateScope().ServiceProvider.GetRequiredService<BaseContext>().Database.Migrate();
 app.Services.CreateScope().ServiceProvider.GetRequiredService<GovContext>().Database.Migrate();
 
-// Standards
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseWebSockets();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 #pragma warning disable ASP0014 // Suggest using top level route registrations
-app.UseEndpoints(endpoints => endpoints.MapControllers().RequireAuthorization()); // Ensure endpoints with UseEndpoints for the spa proxy. ToDo: remove endopoints but the spa proxy does not work if it is removed
+app.UseEndpoints(endpoints => endpoints.MapControllers().RequireAuthorization());
+//app.MapControllers().RequireAuthorization();
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 if (app.Environment.IsDevelopment())
@@ -104,7 +102,7 @@ if (app.Environment.IsDevelopment())
         options.DefaultModelsExpandDepth(-1);
         options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
     });
-    app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["Origin"]));
+    app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["Origin"]!));
 }
 else
 {

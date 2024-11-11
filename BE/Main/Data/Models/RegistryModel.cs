@@ -6,7 +6,6 @@ public class RegistryModel : BaseModel
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string? Entity { get; set; } = null;
-    public string? EntityId { get; set; } = null;
-    public int? RegistryNumber { get; set; } = null;
+    public required string Entity { get; set; }
+    public required string EntityId { get; set; }
 }

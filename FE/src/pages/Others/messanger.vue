@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Post } from '@/interfaces'
+import type { Post } from '@/global/interfaces'
 
 const posts = ref<Post[]>([])
 const message = ref('')

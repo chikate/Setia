@@ -8,17 +8,17 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { PrimeVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     VueRouter(),
     Vue(),
     AutoImport({
-      imports: ['vue', VueRouterAutoImports, 'vue-router', 'pinia'],
-      dirs: ['./src/stores/**', './src/*'],
+      imports: ['vue', VueRouterAutoImports, 'vue-router'],
       vueTemplate: true,
+      dirs: ['./src/global/**'],
       eslintrc: {
-        enabled: true
+        enabled: true,
+        globalsPropValue: true
       }
     }),
     Components({ resolvers: [PrimeVueResolver()], dirs: ['./src/components/**'] })
@@ -28,20 +28,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  publicDir: 'D:/Dragos/Downloads/0Test',
   server: {
     port: 3000,
-    strictPort: true,
-    proxy: {
-      // string shorthand: /foo -> http://localhost:4567/foo
-      '/foo': 'http://localhost:4567',
-      // with options
-      '/api': {
-        target: 'https://localhost:44381',
-        secure: true,
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    strictPort: true
   }
 })

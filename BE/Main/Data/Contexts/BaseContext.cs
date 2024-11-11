@@ -1,7 +1,6 @@
-﻿#pragma warning disable CS8604, CS8601
-
-using Main.Data.Models;
+﻿using Main.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Main.Data.Contexts;
 
@@ -41,21 +40,21 @@ public partial class BaseContext : DbContext
         foreach (UserModel defaultUser in new List<UserModel> {
         new UserModel
         {
-            Name = _config["AdminAccount:Username"],
-            Username = _config["AdminAccount:Username"],
-            Password = _config["AdminAccount:Password"], //_auth.CriptPassword(_config["AdminAccount:Password"]),
+            Name = _config["AdminAccount:Username"]!,
+            Username = _config["AdminAccount:Username"]!,
+            Password = _config["AdminAccount:Password"]!, //_auth.CriptPassword(_config["AdminAccount:Password"]),
             Tags = [
-                _config["AdminAccount:Username"],
+                _config["AdminAccount:Username"]!,
                 "Admin"
             ]
         },
         new UserModel
         {
-            Name = _config["AdminAccount:Username"] + "ADM",
-            Username = _config["AdminAccount:Username"] + "ADM",
-            Password = _config["AdminAccount:Password"], //_auth.CriptPassword(_config["AdminAccount:Password"]),
+            Name = _config["AdminAccount:Username"]! + "ADM",
+            Username = _config["AdminAccount:Username"]! + "ADM",
+            Password = _config["AdminAccount:Password"]!, //_auth.CriptPassword(_config["AdminAccount:Password"]),
             Tags = [
-                _config["AdminAccount:Username"] + "ADM",
+                _config["AdminAccount:Username"]! + "ADM",
                 "Admin"
             ]
         }}) modelBuilder.Entity<UserModel>().HasData(defaultUser);
@@ -113,12 +112,10 @@ public partial class BaseContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+        foreach (EntityEntry entry in ChangeTracker.Entries()) //.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
         {
-            //PropertyInfo? passwordProperty = model.GetType().GetProperty("Password");
-            //passwordProperty?.SetValue(model, _auth.CriptPassword((string)passwordProperty?.GetValue(model)));
-            entry.Property("ExecutionDate").CurrentValue = DateTime.Now;
-            entry.Property("AuthorId").CurrentValue = 1;//(await _auth.GetCurrentUser())?.Id;
+            entry.Property("ExecutionDate").CurrentValue = DateTime.Now.ToUniversalTime();
+            //entry.Property("AuthorId").CurrentValue = Guid.NewGuid();
         }
         return await base.SaveChangesAsync(cancellationToken);
     }

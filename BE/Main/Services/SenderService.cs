@@ -1,5 +1,3 @@
-#pragma warning disable CS8604 // Possible null reference argument.
-
 using Main.Data.DTOs;
 using System.Net;
 using System.Net.Mail;
@@ -32,19 +30,19 @@ public class SenderService : ISenderService
     {
         try
         {
-            using (var smtpClient = new SmtpClient(_config["Email:SmtpServer"], int.Parse(_config["Email:Port"])))
+            using SmtpClient smtpClient = new SmtpClient(_config["Email:SmtpServer"], int.Parse(_config["Email:Port"]!));
+
+            smtpClient.EnableSsl = true;
+            smtpClient.Credentials = new NetworkCredential(_config["Email:User"], _config["Email:Password"]);
+
+            await smtpClient.SendMailAsync(new MailMessage
             {
-                smtpClient.EnableSsl = true;
-                smtpClient.Credentials = new NetworkCredential(_config["Email:User"], _config["Email:Password"]);
-                await smtpClient.SendMailAsync(new MailMessage
-                {
-                    From = new MailAddress(_config["Email:User"]),
-                    //To = emailData.To,
-                    Subject = emailData.Subject,
-                    Body = emailData.Body,
-                    IsBodyHtml = true // Set to true if your email body is HTML
-                });
-            }
+                From = new MailAddress(_config["Email:User"]!),
+                //To = emailData.To,
+                Subject = emailData.Subject,
+                Body = emailData.Body,
+                IsBodyHtml = true // Set to true if your email body is HTML
+            });
         }
         catch (Exception ex) { _logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }

@@ -52,9 +52,12 @@
         </div>
       </AccordionTab> -->
       <AccordionTab header="Properties">
-        <div class="flex-row gap-2">
-          <Checkbox v-model="autoPagination" binary />
-          <label>Pagination</label>
+        <div class="flex-column gap-2">
+          <div class="flex-row gap-2">
+            <Checkbox v-model="autoPagination" binary />
+            <label>Pagination</label>
+          </div>
+          <InputText v-model="padding" placeholder="Padding - left, top, bottom, right / x, y" />
         </div>
       </AccordionTab>
       <AccordionTab header="Dimensions">
@@ -72,58 +75,16 @@
       </AccordionTab>
     </Accordion>
 
-    <div class="flex-column gap-2 align-items-center justify-content-center">
-      <EditorComponent
-        style="max-height: 90vh"
-        class="border-1 border-gray-200"
-        v-model="pages[pageNumber - 1]"
-      />
-
-      <div class="flex-row align-items-center gap-2">
-        <InputNumber
-          :min="1"
-          :max="pages?.length"
-          :useGrouping="false"
-          showButtons
-          buttonLayout="horizontal"
-          fluid
-          @input="
-            (event: InputNumberInputEvent) => {
-              if (
-                event.value == null ||
-                event.value == undefined ||
-                Number(event.value) < 1 ||
-                isNaN(Number(event.value)) ||
-                !String(event.value).trim()[0]
-              )
-                event.value = 1
-            }
-          "
-          class="small"
-          v-model="pageNumber"
-        >
-          <template #incrementbuttonicon>
-            <span class="pi pi-chevron-right" />
-          </template>
-          <template #decrementbuttonicon>
-            <span class="pi pi-chevron-left" />
-          </template>
-        </InputNumber>
-        out of {{ pages?.length }} pages
-      </div>
-    </div>
+    <BetterEditor />
   </div>
 </template>
 
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
 import { jsPDF } from 'jspdf'
-import { downloadInBrowser } from '@/helpers'
+import { downloadInBrowser } from '@/global/helpers'
 
-import EditorComponent from '@/components/better/EditorComponent.vue'
-
-import { IParameter } from '@/components/experimental/ParametersComponent.vue'
-import { InputNumberInputEvent } from 'primevue/inputnumber'
+import type { IParameter } from '@/components/experimental/ParametersComponent.vue'
 
 const parameters = ref<IParameter[]>([{ name: 'test', type: 'value' }])
 const paperAspectRatio = ref<number>(1.414)
@@ -131,6 +92,7 @@ const pages = ref<string[]>(['<p style="height:100px">asd</p><p>dsa</p>', '<p>as
 const pageNumber = ref<number>(1)
 const isLandscape = ref(false)
 const autoPagination = ref(false)
+const padding = ref('')
 const loadingExport = ref(false)
 const exportFileName = ref<string>('export')
 
@@ -188,7 +150,7 @@ async function exporter(extenstion: string) {
 </script>
 
 <style scoped>
-:deep(.p-inputnumber.p-inputnumber-buttons-horizontal .p-inputnumber-button) {
+:deep().p-inputnumber.p-inputnumber-buttons-horizontal .p-inputnumber-button {
   border: 0 none !important;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ToastMessageOptions } from 'primevue/toast'
+import type { ToastMessageOptions } from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 const toast = useToast()
 
@@ -86,7 +86,7 @@ function handleAddParameter(event: KeyboardEvent) {
 </template>
 
 <style scoped>
-:deep(.p-dropdown-trigger) {
+:deep().p-dropdown-trigger {
   display: none !important;
 }
 </style>

@@ -1,44 +1,39 @@
 using Main.Data.Models;
 using Main.Services;
+using Main.Standards;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.APIs;
+namespace Main.Gateway;
 
-[AllowAnonymous]
-[ApiController]
-[Route("/api/[controller]/[action]")]
-public class AdmController : ControllerBase
+public class AdmController : APIControllerBase
 {
     #region Dependency Injection
     private readonly IAuthService _auth;
+    private readonly IAdmService _adm;
     private readonly ICRUDService<SettingsModel> _SettingsCRUD;
 
     public AdmController
     (
         IAuthService auth,
+        IAdmService adm,
         ICRUDService<SettingsModel> SettingsCRUD
     )
     {
         _auth = auth;
+        _adm = adm;
         _SettingsCRUD = SettingsCRUD;
     }
     #endregion
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Ping()
-    {
-        await Task.CompletedTask;
-        try { return Ok("Pong"); }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public IActionResult Ping() => Ok("Pong");
 
     [HttpGet]
-    public async Task<IActionResult> GetServerData()
+    public async Task<IActionResult> GetAllAPIs()
     {
-        await Task.CompletedTask;
-        try { return Ok(); }
+        try { return Ok(await _adm.GetAllAPIs()); }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="card p-1" style="min-width: 300px">
     <DataTable
-      :value="service.loadedItems"
-      :loading="!service.loadedItems"
+      :value="store.loadedItems.value"
+      :loading="!store.loadedItems.value"
       stripedRows
       rowHover
       scrollable
@@ -12,17 +12,17 @@
       v-model:expandedRows="expandedRows"
       :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="[exposedData[0].field]"
-      :paginator="(service.loadedItems?.length ?? 0) > 5"
+      :paginator="(store.loadedItems.value?.length ?? 0) > 5"
       :rows="5"
       :rowsPerPageOptions="[5, 10]"
-      :totalRecords="service.loadedItems?.length ?? 0"
+      :totalRecords="store.loadedItems.value?.length ?? 0"
       reorderableColumns
       @row-dblclick="showDialog = !showDialog"
       @row-click="(selectedItem = $event.data), (editOrAdd = true), $emit('rowClick', $event)"
     >
       <template #header>
         <div class="flex-row gap-2 align-items-center px-2">
-          <h2 class="w-full m-0 p-0 font-bold">{{ formattedserviceName }}</h2>
+          <h2 class="w-full m-0 p-0 font-bold">{{ formattedStoreName }}</h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
@@ -40,7 +40,7 @@
       </template>
       <template #empty>
         <div class="flex-grow-1 text-center">
-          Empty {{ service.serviceName.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }}
+          Empty {{ store.storeName.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }}
         </div>
       </template>
       <template #expansion><slot name="expansion" /></template>
@@ -102,26 +102,26 @@
     >
       <template #header>
         <h3 class="flex-grow-1 font-bold m-0 p-0">
-          {{ !editOrAdd ? 'Add new ' : 'Edit ' + service.serviceName.toLocaleLowerCase() }}
+          {{ !editOrAdd ? 'Add new ' : 'Edit ' + store.storeName.toLocaleLowerCase() }}
         </h3>
         <div class="flex-row gap-3 font-bold">
           <Button class="bg-primary-reverse" label="Back" @click="showDialog = false" />
           <SplitButton
             v-if="editOrAdd"
             label="Save"
-            @click="service.update().then(() => (showDialog = false))"
+            @click="store.update().then(() => (showDialog = false))"
             :model="[
               {
                 label: 'Delete',
                 icon: 'pi pi-trash',
-                command: () => service.delete().then(() => (showDialog = false))
+                command: () => store.delete().then(() => (showDialog = false))
               }
             ]"
           />
           <Button
             v-if="!editOrAdd"
             label="Add"
-            @click="service.add().then(() => (showDialog = false))"
+            @click="store.add().then(() => (showDialog = false))"
           />
         </div>
       </template>
@@ -131,7 +131,7 @@
             {{ key.header }}
           </InputGroupAddon>
           <AutoComplete
-            v-if="key.field.includes('tag') && service.serviceName !== 'tags'"
+            v-if="key.field.includes('tag') && store.storeName !== 'tags'"
             multiple
             :placeholder="key.header"
             v-model="editItem[key.field]"
@@ -173,8 +173,8 @@
 <script setup lang="ts">
 import { INPUT_CLASS } from '@/global/constants'
 
-const emits = defineEmits(['deleteClick', 'addClick', 'rowClick'])
-const props = defineProps(['service'])
+const emits = defineEmits(['deleteClick', 'addClick'])
+const props = defineProps(['store'])
 const readonly = defineModel('readonly', { type: Boolean, default: false })
 const selectedItem = ref()
 const editItem = ref()
@@ -185,17 +185,17 @@ const showFilters = ref(false)
 const editOrAdd = ref(false)
 const selectedColumns = ref([])
 
-const formattedserviceName = computed(
+const formattedStoreName = computed(
   () =>
-    props.service.serviceName?.charAt(0)?.toUpperCase() +
-    props.service.serviceName
-      ?.slice(1)
+    props.store.storeName[0].toUpperCase() +
+    props.store.storeName
+      .slice(1)
       .replaceAll(/([A-Z])/g, ' $1')
       .toLowerCase()
 )
 
 const exposedData = computed(() =>
-  Object.keys(props.service.defaultValues)
+  Object.keys(props.store.defaultValues)
     .filter((param) => !['password', 'id', 'executiondate'].includes(param.toLowerCase()))
     .map((key) => ({
       field: key,
@@ -206,7 +206,7 @@ const exposedData = computed(() =>
           .replace(/([A-Z])/g, ' $1')
           .toLowerCase()
           .replace(' data', ''),
-      type: typeof props.service.defaultValues[key]
+      type: typeof props.store.defaultValues[key]
     }))
 )
 
@@ -214,12 +214,12 @@ function handleSplitButtonClick() {
   if (readonly.value) return
 
   if (showMultipleDelete.value) {
-    props.service.delete()
+    props.store.delete()
     emits('deleteClick')
     return
   }
 
-  editItem.value = props.service.defaultValues
+  editItem.value = props.store.defaultValues
   editOrAdd.value = false
   showDialog.value = !showDialog.value
   emits('addClick')
@@ -239,8 +239,5 @@ const splitButtonModel = computed(() => [
   }
 ])
 
-onBeforeMount(async () => {
-  await props.service?.getItems()
-  console.log(props.service?.loadedItems)
-})
+onBeforeMount(props.store.getItems)
 </script>

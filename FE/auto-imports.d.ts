@@ -6,50 +6,40 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const CRUDStore: typeof import('./src/stores/CRUDStore')['CRUDStore']
-  const DEFAULT_ROWS_INDEX: typeof import('./src/constants')['DEFAULT_ROWS_INDEX']
-  const DEFAULT_ROWS_OPTIONS: typeof import('./src/constants')['DEFAULT_ROWS_OPTIONS']
+  const AuthService: (typeof import('./src/global/services'))['AuthService']
+  const DEFAULT_ROWS_INDEX: typeof import('./src/global/constants')['DEFAULT_ROWS_INDEX']
+  const DEFAULT_ROWS_OPTIONS: typeof import('./src/global/constants')['DEFAULT_ROWS_OPTIONS']
   const EffectScope: typeof import('vue')['EffectScope']
-  const FILE_ICONS: typeof import('./src/constants')['FILE_ICONS']
-  const INPUT_CLASS: typeof import('./src/constants')['INPUT_CLASS']
-  const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
-  const apiRequest: typeof import('./src/helpers')['apiRequest']
-  const app: typeof import('./src/main')['app']
-  const authStore: typeof import('./src/stores/authStore')['authStore']
-  const canUserAccessRoute: typeof import('./src/helpers')['canUserAccessRoute']
-  const capitalizeString: typeof import('./src/helpers')['capitalizeString']
-  const capitalizeWords: typeof import('./src/helpers')['capitalizeWords']
+  const FILE_ICONS: typeof import('./src/global/constants')['FILE_ICONS']
+  const FileManager: (typeof import('./src/global/services'))['FileManager']
+  const HelperService: (typeof import('./src/global/services'))['HelperService']
+  const INPUT_CLASS: typeof import('./src/global/constants')['INPUT_CLASS']
+  const apiRequest: typeof import('./src/global/helpers')['apiRequest']
+  const authService: typeof import('./src/global/services')['authService']
+  const canUserAccessRoute: typeof import('./src/global/helpers')['canUserAccessRoute']
+  const capitalizeString: typeof import('./src/global/helpers')['capitalizeString']
+  const capitalizeWords: typeof import('./src/global/helpers')['capitalizeWords']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
-  const createPinia: typeof import('pinia')['createPinia']
-  const cryptoStore: typeof import('./src/stores/cryptoStore')['cryptoStore']
   const customRef: typeof import('vue')['customRef']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
-  const defineStore: typeof import('pinia')['defineStore']
-  const download: typeof import('./src/helpers')['download']
-  const downloadInBrowser: typeof import('./src/helpers')['downloadInBrowser']
-  const driveStore: typeof import('./src/stores/driveStore')['driveStore']
+  const downloadInBrowser: typeof import('./src/global/helpers')['downloadInBrowser']
   const effectScope: typeof import('vue')['effectScope']
-  const getActivePinia: typeof import('pinia')['getActivePinia']
+  const fileManager: typeof import('./src/global/services')['fileManager']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const h: typeof import('vue')['h']
-  const helperStore: typeof import('./src/stores/helperStore')['helperStore']
+  const helperService: typeof import('./src/global/services')['helperService']
   const inject: typeof import('vue')['inject']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
-  const isValidISODate: typeof import('./src/helpers')['isValidISODate']
-  const mapActions: typeof import('pinia')['mapActions']
-  const mapGetters: typeof import('pinia')['mapGetters']
-  const mapState: typeof import('pinia')['mapState']
-  const mapStores: typeof import('pinia')['mapStores']
-  const mapWritableState: typeof import('pinia')['mapWritableState']
+  const isValidISODate: typeof import('./src/global/helpers')['isValidISODate']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
-  const notificationsCRUDStore: typeof import('./src/stores/CRUDsStore')['notificationsCRUDStore']
+  const notificationsCRUDService: typeof import('./src/global/services')['notificationsCRUDService']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -66,29 +56,25 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const pontajCRUDStore: typeof import('./src/stores/CRUDsStore')['pontajCRUDStore']
-  const postsCRUDStore: typeof import('./src/stores/CRUDsStore')['postsCRUDStore']
+  const pontajCRUDService: typeof import('./src/global/services')['pontajCRUDService']
+  const postsCRUDService: typeof import('./src/global/services')['postsCRUDService']
   const provide: typeof import('vue')['provide']
-  const questionAnswersCRUDStore: typeof import('./src/stores/CRUDsStore')['questionAnswersCRUDStore']
-  const questionsCRUDStore: typeof import('./src/stores/CRUDsStore')['questionsCRUDStore']
+  const questionAnswersCRUDService: typeof import('./src/global/services')['questionAnswersCRUDService']
+  const questionsCRUDService: typeof import('./src/global/services')['questionsCRUDService']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
   const resolveComponent: typeof import('vue')['resolveComponent']
-  const setActivePinia: typeof import('pinia')['setActivePinia']
-  const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const storeToRefs: typeof import('pinia')['storeToRefs']
-  const tagsCRUDStore: typeof import('./src/stores/CRUDsStore')['tagsCRUDStore']
+  const tagsCRUDService: typeof import('./src/global/services')['tagsCRUDService']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
   const triggerRef: typeof import('vue')['triggerRef']
   const unref: typeof import('vue')['unref']
-  const useAppStore: typeof import('./src/stores/AppStore')['useAppStore']
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
@@ -99,8 +85,8 @@ declare global {
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const userCollectionCRUDStore: typeof import('./src/stores/CRUDsStore')['userCollectionCRUDStore']
-  const usersCRUDStore: typeof import('./src/stores/CRUDsStore')['usersCRUDStore']
+  const userCollectionCRUDService: typeof import('./src/global/services')['userCollectionCRUDService']
+  const usersCRUDService: typeof import('./src/global/services')['usersCRUDService']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -117,49 +103,37 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly CRUDStore: UnwrapRef<typeof import('./src/stores/CRUDStore')['CRUDStore']>
-    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/constants')['DEFAULT_ROWS_INDEX']>
-    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/constants')['DEFAULT_ROWS_OPTIONS']>
+    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/global/constants')['DEFAULT_ROWS_INDEX']>
+    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/global/constants')['DEFAULT_ROWS_OPTIONS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly FILE_ICONS: UnwrapRef<typeof import('./src/constants')['FILE_ICONS']>
-    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/constants')['INPUT_CLASS']>
-    readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
-    readonly apiRequest: UnwrapRef<typeof import('./src/helpers')['apiRequest']>
-    readonly app: UnwrapRef<typeof import('./src/main')['app']>
-    readonly authStore: UnwrapRef<typeof import('./src/stores/authStore')['authStore']>
-    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/helpers')['canUserAccessRoute']>
-    readonly capitalizeString: UnwrapRef<typeof import('./src/helpers')['capitalizeString']>
-    readonly capitalizeWords: UnwrapRef<typeof import('./src/helpers')['capitalizeWords']>
+    readonly FILE_ICONS: UnwrapRef<typeof import('./src/global/constants')['FILE_ICONS']>
+    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/global/constants')['INPUT_CLASS']>
+    readonly apiRequest: UnwrapRef<typeof import('./src/global/helpers')['apiRequest']>
+    readonly authService: UnwrapRef<typeof import('./src/global/services')['authService']>
+    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/global/helpers')['canUserAccessRoute']>
+    readonly capitalizeString: UnwrapRef<typeof import('./src/global/helpers')['capitalizeString']>
+    readonly capitalizeWords: UnwrapRef<typeof import('./src/global/helpers')['capitalizeWords']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
-    readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
-    readonly cryptoStore: UnwrapRef<typeof import('./src/stores/cryptoStore')['cryptoStore']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
-    readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
-    readonly downloadInBrowser: UnwrapRef<typeof import('./src/helpers')['downloadInBrowser']>
-    readonly driveStore: UnwrapRef<typeof import('./src/stores/driveStore')['driveStore']>
+    readonly downloadInBrowser: UnwrapRef<typeof import('./src/global/helpers')['downloadInBrowser']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
-    readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
+    readonly fileManager: UnwrapRef<typeof import('./src/global/services')['fileManager']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
-    readonly helperStore: UnwrapRef<typeof import('./src/stores/helperStore')['helperStore']>
+    readonly helperService: UnwrapRef<typeof import('./src/global/services')['helperService']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
-    readonly isValidISODate: UnwrapRef<typeof import('./src/helpers')['isValidISODate']>
-    readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
-    readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
-    readonly mapState: UnwrapRef<typeof import('pinia')['mapState']>
-    readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
-    readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
+    readonly isValidISODate: UnwrapRef<typeof import('./src/global/helpers')['isValidISODate']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly notificationsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['notificationsCRUDStore']>
+    readonly notificationsCRUDService: UnwrapRef<typeof import('./src/global/services')['notificationsCRUDService']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
@@ -176,29 +150,25 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly pontajCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['pontajCRUDStore']>
-    readonly postsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['postsCRUDStore']>
+    readonly pontajCRUDService: UnwrapRef<typeof import('./src/global/services')['pontajCRUDService']>
+    readonly postsCRUDService: UnwrapRef<typeof import('./src/global/services')['postsCRUDService']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
-    readonly questionAnswersCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['questionAnswersCRUDStore']>
-    readonly questionsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['questionsCRUDStore']>
+    readonly questionAnswersCRUDService: UnwrapRef<typeof import('./src/global/services')['questionAnswersCRUDService']>
+    readonly questionsCRUDService: UnwrapRef<typeof import('./src/global/services')['questionsCRUDService']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
-    readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
-    readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
-    readonly tagsCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['tagsCRUDStore']>
+    readonly tagsCRUDService: UnwrapRef<typeof import('./src/global/services')['tagsCRUDService']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
-    readonly useAppStore: UnwrapRef<typeof import('./src/stores/AppStore')['useAppStore']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
@@ -209,8 +179,8 @@ declare module 'vue' {
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly userCollectionCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['userCollectionCRUDStore']>
-    readonly usersCRUDStore: UnwrapRef<typeof import('./src/stores/CRUDsStore')['usersCRUDStore']>
+    readonly userCollectionCRUDService: UnwrapRef<typeof import('./src/global/services')['userCollectionCRUDService']>
+    readonly usersCRUDService: UnwrapRef<typeof import('./src/global/services')['usersCRUDService']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

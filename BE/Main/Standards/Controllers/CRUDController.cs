@@ -1,14 +1,11 @@
 using Main.Data.DTOs;
 using Main.Data.Models;
 using Main.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Main.Standards.Controllers;
 
-[Authorize]
-[Route("/api/[controller]/[action]")]
-public abstract class CRUDController<TModel> : ControllerBase where TModel : BaseModel
+public abstract class CRUDController<TModel> : APIControllerBase where TModel : BaseModel
 {
     #region Dependency Injection
     private readonly ICRUDService<TModel> _CRUD;
@@ -58,12 +55,12 @@ public abstract class CRUDController<TModel> : ControllerBase where TModel : Bas
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(Guid guid)
     {
         try
         {
             await _auth.CheckUserRight(filePath: typeof(TModel).Name);
-            return Ok(await _CRUD.Delete(id));
+            return await _CRUD.Delete(guid) ? Ok($"{guid} Deleted") : NotFound("Entity Not Found, Guid Invalid");
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }

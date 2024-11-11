@@ -1,11 +1,10 @@
 using Main.Services;
+using Main.Standards;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.APIs;
+namespace Main.Gateway;
 
-[ApiController]
-[Route("/api/[controller]/[action]")]
-public class FileManagerController : ControllerBase
+public class FileManagerController : APIControllerBase
 {
     #region Dependency Injection
     private readonly IFileManagerService _archiveService;
@@ -23,12 +22,12 @@ public class FileManagerController : ControllerBase
     #endregion
 
     [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile formFile, bool compressIt)
+    public async Task<IActionResult> Upload(IFormFile formFile, string saveToPath = "")
     {
         try
         {
             await _auth.CheckUserRight();
-            return Ok(await _archiveService.UploadFFC(formFile, compressIt));
+            return Ok(await _archiveService.Upload(formFile, saveToPath));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
@@ -39,7 +38,7 @@ public class FileManagerController : ControllerBase
         try
         {
             await _auth.CheckUserRight();
-            return Ok(await _archiveService.DownloadFFC(filePath));
+            return Ok(await _archiveService.Download(filePath));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
@@ -50,7 +49,7 @@ public class FileManagerController : ControllerBase
         try
         {
             await _auth.CheckUserRight();
-            await _archiveService.DeleteFFC(filePath);
+            await _archiveService.Delete(filePath);
             return Ok("Deleted");
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
@@ -79,25 +78,27 @@ public class FileManagerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetFileRegistryNumber([FromQuery] string filePath)
+    public async Task<IActionResult> GetFileRegistry([FromQuery] string filePath)
     {
         try
         {
             await _auth.CheckUserRight();
-            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
-            return Ok(await _archiveService.GetFileRegistryNumber(filePath));
+
+            if (filePath == null) 
+                throw new ArgumentNullException(nameof(filePath));
+
+            return Ok(await _archiveService.GetFileRegistry(filePath));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetFile([FromQuery] string input)
+    public async Task<IActionResult> SearchAndGetFile([FromQuery] string input)
     {
         try
         {
             await _auth.CheckUserRight();
-            if (Guid.TryParse(input, out var registryNumber)) return Ok(await _archiveService.GetFileFromRegistryNumber(registryNumber));
-            else return BadRequest("Invalid GUID format.");
+            return Ok(await _archiveService.SearchAndGetFile(input));
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
     }

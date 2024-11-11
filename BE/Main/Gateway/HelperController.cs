@@ -1,14 +1,13 @@
 using Main.Data.Contexts;
 using Main.Data.Models;
 using Main.Services;
+using Main.Standards;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Main.APIs;
+namespace Main.Gateway;
 
-[ApiController]
-[Route("/api/[controller]/[action]")]
-public class HelperController : ControllerBase
+public class HelperController : APIControllerBase
 {
     #region Dependency Injection
     private readonly BaseContext _baseContext;
@@ -54,7 +53,10 @@ public class HelperController : ControllerBase
         try
         {
             UserModel? user = await _baseContext.Set<UserModel>().Where(u => u.Username == username).SingleOrDefaultAsync();
-            if (user == null) throw new Exception("User Not Found");
+
+            if (user == null) 
+                throw new Exception("User Not Found");
+
             return Ok(await _govContext.Set<PostModel>().Where(u => u.AuthorId == user.Id && !u.Tags.Any(t => t.Contains("Deleted"))).ToListAsync());
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
@@ -66,7 +68,10 @@ public class HelperController : ControllerBase
         try
         {
             UserModel? user = await _baseContext.Set<UserModel>().FindAsync((await _auth.GetCurrentUser())?.Id);
-            if (user == null) throw new Exception("User Not Found");
+
+            if (user == null) 
+                throw new Exception("User Not Found");
+
             user.Avatar = avatarUrl;
             _baseContext.Set<UserModel>().Update(user);
             await _baseContext.SaveChangesAsync();
@@ -81,7 +86,9 @@ public class HelperController : ControllerBase
         try
         {
             UserModel? toUser = await _baseContext.Set<UserModel>().SingleOrDefaultAsync(u => u.Username == username);
-            if (toUser == null) throw new Exception("There is no user with this username");
+
+            if (toUser == null) 
+                throw new Exception("There is no user with this username");
 
             await _baseContext.Set<NotificationModel>().AddAsync(new NotificationModel
             {
@@ -103,13 +110,17 @@ public class HelperController : ControllerBase
         try
         {
             NotificationModel? notification = await _baseContext.Set<NotificationModel>().Where(u => u.Id == notificationId).SingleOrDefaultAsync();
-            if (notification == null) throw new Exception("Invalid notification");
+            if (notification == null) 
+                throw new Exception("Invalid notification");
 
             UserModel? fromUser = await _baseContext.Set<UserModel>().Where(u => u.Id == notification.AuthorId).SingleOrDefaultAsync();
-            if (fromUser == null) throw new Exception("There is no user with this username");
+            if (fromUser == null) 
+                throw new Exception("There is no user with this username");
 
             UserModel? currentUser = await _auth.GetCurrentUser();
-            if (currentUser == null) throw new Exception("User Not Found");
+            if (currentUser == null)
+                throw new Exception("User Not Found");
+
             fromUser.Friends.Add(currentUser.Id);
             currentUser.Friends.Add(fromUser.Id);
 

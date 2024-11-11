@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { User } from '@/interfaces'
+import type { User } from '@/global/interfaces'
 
 const profileUserData = ref<User>({} as User)
-const isMyProfile = computed<boolean>(() => profileUserData.value.id === authStore().userData?.id)
+const isMyProfile = computed<boolean>(() => profileUserData.value.id === authService.user?.id)
 
 const props = defineProps({
   username: { type: String, required: true }
 })
 
 onBeforeMount(async () => {
-  profileUserData.value = await helperStore().getUserProfile(String(props.username))
+  profileUserData.value = await helperService.getUserProfile(String(props.username))
 })
 </script>
 

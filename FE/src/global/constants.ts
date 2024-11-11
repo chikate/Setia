@@ -1,3 +1,5 @@
+// All these constants sould exist inside a db at some point
+
 export const INPUT_CLASS = ref<string>(
   `m-0 p-2 px-3 justify-content-start min-w-13px w-13px max-w-13px`
 )
@@ -32,7 +34,7 @@ export const FILE_ICONS: Record<string, string> = {
   mkv: 'pi pi-video',
   mov: 'pi pi-video',
   wmv: 'pi pi-video',
-  txt: 'pi pi-file',
+  txt: 'pi pi-file-word',
   log: 'pi pi-file',
   html: 'pi pi-code',
   css: 'pi pi-code',
@@ -41,5 +43,6 @@ export const FILE_ICONS: Record<string, string> = {
   xml: 'pi pi-code',
   exe: 'pi pi-cog',
   bat: 'pi pi-cog',
-  sh: 'pi pi-cog'
+  sh: 'pi pi-cog',
+  code: 'pi-code'
 }

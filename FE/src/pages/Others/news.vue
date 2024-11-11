@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Post } from '@/interfaces'
+import type { Post } from '@/global/interfaces'
 </script>
 
 <template>
