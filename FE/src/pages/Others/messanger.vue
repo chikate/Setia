@@ -23,7 +23,7 @@ const message = ref('')
     </div>
     <InputText
       v-model="message"
-      @keydown.enter="usePostsCRUDStore().add(), (message = '')"
+      @keydown.enter="(usePostsCRUDStore().add(), (message = ''))"
       placeholder="Message"
       class="p-3 px-4"
     />

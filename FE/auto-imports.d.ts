@@ -7,39 +7,43 @@
 export {}
 declare global {
   const AuthService: (typeof import('./src/global/services'))['AuthService']
-  const DEFAULT_ROWS_INDEX: typeof import('./src/global/constants')['DEFAULT_ROWS_INDEX']
-  const DEFAULT_ROWS_OPTIONS: typeof import('./src/global/constants')['DEFAULT_ROWS_OPTIONS']
+  const DEFAULT_ROWS_INDEX: typeof import('./src/globals/config')['DEFAULT_ROWS_INDEX']
+  const DEFAULT_ROWS_OPTIONS: typeof import('./src/globals/config')['DEFAULT_ROWS_OPTIONS']
   const EffectScope: typeof import('vue')['EffectScope']
-  const FILE_ICONS: typeof import('./src/global/constants')['FILE_ICONS']
+  const FILE_ICONS: typeof import('./src/globals/config')['FILE_ICONS']
   const FileManager: (typeof import('./src/global/services'))['FileManager']
   const HelperService: (typeof import('./src/global/services'))['HelperService']
-  const INPUT_CLASS: typeof import('./src/global/constants')['INPUT_CLASS']
-  const apiRequest: typeof import('./src/global/helpers')['apiRequest']
-  const authService: typeof import('./src/global/services')['authService']
-  const canUserAccessRoute: typeof import('./src/global/helpers')['canUserAccessRoute']
-  const capitalizeString: typeof import('./src/global/helpers')['capitalizeString']
-  const capitalizeWords: typeof import('./src/global/helpers')['capitalizeWords']
+  const INPUT_CLASS: typeof import('./src/globals/config')['INPUT_CLASS']
+  const MENU_ICONS: typeof import('./src/globals/config')['MENU_ICONS']
+  const TOAST_LIFETIME: typeof import('./src/globals/config')['TOAST_LIFETIME']
+  const apiRequest: typeof import('./src/globals/helpers')['apiRequest']
+  const authService: typeof import('./src/globals/services')['authService']
+  const canUserAccessRoute: typeof import('./src/globals/helpers')['canUserAccessRoute']
+  const capitalizeString: typeof import('./src/globals/helpers')['capitalizeString']
+  const capitalizeWords: typeof import('./src/globals/helpers')['capitalizeWords']
   const computed: typeof import('vue')['computed']
+  const connection: typeof import('./src/globals/signals.ts')['connection']
   const createApp: typeof import('vue')['createApp']
   const customRef: typeof import('vue')['customRef']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
-  const downloadInBrowser: typeof import('./src/global/helpers')['downloadInBrowser']
+  const downloadInBrowser: typeof import('./src/globals/helpers')['downloadInBrowser']
   const effectScope: typeof import('vue')['effectScope']
-  const fileManager: typeof import('./src/global/services')['fileManager']
+  const fileManager: typeof import('./src/globals/services')['fileManager']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const h: typeof import('vue')['h']
-  const helperService: typeof import('./src/global/services')['helperService']
+  const helperService: typeof import('./src/globals/services')['helperService']
   const inject: typeof import('vue')['inject']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
-  const isValidISODate: typeof import('./src/global/helpers')['isValidISODate']
+  const isValidISODate: typeof import('./src/globals/helpers')['isValidISODate']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
-  const notificationsCRUDService: typeof import('./src/global/services')['notificationsCRUDService']
+  const notificationsCRUDService: typeof import('./src/globals/services')['notificationsCRUDService']
+  const notificationsConnection: typeof import('./src/globals/signals.ts')['notificationsConnection']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -56,11 +60,11 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const pontajCRUDService: typeof import('./src/global/services')['pontajCRUDService']
-  const postsCRUDService: typeof import('./src/global/services')['postsCRUDService']
+  const pontajCRUDService: typeof import('./src/globals/services')['pontajCRUDService']
+  const postsCRUDService: typeof import('./src/globals/services')['postsCRUDService']
   const provide: typeof import('vue')['provide']
-  const questionAnswersCRUDService: typeof import('./src/global/services')['questionAnswersCRUDService']
-  const questionsCRUDService: typeof import('./src/global/services')['questionsCRUDService']
+  const questionAnswersCRUDService: typeof import('./src/globals/services')['questionAnswersCRUDService']
+  const questionsCRUDService: typeof import('./src/globals/services')['questionsCRUDService']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
@@ -68,7 +72,9 @@ declare global {
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const tagsCRUDService: typeof import('./src/global/services')['tagsCRUDService']
+  const signalRConnection: typeof import('./src/globals/services')['signalRConnection']
+  const stringToColor: typeof import('./src/globals/helpers')['stringToColor']
+  const tagsCRUDService: typeof import('./src/globals/services')['tagsCRUDService']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
@@ -85,8 +91,8 @@ declare global {
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const userCollectionCRUDService: typeof import('./src/global/services')['userCollectionCRUDService']
-  const usersCRUDService: typeof import('./src/global/services')['usersCRUDService']
+  const userCollectionCRUDService: typeof import('./src/globals/services')['userCollectionCRUDService']
+  const usersCRUDService: typeof import('./src/globals/services')['usersCRUDService']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -97,43 +103,49 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { IAuthenticationDTO, IBaseAudit, IDefinition, User, Post, Pontaj, Taging, Question, QuestionAnswer, UserTag, UserCollection, INotification } from './src/globals/interfaces'
+  import('./src/globals/interfaces')
 }
+
 // for vue template auto import
 import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/global/constants')['DEFAULT_ROWS_INDEX']>
-    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/global/constants')['DEFAULT_ROWS_OPTIONS']>
+    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/globals/config')['DEFAULT_ROWS_INDEX']>
+    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/globals/config')['DEFAULT_ROWS_OPTIONS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly FILE_ICONS: UnwrapRef<typeof import('./src/global/constants')['FILE_ICONS']>
-    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/global/constants')['INPUT_CLASS']>
-    readonly apiRequest: UnwrapRef<typeof import('./src/global/helpers')['apiRequest']>
-    readonly authService: UnwrapRef<typeof import('./src/global/services')['authService']>
-    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/global/helpers')['canUserAccessRoute']>
-    readonly capitalizeString: UnwrapRef<typeof import('./src/global/helpers')['capitalizeString']>
-    readonly capitalizeWords: UnwrapRef<typeof import('./src/global/helpers')['capitalizeWords']>
+    readonly FILE_ICONS: UnwrapRef<typeof import('./src/globals/config')['FILE_ICONS']>
+    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/globals/config')['INPUT_CLASS']>
+    readonly MENU_ICONS: UnwrapRef<typeof import('./src/globals/config')['MENU_ICONS']>
+    readonly TOAST_LIFETIME: UnwrapRef<typeof import('./src/globals/config')['TOAST_LIFETIME']>
+    readonly apiRequest: UnwrapRef<typeof import('./src/globals/helpers')['apiRequest']>
+    readonly authService: UnwrapRef<typeof import('./src/globals/services')['authService']>
+    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/globals/helpers')['canUserAccessRoute']>
+    readonly capitalizeString: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeString']>
+    readonly capitalizeWords: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeWords']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
-    readonly downloadInBrowser: UnwrapRef<typeof import('./src/global/helpers')['downloadInBrowser']>
+    readonly downloadInBrowser: UnwrapRef<typeof import('./src/globals/helpers')['downloadInBrowser']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
-    readonly fileManager: UnwrapRef<typeof import('./src/global/services')['fileManager']>
+    readonly fileManager: UnwrapRef<typeof import('./src/globals/services')['fileManager']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
-    readonly helperService: UnwrapRef<typeof import('./src/global/services')['helperService']>
+    readonly helperService: UnwrapRef<typeof import('./src/globals/services')['helperService']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
-    readonly isValidISODate: UnwrapRef<typeof import('./src/global/helpers')['isValidISODate']>
+    readonly isValidISODate: UnwrapRef<typeof import('./src/globals/helpers')['isValidISODate']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly notificationsCRUDService: UnwrapRef<typeof import('./src/global/services')['notificationsCRUDService']>
+    readonly notificationsCRUDService: UnwrapRef<typeof import('./src/globals/services')['notificationsCRUDService']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
@@ -150,11 +162,11 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly pontajCRUDService: UnwrapRef<typeof import('./src/global/services')['pontajCRUDService']>
-    readonly postsCRUDService: UnwrapRef<typeof import('./src/global/services')['postsCRUDService']>
+    readonly pontajCRUDService: UnwrapRef<typeof import('./src/globals/services')['pontajCRUDService']>
+    readonly postsCRUDService: UnwrapRef<typeof import('./src/globals/services')['postsCRUDService']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
-    readonly questionAnswersCRUDService: UnwrapRef<typeof import('./src/global/services')['questionAnswersCRUDService']>
-    readonly questionsCRUDService: UnwrapRef<typeof import('./src/global/services')['questionsCRUDService']>
+    readonly questionAnswersCRUDService: UnwrapRef<typeof import('./src/globals/services')['questionAnswersCRUDService']>
+    readonly questionsCRUDService: UnwrapRef<typeof import('./src/globals/services')['questionsCRUDService']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
@@ -162,7 +174,8 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly tagsCRUDService: UnwrapRef<typeof import('./src/global/services')['tagsCRUDService']>
+    readonly stringToColor: UnwrapRef<typeof import('./src/globals/helpers')['stringToColor']>
+    readonly tagsCRUDService: UnwrapRef<typeof import('./src/globals/services')['tagsCRUDService']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
@@ -179,8 +192,8 @@ declare module 'vue' {
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly userCollectionCRUDService: UnwrapRef<typeof import('./src/global/services')['userCollectionCRUDService']>
-    readonly usersCRUDService: UnwrapRef<typeof import('./src/global/services')['usersCRUDService']>
+    readonly userCollectionCRUDService: UnwrapRef<typeof import('./src/globals/services')['userCollectionCRUDService']>
+    readonly usersCRUDService: UnwrapRef<typeof import('./src/globals/services')['usersCRUDService']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

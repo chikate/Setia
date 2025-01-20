@@ -72,7 +72,6 @@
 .banner .content h1 {
   font-family: 'ICA Rubrik';
   font-size: 16em;
-  line-height: 1em;
   color: #25283b;
   position: relative;
 }

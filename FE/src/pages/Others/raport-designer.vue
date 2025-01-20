@@ -9,7 +9,7 @@
             (event: any) => {
               if (
                 event.target.value &&
-                event.target.value != '' &&
+                event.target.value &&
                 event.target.value != null &&
                 event.target.value != undefined
               )

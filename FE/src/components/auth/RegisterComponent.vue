@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, sameAs } from '@vuelidate/validators'
-import { INPUT_CLASS } from '@/global/constants'
 
 const inputEmail = defineModel('inputEmail', {
   type: String,
@@ -53,7 +52,7 @@ async function submitRegistration() {
 
 <template>
   <div v-if="registerState < 3" class="flex flex-column gap-3 w-4 border-round align-self-start">
-    <h2 class="m-0 p-0">Register</h2>
+    <h2>Register</h2>
 
     <InputGroup>
       <InlineMessage
@@ -140,7 +139,7 @@ async function submitRegistration() {
 
     <Button
       label="Register"
-      class="button-gradient-effect"
+      class="button-gradient-effect text-xl font-bold"
       :loading="registerState > 1"
       @click="submitRegistration"
     />

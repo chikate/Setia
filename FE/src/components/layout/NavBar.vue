@@ -50,7 +50,7 @@ window.addEventListener('scroll', function () {
     </div>
     <div class="flex-row gap-3 pointer-events-auto flex-grow-1 justify-content-end">
       <i
-        v-tooltip.left="{
+        v-tooltip="{
           value: `Switch to ${settingsStore().theme.includes('dark') ? 'light' : 'dark'} mode`,
           showDelay: 700,
           hideDelay: 100
@@ -61,7 +61,7 @@ window.addEventListener('scroll', function () {
       />
 
       <i
-        v-tooltip.left="{
+        v-tooltip="{
           value: 'Change language',
           showDelay: 700,
           hideDelay: 100
@@ -97,7 +97,7 @@ window.addEventListener('scroll', function () {
 
       <i
         v-badge="useNotificationsCRUDStore().allLoadedItems?.length ?? ''"
-        v-tooltip.left="{
+        v-tooltip="{
           value: `Notifications`,
           showDelay: 700,
           hideDelay: 100
@@ -123,30 +123,30 @@ window.addEventListener('scroll', function () {
       <div @click="accountOverlay.toggle($event)" class="cursor-pointer">
         <i class="pi pi-user">
           <OverlayPanel ref="accountOverlay" class="p-0 m-0">
-            <LoginComponent v-if="!authStore().token" @close="accountOverlay.hide($event)" />
+            <LoginComponent v-if="!authService().token" @close="accountOverlay.hide($event)" />
             <div v-else class="flex flex-column gap-3">
               <Button
                 label="Profile"
                 @click="
-                  authStore().userData
-                    ? $router.push(`/profile/${authStore().userData?.username}`)
+                  authService().userData
+                    ? $router.push(`/profile/${authService().userData?.username}`)
                     : undefined
                 "
               />
               <Button label="Collection" @click="$router.push(`/collection`)" />
               <Button
-                v-if="authStore().checkUserRight('Admin')"
+                v-if="authService().checkUserRight('Admin')"
                 label="Administration"
                 @click="$router.push('/adm')"
               />
               <Button label="Vote / Questions" @click="$router.push('/vote-creator')" />
               <Button label="Messanger" @click="$router.push('/messanger')" />
-              <Button label="Logout" @click="authStore().logOut()" />
+              <Button label="Logout" @click="authService().logOut()" />
             </div>
           </OverlayPanel>
         </i>
         <a>
-          {{ authStore().userData?.username ?? 'Account' }}
+          {{ authService().userData?.username ?? 'Account' }}
         </a>
       </div>
     </div>

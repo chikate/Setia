@@ -18,7 +18,7 @@
       :totalRecords="store.loadedItems.value?.length ?? 0"
       reorderableColumns
       @row-dblclick="showDialog = !showDialog"
-      @row-click="(selectedItem = $event.data), (editOrAdd = true), $emit('rowClick', $event)"
+      @row-click="((selectedItem = $event.data), (editOrAdd = true), $emit('rowClick', $event))"
     >
       <template #header>
         <div class="flex-row gap-2 align-items-center px-2">
@@ -171,8 +171,6 @@
 </template>
 
 <script setup lang="ts">
-import { INPUT_CLASS } from '@/global/constants'
-
 const emits = defineEmits(['deleteClick', 'addClick'])
 const props = defineProps(['store'])
 const readonly = defineModel('readonly', { type: Boolean, default: false })
@@ -239,5 +237,5 @@ const splitButtonModel = computed(() => [
   }
 ])
 
-onBeforeMount(props.store.getItems)
+onBeforeMount(props.store.loadItems)
 </script>

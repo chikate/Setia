@@ -19,17 +19,17 @@ const accountOverlay = ref()
       :key="i"
       :to="menu.path"
       :class="{ 'text-blue-500': $route.path == menu.path }"
-      v-tooltip.bottom="menu.label"
+      v-tooltip="menu.label"
     >
       <i
-        v-if="menu.right ? authStore().checkUserRight(menu.right) : true"
+        v-if="menu.right ? authService().checkUserRight(menu.right) : true"
         :class="`pi pi-${menu.icon} cursor-pointer`"
       />
     </RouterLink>
     <a
       @click="
-        authStore().userData
-          ? $router.push(`/profile/${authStore().userData?.username}`)
+        authService().userData
+          ? $router.push(`/profile/${authService().userData?.username}`)
           : accountOverlay.toggle($event)
       "
       class="cursor-pointer flex-row align-items-center"
@@ -38,12 +38,12 @@ const accountOverlay = ref()
         class="mx-1"
         v-if="true"
         v-badge="useNotificationsCRUDStore().allLoadedItems?.length ?? ''"
-        v-tooltip.bottom="'Profile'"
+        v-tooltip="'Profile'"
       />
       <div class="pr-2 font-semibold" v-else>
         <i class="pi pi-user" />
         <OverlayPanel ref="accountOverlay" class="p-0 m-0">
-          <LoginComponent v-if="!authStore().token" @close="accountOverlay.hide($event)" />
+          <LoginComponent v-if="!authService().token" @close="accountOverlay.hide($event)" />
         </OverlayPanel>
       </div>
     </a>

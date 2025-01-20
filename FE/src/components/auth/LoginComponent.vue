@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { IAuthenticationDTO } from '@/global/interfaces'
-import { INPUT_CLASS } from '@/global/constants'
+import type { IAuthenticationDTO } from '@/globals/interfaces'
 
 const loginState = ref(localStorage.getItem('token') ? 3 : 0)
 
@@ -29,12 +28,22 @@ async function submitLogin() {
       } else loginState.value = 0
       inputPassword.value = ''
     })
+    .catch((error) => {
+      console.error(error)
+      loginState.value = 0
+    })
 }
+
+const logout = async () =>
+  await authService
+    .logOut()
+    .then(() => (loginState.value = 0))
+    .catch(console.error)
 </script>
 
 <template>
   <div v-if="loginState < 3" class="flex flex-column gap-3 border-round w-3 align-self-start">
-    <h2 class="m-0 p-0">Login</h2>
+    <h2>Login</h2>
 
     <InputGroup>
       <InputGroupAddon v-if="inputUsername" :class="INPUT_CLASS"> Username </InputGroupAddon>
@@ -78,7 +87,7 @@ async function submitLogin() {
   <div v-else class="flex-column justify-content-between">
     Profile
 
-    <Button label="Log Out" class="button-gradient-effect" @click="authService.logOut()" />
+    <Button label="Log Out" class="button-gradient-effect text-xl font-bold" @click="logout" />
   </div>
 </template>
 

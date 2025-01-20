@@ -9,8 +9,8 @@
       <CRUDT
         class="w-full flex-grow-1"
         :store="useQuestionsCRUDStore()"
-        @rowClick="(answerMode = true), (checksList = [])"
-        @addClick="useQuestionsCRUDStore().resetToDefaults(), (answerMode = false)"
+        @rowClick="((answerMode = true), (checksList = []))"
+        @addClick="(useQuestionsCRUDStore().resetToDefaults(), (answerMode = false))"
       />
       <CRUDT class="w-full flex-grow-1" :store="useQuestionAnswersCRUDStore()" readonly />
     </div>

@@ -21,7 +21,8 @@ async function refresh() {
   await useQuestionAnswersCRUDStore().get()
   answered.value = useQuestionAnswersCRUDStore().allLoadedItems?.find(
     (elem: QuestionAnswer) =>
-      elem.author == authStore().userData?.username && elem.questionId == thisQuestionData.value.id
+      elem.author == authService().userData?.username &&
+      elem.questionId == thisQuestionData.value.id
   )
 }
 </script>
@@ -55,10 +56,10 @@ async function refresh() {
         v-if="!answered"
         v-model="checksList[i]"
         @update:modelValue="
-          (thisQuestionData.selection = []),
-            checksList.forEach((elem: Boolean, i) =>
-              elem ? thisQuestionData.selection.push(thisQuestionData.options[i]) : ''
-            )
+          ((thisQuestionData.selection = []),
+          checksList.forEach((elem: Boolean, i) =>
+            elem ? thisQuestionData.selection.push(thisQuestionData.options[i]) : ''
+          ))
         "
         binary
       />

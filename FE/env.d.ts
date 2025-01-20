@@ -12,5 +12,3 @@ declare module '@vue/runtime-core' {
     $route: ReturnType<Router['currentRoute']>
   }
 }
-
-export {}

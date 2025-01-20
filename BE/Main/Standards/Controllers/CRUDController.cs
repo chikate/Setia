@@ -1,11 +1,11 @@
-using Main.Data.DTOs;
-using Main.Data.Models;
-using Main.Services;
+using Main.Modules.Auth;
+using Main.Standards.Data.Models;
+using Main.Standards.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.Standards.Controllers;
+namespace Main.Standards.CRUDController;
 
-public abstract class CRUDController<TModel> : APIControllerBase where TModel : BaseModel
+public abstract class CRUDController<TModel> : StandardAPI where TModel : BaseModel
 {
     #region Dependency Injection
     private readonly ICRUDService<TModel> _CRUD;

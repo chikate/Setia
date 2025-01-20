@@ -122,6 +122,6 @@ async function searchFile(event: KeyboardEvent) {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjust item size */
 }
 .container > * {
-  line-height: 0;
+  line-height: 0 !important;
 }
 </style>

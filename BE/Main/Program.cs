@@ -1,11 +1,18 @@
 using Main.Data.Contexts;
-using Main.Data.Models;
-using Main.Services;
+using Main.Modules.Adm;
+using Main.Modules.Audit;
+using Main.Modules.Auth;
+using Main.Modules.Chat;
+using Main.Modules.Drive;
+using Main.Modules.Sessions;
+using Main.Standards.Data.Models;
+using Main.Standards.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 
 IConfiguration config = new ConfigurationManager()
@@ -14,9 +21,10 @@ IConfiguration config = new ConfigurationManager()
     .AddUserSecrets<Program>()
     .Build();
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions { WebRootPath = config["StoragePath"] });
+WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions { WebRootPath = config["StoragePath"], Args = args });
 
-#region DB Connection & Setup
+builder.Configuration.AddConfiguration(config);
+
 Action<DbContextOptionsBuilder> dbOptions = options =>
 {
     switch (config["DBTech"])
@@ -27,23 +35,31 @@ Action<DbContextOptionsBuilder> dbOptions = options =>
     }
 };
 
-builder.Services.AddDbContext<BaseContext>(dbOptions);
-builder.Services.AddDbContext<GovContext>(dbOptions);
-#endregion
-
-#region Services
-builder.Services.AddTransient<ISenderService, SenderService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+// Modules
+builder.Services.AddDbContext<AdmContext>(dbOptions);
 builder.Services.AddScoped<IAdmService, AdmService>();
+
+builder.Services.AddDbContext<AuditContext>(dbOptions);
 builder.Services.AddScoped<IAuditService, AuditService>();
-builder.Services.AddScoped<IFileManagerService, FileManagerService>();
 
-builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, BaseContext>>();
-builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, BaseContext>>();
+builder.Services.AddDbContext<AuthContext>(dbOptions);
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddDbContext<DriveContext>(dbOptions);
+builder.Services.AddTransient<IDriveService, DriveService>();
+
+builder.Services.AddDbContext<ChatContext>(dbOptions);
+builder.Services.AddTransient<IChatService, ChatService>();
+
+builder.Services.AddDbContext<SessionsContext>(dbOptions);
+builder.Services.AddSingleton<SSEClientManager>();
+
+builder.Services.AddDbContext<GovContext>(dbOptions);
+builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, AuthContext>>();
+builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, AdmContext>>();
 builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
-#endregion
 
-#region Dependency Services & Authentication
+// Standards
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
@@ -72,26 +88,28 @@ builder.Services.AddSwaggerGen(options =>
         { new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme,Id = "Bearer"} }, Array.Empty<string>() }
     });
 });
-#endregion
 
 WebApplication app = builder.Build();
 
-app.Services.CreateScope().ServiceProvider.GetRequiredService<BaseContext>().Database.Migrate();
-app.Services.CreateScope().ServiceProvider.GetRequiredService<GovContext>().Database.Migrate();
+// Dynamicaly run all migrations
+using (var scope = app.Services.CreateScope())
+{
+    Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(DbContext)) && !t.IsAbstract).ToList()
+        .ForEach(dbContextType => ((DbContext)scope.ServiceProvider.GetRequiredService(dbContextType)).Database.Migrate());
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-app.UseWebSockets();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 #pragma warning disable ASP0014 // Suggest using top level route registrations
-app.UseEndpoints(endpoints => endpoints.MapControllers().RequireAuthorization());
-//app.MapControllers().RequireAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers().RequireAuthorization();
+});
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 if (app.Environment.IsDevelopment())
@@ -107,7 +125,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseSpaStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "dist")) });
-    app.UseSpa(options => options.Options.SourcePath = "dist");
 }
 
 await app.RunAsync();

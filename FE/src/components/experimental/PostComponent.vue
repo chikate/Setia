@@ -56,7 +56,7 @@ onBeforeMount(async () => {
   if (thisPostData.value.author)
     authorData.value = await helperService.getUserProfile(String(thisPostData.value.author))
 
-  await postsCRUDService.getItems()
+  await postsCRUDService.loadItems()
 
   icons.value = [
     {

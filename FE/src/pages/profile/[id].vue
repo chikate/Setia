@@ -54,7 +54,7 @@ customUpload
         </div>
       </div>
       <PostComponent
-        v-if="profileUserData.id == authStore().userData?.id"
+        v-if="profileUserData.id == authService().userData?.id"
         :post-data="usePostsCRUDStore().editItem"
       />
     </div>
@@ -79,9 +79,9 @@ customUpload
           @vue:beforeMount="avatarUrl = profileUserData.avatar"
           v-model="avatarUrl"
           @keypress.enter="
-            helperService.getCurentUserAvatar(avatarUrl),
-              (profileUserData.avatar = avatarUrl),
-              (showUploadAvatar = false)
+            (helperService.getCurentUserAvatar(avatarUrl),
+            (profileUserData.avatar = avatarUrl),
+            (showUploadAvatar = false))
           "
         />
       </div>

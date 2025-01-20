@@ -269,7 +269,6 @@ export default {
   h4,
   h5,
   h6 {
-    line-height: 1.1;
     margin-top: 2.5rem;
     text-wrap: pretty;
   }

@@ -2,18 +2,13 @@
   <div class="flex-column gap-2">
     <div class="flex-wrap gap-2">
       <Button
-        v-for="(folderName, index) in folderLocation.split('/')"
+        v-for="(folderName, index) in ['Home', ...folderLocation.split('/')]"
         :key="index"
         text
         :label="folderName"
         class="cursor-pointer p-2"
         @click="
-          goToFolderLocation(
-            folderLocation
-              .split('/')
-              .slice(0, index + 1)
-              .join('/')
-          )
+          goToFolderLocation(index == 0 ? '' : folderLocation.split('/').slice(0, index).join('/'))
         "
       />
     </div>
@@ -112,6 +107,6 @@ async function searchFile(event: KeyboardEvent) {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjust item size */
 }
 .container > * {
-  line-height: 0;
+  line-height: 0 !important;
 }
 </style>

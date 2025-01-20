@@ -81,9 +81,6 @@
 
 <script setup lang="ts">
 import * as htmlToImage from 'html-to-image'
-import { jsPDF } from 'jspdf'
-import { downloadInBrowser } from '@/global/helpers'
-
 import type { IParameter } from '@/components/experimental/ParametersComponent.vue'
 
 const parameters = ref<IParameter[]>([{ name: 'test', type: 'value' }])
@@ -111,14 +108,14 @@ async function exporter(extenstion: string) {
       .toPng(paperToDownload)
       .then((url: string) => downloadInBrowser(url, exportFileName.value + '.png'))
 
-  if (extenstion.includes('pdf'))
-    await new jsPDF({
-      orientation: isLandscape.value ? 'l' : 'p',
-      unit: 'mm',
-      format: [297, 210]
-    })
-      .html(paperToDownload)
-      .save(exportFileName.value + '.pdf')
+  // if (extenstion.includes('pdf'))
+  //   await new jsPDF({
+  //     orientation: isLandscape.value ? 'l' : 'p',
+  //     unit: 'mm',
+  //     format: [297, 210]
+  //   })
+  //     .html(paperToDownload)
+  //     .save(exportFileName.value + '.pdf')
 
   if (extenstion.includes('doc'))
     downloadInBrowser(

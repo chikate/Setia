@@ -15,10 +15,9 @@ export default defineConfig({
     AutoImport({
       imports: ['vue', VueRouterAutoImports, 'vue-router'],
       vueTemplate: true,
-      dirs: ['./src/global/**'],
+      dirs: ['./src/globals/**'],
       eslintrc: {
-        enabled: true,
-        globalsPropValue: true
+        enabled: true
       }
     }),
     Components({ resolvers: [PrimeVueResolver()], dirs: ['./src/components/**'] })

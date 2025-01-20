@@ -29,8 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { capitalizeString } from '@/global/helpers'
-
 const loadedItems = ref([])
 
 onBeforeMount(init)
