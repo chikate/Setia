@@ -2,13 +2,23 @@
 /// <reference types="vite/client" />
 /// <reference types="vue" />
 /// <reference types="unplugin-vue-router/client" />
-/// <reference types="vue-router" />
 
-import { Router } from 'vue-router'
+import { Router, RouteLocationNormalized } from "vue-router";
 
-declare module '@vue/runtime-core' {
+declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $router: Router
-    $route: ReturnType<Router['currentRoute']>
+    $router: Router;
+    $route: RouteLocationNormalized;
+  }
+}
+
+// src/types.d.ts
+import "vue-router";
+
+declare module "vue-router" {
+  interface RouteMeta {
+    title?: string;
+    requiresAuth?: boolean;
+    role?: string;
   }
 }

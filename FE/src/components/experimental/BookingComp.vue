@@ -40,7 +40,7 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
     <div class="card flex-row">
       <div class="flex-column w-full">
         <div :class="fieldTextStyle">CHECK IN</div>
-        <Calendar
+        <DatePicker
           v-model="checkIn"
           :minDate="new Date()"
           :disabledDates="[]"
@@ -50,7 +50,7 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
       <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-100" />
       <div class="flex-column w-full">
         <div :class="fieldTextStyle">CHECK OUT</div>
-        <Calendar
+        <DatePicker
           v-model="checkOut"
           :minDate="new Date()"
           :disabledDates="[]"

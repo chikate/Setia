@@ -1,8 +1,8 @@
 <template>
   <div class="card p-1" style="min-width: 300px">
     <DataTable
-      :value="service.loadedItems"
-      :loading="!service.loadedItems"
+      :value="valueitems"
+      :loading="!valueitems"
       stripedRows
       rowHover
       scrollable
@@ -12,17 +12,21 @@
       v-model:expandedRows="expandedRows"
       :filterDisplay="showFilters ? 'row' : undefined"
       :globalFilterFields="[exposedData[0].field]"
-      :paginator="(service.loadedItems?.length ?? 0) > 5"
+      :paginator="(valueitems?.length ?? 0) > 5"
       :rows="5"
       :rowsPerPageOptions="[5, 10]"
-      :totalRecords="service.loadedItems?.length ?? 0"
+      :totalRecords="valueitems?.length ?? 0"
       reorderableColumns
       @row-dblclick="showDialog = !showDialog"
-      @row-click="((selectedItem = $event.data), (editOrAdd = true), $emit('rowClick', $event))"
+      @row-click="
+        (selectedItem = $event.data),
+          (editOrAdd = true),
+          $emit('rowClick', $event)
+      "
     >
       <template #header>
         <div class="flex-row gap-2 align-items-center px-2">
-          <h2 class="w-full m-0 p-0 font-bold">{{ formattedserviceName }}</h2>
+          <h2 class="w-full m-0 p-0 font-bold">{{ formattedServiceName }}</h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
@@ -33,19 +37,28 @@
             />
           </div>
           <InputText placeholder="Search..." />
-          <SplitButton v-if="!readonly" @click="handleSplitButtonClick" :model="splitButtonModel">
+          <SplitButton
+            v-if="!readonly"
+            @click="handleSplitButtonClick"
+            :model="splitButtonModel"
+          >
             <i :class="showMultipleDelete ? 'pi pi-trash' : 'pi pi-plus'" />
           </SplitButton>
         </div>
       </template>
       <template #empty>
         <div class="flex-grow-1 text-center">
-          Empty {{ service.serviceName.replaceAll(/([A-Z])/g, ' $1').toLowerCase() }}
+          Empty
+          {{
+            service.serviceName?.replaceAll(/([A-Z])/g, " $1")?.toLowerCase()
+          }}
         </div>
       </template>
       <template #expansion><slot name="expansion" /></template>
       <Column
-        v-if="showMultipleDelete && selectedColumns.length !== exposedData.length"
+        v-if="
+          showMultipleDelete && selectedColumns.length !== exposedData.length
+        "
         selectionMode="multiple"
         class="pr-0 pt-0"
         style="width: 1px"
@@ -78,7 +91,7 @@
             v-if="typeof data[field] === 'boolean'"
             :class="`pi ${data[field] ? 'pi-verified' : 'pi-circle'}`"
           />
-          <div v-else>{{ data[field].toString() }}</div>
+          <div v-else>{{ data[field]?.toString() }}</div>
         </template>
         <template #filter="{ filterModel, filterCallback }">
           <InputText
@@ -102,10 +115,14 @@
     >
       <template #header>
         <h3 class="flex-grow-1 font-bold m-0 p-0">
-          {{ !editOrAdd ? 'Add new ' : 'Edit ' + service.serviceName.toLocaleLowerCase() }}
+          {{ !editOrAdd ? "Add new " : "Edit " + formattedServiceName }}
         </h3>
         <div class="flex-row gap-3 font-bold">
-          <Button class="bg-primary-reverse" label="Back" @click="showDialog = false" />
+          <Button
+            class="bg-primary-reverse"
+            label="Back"
+            @click="showDialog = false"
+          />
           <SplitButton
             v-if="editOrAdd"
             label="Save"
@@ -114,8 +131,9 @@
               {
                 label: 'Delete',
                 icon: 'pi pi-trash',
-                command: () => service.delete().then(() => (showDialog = false))
-              }
+                command: () =>
+                  service.delete().then(() => (showDialog = false)),
+              },
             ]"
           />
           <Button
@@ -163,7 +181,11 @@
             v-model="editItem[key.field]"
             binary
           />
-          <InputText v-else v-model="editItem[key.field]" :placeholder="key.header" />
+          <InputText
+            v-else
+            v-model="editItem[key.field]"
+            :placeholder="key.header"
+          />
         </InputGroup>
       </div>
     </Dialog>
@@ -171,74 +193,89 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(['deleteClick', 'addClick', 'rowClick'])
-const props = defineProps(['service'])
-const readonly = defineModel('readonly', { type: Boolean, default: false })
-const selectedItem = ref()
-const editItem = ref()
-const expandedRows = ref()
-const showDialog = ref(false)
-const showMultipleDelete = ref(false)
-const showFilters = ref(false)
-const editOrAdd = ref(false)
-const selectedColumns = ref([])
+const emits = defineEmits(["deleteClick", "addClick", "rowClick"]);
+const props = defineProps(["service"]);
+const readonly = defineModel("readonly", { type: Boolean, default: false });
 
-const formattedserviceName = computed(
+const selectedItem = ref();
+const valueitems = ref();
+const editItem = ref();
+const expandedRows = ref();
+const showDialog = ref(false);
+const showMultipleDelete = ref(false);
+const showFilters = ref(false);
+const editOrAdd = ref(false);
+const selectedColumns = ref([]);
+
+onBeforeMount(async () => {
+  await props.service?.loadItems();
+  valueitems.value = JSON.parse(
+    localStorage.getItem("LoadedItemsFor" + props.service.name) ?? "null"
+  );
+
+  console.log(valueitems.value);
+});
+
+const formattedServiceName = computed(
   () =>
-    props.service.serviceName?.charAt(0)?.toUpperCase() +
-    props.service.serviceName
+    props.service.name?.charAt(0)?.toUpperCase() +
+    props.service.name
       ?.slice(1)
-      .replaceAll(/([A-Z])/g, ' $1')
+      .replaceAll(/([A-Z])/g, " $1")
       .toLowerCase()
-)
+);
 
 const exposedData = computed(() =>
   Object.keys(props.service.defaultValues)
-    .filter((param) => !['password', 'id', 'executiondate'].includes(param.toLowerCase()))
+    .filter(
+      (param) =>
+        !["password", "id", "executiondate"].includes(param.toLowerCase())
+    )
     .map((key) => ({
       field: key,
       header:
         key.charAt(0).toUpperCase() +
         key
           .slice(1)
-          .replace(/([A-Z])/g, ' $1')
+          .replace(/([A-Z])/g, " $1")
           .toLowerCase()
-          .replace(' data', ''),
-      type: typeof props.service.defaultValues[key]
+          .replace(" data", ""),
+      type: typeof props.service.defaultValues[key],
     }))
-)
+);
 
 function handleSplitButtonClick() {
-  if (readonly.value) return
+  if (readonly.value) return;
 
   if (showMultipleDelete.value) {
-    props.service.delete()
-    emits('deleteClick')
-    return
+    props.service.delete();
+    emits("deleteClick");
+    return;
   }
 
-  editItem.value = props.service.defaultValues
-  editOrAdd.value = false
-  showDialog.value = !showDialog.value
-  emits('addClick')
+  editItem.value = props.service.defaultValues;
+  editOrAdd.value = false;
+  showDialog.value = !showDialog.value;
+  emits("addClick");
 }
 
 const splitButtonModel = computed(() => [
   {
-    label: showMultipleDelete.value ? 'Cancel multiple select' : 'Multiple select',
-    icon: 'pi pi-th-large',
-    command: () => (showMultipleDelete.value = !showMultipleDelete.value)
+    label: showMultipleDelete.value
+      ? "Cancel multiple select"
+      : "Multiple select",
+    icon: "pi pi-th-large",
+    command: () => (showMultipleDelete.value = !showMultipleDelete.value),
   },
-  { label: 'Collapse all', icon: 'pi pi-angle-right', command: () => (expandedRows.value = null) },
   {
-    label: showMultipleDelete.value ? 'Hide' : 'Show filters',
-    icon: showMultipleDelete.value ? 'pi pi-filter' : 'pi pi-filter-slash',
-    command: () => (showFilters.value = !showFilters.value)
-  }
-])
-
-onBeforeMount(async () => {
-  await props.service?.loadItems()
-  console.log(props.service?.loadedItems)
-})
+    label: "Collapse all",
+    icon: "pi pi-angle-right",
+    command: () => (expandedRows.value = null),
+  },
+  {
+    label: showMultipleDelete.value ? "Hide" : "Show filters",
+    icon: showMultipleDelete.value ? "pi pi-filter" : "pi pi-filter-slash",
+    command: () => (showFilters.value = !showFilters.value),
+  },
+]);
 </script>

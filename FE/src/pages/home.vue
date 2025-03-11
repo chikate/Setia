@@ -1,6 +1,6 @@
 <template>
   <div class="flex-row h-full">
-    <div class="flex-column align-items-center gap-4 p-4 overflow-auto mm-w-100rem">
+    <div class="flex-column align-items-center gap-4 mm-w-100rem">
       <div
         v-for="(room, room_index) in rooms"
         :key="room_index"

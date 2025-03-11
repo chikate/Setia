@@ -266,7 +266,6 @@ onMounted(() => {
 /* Scrollable area for the timeline */
 .timeline-scroll {
   overflow-x: auto;
-  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   background-color: lightgray;

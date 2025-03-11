@@ -9,130 +9,147 @@ import type {
   Post,
   QuestionAnswer,
   Question,
-  Taging
-} from '@/globals/interfaces'
+  Taging,
+} from "@/globals/interfaces";
 
 // Services
 export const helperService = new (class HelperService {
   getUserProfile = async (username: string) =>
-    await apiRequest(`Helper/GetUserProfile`, { username })
+    await apiRequest(`Helper/GetUserProfile`, { username });
 
   getCurentUserAvatar = async (avatarUrl: string) =>
-    await apiRequest(`Helper/GetCurentUserAvatar`, { avatarUrl })
+    await apiRequest(`Helper/GetCurentUserAvatar`, { avatarUrl });
 
   sendFriendRequest = async (username: string) =>
-    await apiRequest(`Helper/SendFriendRequest`, { username })
+    await apiRequest(`Helper/SendFriendRequest`, { username });
 
   getQuestionAnswereDistribution = async (questionId: string) =>
-    await apiRequest(`QuestionAnswers/GetQuestionAnswereDistribution`, { questionId })
-})()
-export const fileManager = new (class FileManager {
+    await apiRequest(`QuestionAnswers/GetQuestionAnswereDistribution`, {
+      questionId,
+    });
+})();
+export const fileManager = new (class Drive {
   upload = async (formFile: FormData, compressIt: boolean) =>
-    await apiRequest(`FileManager/Upload`, { formFile, compressIt }, 'post')
+    await apiRequest(`Drive/Upload`, { formFile, compressIt }, "post");
 
-  download = async (filePath: string) => await apiRequest(`FileManager/Download`, { filePath })
+  download = async (filePath: string) =>
+    await apiRequest(`Drive/Download`, { filePath });
 
   SearchAndGetFile = async (input: string) =>
-    await apiRequest(`FileManager/SearchAndGetFile`, { input })
+    await apiRequest(`Drive/SearchAndGetFile`, { input });
 
   getFolderContent = async (filePath?: string) =>
-    await apiRequest(`FileManager/GetFolderContent`, { filePath })
+    await apiRequest(`Drive/GetFolderContent`, { filePath });
 
-  getAllPartitions = async () => await apiRequest(`FileManager/GetAllPartitions`)
+  getAllPartitions = async () => await apiRequest(`Drive/GetAllPartitions`);
 
   GetFileRegistryNumber = async (filePath: string) =>
-    await apiRequest(`FileManager/GetFileRegistryNumber`, { filePath })
+    await apiRequest(`Drive/GetFileRegistryNumber`, { filePath });
 
   GetFileFromRegistryNumber = async (regestryNumber: string) =>
-    await apiRequest(`FileManager/GetFileFromRegistryNumber`, { regestryNumber })
-})()
+    await apiRequest(`Drive/GetFileFromRegistryNumber`, {
+      regestryNumber,
+    });
+})();
 export const authService = new (class AuthService {
-  user = JSON.parse(localStorage.getItem('user') ?? 'null')
+  user = JSON.parse(localStorage.getItem("user") ?? "null");
   login = async (loginCredentials: IAuthenticationDTO) =>
-    await apiRequest(`Auth/Login`, loginCredentials).then((response) => {
-      localStorage.setItem('token', response)
+    await apiRequest(`Auth/Login`, loginCredentials).then((response: any) => {
+      setCookie("token", response);
       // localStorage.setItem('user', JSON.stringify(response.user))
-      return true
-    })
+      return true;
+    });
 
   register = (email: string, username: string, password: string) =>
-    apiRequest(`Auth/Register`, { email, username, password }, 'post')
+    apiRequest(`Auth/Register`, { email, username, password }, "post");
 
-  recoverAccount = (email: string) => apiRequest(`Auth/RecoverAccount`, { email }, 'post')
+  recoverAccount = (email: string) =>
+    apiRequest(`Auth/RecoverAccount`, { email }, "post");
 
   checkUserRight = (right: string) =>
-    (JSON.parse(String(localStorage.getItem('user') ?? 'null')) as User)?.tags.find((tag: string) =>
-      tag.includes(right)
-    )
+    (
+      JSON.parse(String(localStorage.getItem("user") ?? "null")) as User
+    )?.tags.find((tag: string) => tag.includes(right));
 
-  logOut = async () => localStorage.clear()
-})()
+  logOut = async () => {
+    localStorage.clear();
+    clearCookie();
+  };
+})();
 
 // CRUDs
 class CRUDService {
-  name: string = ''
-  defaultValues: object = {}
-  loadedItems: Array<any> = JSON.parse(localStorage.getItem('LoadedItemsFor' + this.name) ?? 'null')
+  name: string = "";
+  defaultValues: object = {};
+  loadedItems: Array<any> = JSON.parse(
+    localStorage.getItem("LoadedItemsFor" + this.name) ?? "null"
+  );
 
   constructor(name: string, defaultValues: any) {
-    this.name = name
-    this.defaultValues = defaultValues
+    this.name = name;
+    this.defaultValues = defaultValues;
   }
 
   async loadItems(getFilter?: any) {
     localStorage.setItem(
-      'LoadedItemsFor' + this.name,
+      "LoadedItemsFor" + this.name,
       JSON.stringify(await apiRequest(`${this.name}/Get`, getFilter))
-    )
-    return this.loadedItems
+    );
+    return this.loadedItems;
   }
 
   addItems = async (items?: (typeof this.defaultValues)[]) =>
-    await apiRequest(`${this.name}/Add`, items, 'post').then((response) => {
-      if (response) this.loadItems()
-      return response
-    })
+    await apiRequest(`${this.name}/Add`, items, "post").then((response) => {
+      if (response) this.loadItems();
+      return response;
+    });
 
   updateItems = async (items?: (typeof this.defaultValues)[]) =>
-    await apiRequest(`${this.name}/Update`, items, 'put').then((response) => {
-      if (response) this.loadItems()
-      return response
-    })
+    await apiRequest(`${this.name}/Update`, items, "put").then((response) => {
+      if (response) this.loadItems();
+      return response;
+    });
 
   deleteItems = async (ids?: string[]) =>
-    await apiRequest(`${this.name}/Delete`, ids, 'delete').then((response) => {
-      if (response) this.loadItems()
-      return response
-    })
+    await apiRequest(`${this.name}/Delete`, ids, "delete").then((response) => {
+      if (response) this.loadItems();
+      return response;
+    });
 }
-export const notificationsCRUDService = new CRUDService('Notifications', {} as INotification)
-export const userCollectionCRUDService = new CRUDService('UserCollection', {} as UserCollection)
-export const pontajCRUDService = new CRUDService('Pontaj', {
+export const notificationsCRUDService = new CRUDService(
+  "Notifications",
+  {} as INotification
+);
+export const userCollectionCRUDService = new CRUDService(
+  "UserCollection",
+  {} as UserCollection
+);
+export const pontajCRUDService = new CRUDService("Pontaj", {
   beginTime: new Date().toISOString(),
-  endTime: '',
-  description: ''
-} as Pontaj)
-export const postsCRUDService = new CRUDService('Posts', {
-  message: ''
-} as Post)
-export const questionAnswersCRUDService = new CRUDService('QuestionAnswers', {
-  author: '',
-  questionData: { title: '' },
-  answer: []
-} as unknown as QuestionAnswer)
-export const questionsCRUDService = new CRUDService('Questions', {
-  title: 'Title',
+  endTime: "",
+  description: "",
+} as Pontaj);
+export const postsCRUDService = new CRUDService("Posts", {
+  message: "",
+} as Post);
+export const questionAnswersCRUDService = new CRUDService("QuestionAnswers", {
+  author: "",
+  questionData: { title: "" },
+  answer: [],
+} as unknown as QuestionAnswer);
+export const questionsCRUDService = new CRUDService("Questions", {
+  title: "Title",
   options: [],
   selection: [],
-  author: undefined
-} as unknown as Question)
-export const tagsCRUDService = new CRUDService('Tags', {
-  tag: '',
-  comments: ''
-} as Taging)
-export const usersCRUDService = new CRUDService('Users', {
-  username: '',
-  email: '',
-  name: '',
-  tags: []
-} as unknown as User)
+  author: undefined,
+} as unknown as Question);
+export const tagsCRUDService = new CRUDService("Tags", {
+  tag: "",
+  comments: "",
+} as Taging);
+export const usersCRUDService = new CRUDService("Users", {
+  username: "",
+  email: "",
+  name: "",
+  tags: [],
+} as unknown as User);

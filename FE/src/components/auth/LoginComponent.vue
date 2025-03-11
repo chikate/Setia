@@ -1,57 +1,68 @@
 <script setup lang="ts">
-import type { IAuthenticationDTO } from '@/globals/interfaces'
+import type { IAuthenticationDTO } from "@/globals/interfaces";
 
-const loginState = ref(localStorage.getItem('token') ? 3 : 0)
+const loginState = ref(getCookie("token") ? 3 : 0);
 
-const inputUsername = defineModel('inputUsername', {
+const inputUsername = defineModel("inputUsername", {
   type: String,
   required: false,
-  default: ''
-})
-const inputPassword = defineModel('inputPassword', {
+  default: "",
+});
+const inputPassword = defineModel("inputPassword", {
   type: String,
   required: false,
-  default: ''
-})
+  default: "",
+});
 
 async function submitLogin() {
-  loginState.value = 1
+  loginState.value = 1;
   await authService
     .login({
       username: inputUsername.value,
-      password: inputPassword.value
+      password: inputPassword.value,
     } as IAuthenticationDTO)
     .then((successful: Boolean) => {
       if (successful) {
-        inputUsername.value = ''
-        loginState.value = 3
-      } else loginState.value = 0
-      inputPassword.value = ''
+        inputUsername.value = "";
+        loginState.value = 3;
+      } else loginState.value = 0;
+      inputPassword.value = "";
     })
     .catch((error) => {
-      console.error(error)
-      loginState.value = 0
-    })
+      console.error(error);
+      loginState.value = 0;
+    });
 }
 
 const logout = async () =>
   await authService
     .logOut()
     .then(() => (loginState.value = 0))
-    .catch(console.error)
+    .catch(console.error);
 </script>
 
 <template>
-  <div v-if="loginState < 3" class="flex flex-column gap-3 border-round w-3 align-self-start">
+  <div
+    v-if="loginState < 3"
+    class="flex flex-column gap-3 border-round w-3 align-self-start"
+  >
     <h2>Login</h2>
 
     <InputGroup>
-      <InputGroupAddon v-if="inputUsername" :class="INPUT_CLASS"> Username </InputGroupAddon>
-      <InputText placeholder="Username" v-model="inputUsername" @keydown.enter="submitLogin" />
+      <InputGroupAddon v-if="inputUsername" :class="INPUT_CLASS">
+        Username
+      </InputGroupAddon>
+      <InputText
+        placeholder="Username"
+        v-model="inputUsername"
+        @keydown.enter="submitLogin"
+      />
     </InputGroup>
 
     <InputGroup>
-      <InputGroupAddon v-if="inputPassword" :class="INPUT_CLASS"> Password </InputGroupAddon>
+      <InputGroupAddon v-if="inputPassword" :class="INPUT_CLASS">
+        Password
+      </InputGroupAddon>
       <Password
         placeholder="Password"
         v-model="inputPassword"
@@ -64,7 +75,9 @@ const logout = async () =>
       class="flex-wrap justify-content-center text-xs font-semibold text-white-alpha-600 text-center"
     >
       By continuing you accept the
-      <RouterLink to="/terms-of-service" class="font-medium">Terms of Service</RouterLink>,
+      <RouterLink to="/terms-of-service" class="font-medium"
+        >Terms of Service</RouterLink
+      >,
       <div>
         <RouterLink to="/privacy-policy" class="font-medium">
           Privacy Policy and Cookie Policy </RouterLink
@@ -87,7 +100,11 @@ const logout = async () =>
   <div v-else class="flex-column justify-content-between">
     Profile
 
-    <Button label="Log Out" class="button-gradient-effect text-xl font-bold" @click="logout" />
+    <Button
+      label="Log Out"
+      class="button-gradient-effect text-xl font-bold"
+      @click="logout"
+    />
   </div>
 </template>
 

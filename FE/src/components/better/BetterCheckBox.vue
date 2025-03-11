@@ -13,7 +13,7 @@ const label = defineModel('label', {
 
 <template>
   <div class="card cursor-pointer flex-row gap-2 p-2 border-round" @click="model = !model">
-    <div class="flex-grow-1 overflow-x-auto">{{ label }}</div>
+    <div class="flex-grow-1">{{ label }}</div>
     <Checkbox class="pointer-events-none border-round" binary v-model="model" />
   </div>
 </template>

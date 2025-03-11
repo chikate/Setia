@@ -25,3 +25,5 @@ npm ls rimraf
 This command shows the dependency chain leading to the deprecated rimraf
 
 #
+
+npm install --legacy-peer-deps

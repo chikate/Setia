@@ -3,26 +3,27 @@
 Right click on **Main** project > select **"Manage User Secrets"** and paste this code in there but dont forget to configure it corespondently
 
 ```json
+// dotnet user-secrets set "Email-Service-Account:Username" "email-username"
 {
   "AdminAccount": {
-    "Username": "Dragos",
-    "Password": "Password"
+    "Username": "yourusername",
+    "Password": "yourpassword"
   },
-  "CryptKey": "", // 32 alphanumeric string
-  "DBConnectionStrings": "Host=localhost:5432;DataBase=Setia;User ID=postgres;Password=Dragos123;", // Data base connection string
+  "CryptKey": "uwXk6g6Kxr166TGji80ICeI0udlzm7hT", // 32 alphanumeric string
+  "DBConnectionStrings": "Server=localhost:5432;DataBase=Setia;User ID=postgres;Password=dragos;",
   "DBTech": "PgSQL",
-  "SmtpSettings": {
-    "Server": "smtp.example.com",
-    "Port": 587,
-    "SenderName": "Your Name",
-    "SenderEmail": "your.email@example.com",
-    "Username": "your.email@example.com",
+  "HOST_Client": "http://localhost:3000",
+  "HOST_Server": "https://localhost:5000",
+  "SMTPSettings": {
+    "EnableSsl": true,
     "Password": "yourpassword",
-    "EnableSsl": true
+    "Port": 587,
+    "SenderEmail": "your.email@example.com",
+    "SenderName": "Your Name",
+    "Server": "smtp.example.com",
+    "Username": "your.email@example.com"
   },
-  "Origin": "http://localhost:3000",
-  "Server": "https://localhost:5000",
-  "StoragePath": "D:\\Dragos\\Downloads\\Drive"
+  "StoragePath": "D:\\Dragos\\Downloads\\drive"
 }
 ```
 

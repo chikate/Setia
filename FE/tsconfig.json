@@ -1,23 +1,14 @@
 {
-  // "extends": ["@vue/tsconfig/tsconfig.dom.json", "@tsconfig/node20/tsconfig.json"],
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    /* Linting */
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,12 +1,35 @@
 <template>
-  <div class="flex-row gap-2 align-items-center">
+  <div class="flex-row align-items-center justify-content-around">
     <Accordion
       style="width: 300px"
       multiple
-      :activeIndex="[0, 1, 2, 3, 4]"
+      :activeIndex="[0, 1]"
       collapseIcon="pi pi-minus text-gray-200"
-      class="custom-shadow-1 border-1 border-round border-gray-200"
+      class="custom-shadow-1 border-1 border-round border-gray-200 overflow-auto"
     >
+      <AccordionTab header="Editor">
+        <div class="flex-row justify-content-between gap-2">
+          <div class="flex-column gap-2 align-items-center">
+            <Button icon="pi pi-bars" @click="console.log(textEditor)" />
+            <label>Left</label>
+          </div>
+          <div class="flex-column gap-2 align-items-center">
+            <Button icon="pi pi-bars" @click="console.log(textEditor)" />
+            <label>Justify</label>
+          </div>
+          <div class="flex-column gap-2 align-items-center">
+            <Button icon="pi pi-bars" @click="console.log(textEditor)" />
+            <label>Center</label>
+          </div>
+          <div class="flex-column gap-2 align-items-center">
+            <Button icon="pi pi-bars" @click="console.log(textEditor)" />
+            <label>Right</label>
+          </div>
+        </div>
+      </AccordionTab>
+      <AccordionTab header="Parameters">
+        <ParametersComponent :parameters @paramDblClick="handleParamDblClick" />
+      </AccordionTab>
       <AccordionTab header="Exports">
         <div class="flex-wrap gap-2">
           <Button
@@ -46,18 +69,16 @@
           />
         </div>
       </AccordionTab>
-      <!-- <AccordionTab header="Tools">
-        <div class="flex-wrap gap-2">
-          <Button icon="pi pi-at" :draggable="true" />
-        </div>
-      </AccordionTab> -->
       <AccordionTab header="Properties">
         <div class="flex-column gap-2">
           <div class="flex-row gap-2">
             <Checkbox v-model="autoPagination" binary />
             <label>Pagination</label>
           </div>
-          <InputText v-model="padding" placeholder="Padding - left, top, bottom, right / x, y" />
+          <InputText
+            v-model="padding"
+            placeholder="Padding - left, top, bottom, right / x, y"
+          />
         </div>
       </AccordionTab>
       <AccordionTab header="Dimensions">
@@ -70,43 +91,57 @@
           />
         </div>
       </AccordionTab>
-      <AccordionTab header="Parameters">
-        <ParametersComponent :parameters @paramDblClick="handleParamDblClick" />
-      </AccordionTab>
     </Accordion>
-
-    <BetterEditor />
+    <div class="flex-column gap-2 align-items-center">
+      <label>Editor</label>
+      <BetterEditor :pages contenteditable ref="textEditor" />
+    </div>
+    <div class="flex-column gap-2 align-items-center">
+      <label>View</label>
+      <BetterEditor :pages ref="renderer" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import * as htmlToImage from 'html-to-image'
-import type { IParameter } from '@/components/experimental/ParametersComponent.vue'
+import * as htmlToImage from "html-to-image";
+import type { IParameter } from "@/components/experimental/ParametersComponent.vue";
 
-const parameters = ref<IParameter[]>([{ name: 'test', type: 'value' }])
-const paperAspectRatio = ref<number>(1.414)
-const pages = ref<string[]>(['<p style="height:100px">asd</p><p>dsa</p>', '<p>asd</p><p>asd</p>'])
-const pageNumber = ref<number>(1)
-const isLandscape = ref(false)
-const autoPagination = ref(false)
-const padding = ref('')
-const loadingExport = ref(false)
-const exportFileName = ref<string>('export')
+const parameters = ref<IParameter[]>([{ name: "test", type: "value" }]);
+const paperAspectRatio = ref<number>(1.414);
+const pages = ref<HTMLElement[]>([
+  {
+    innerHTML: "<p>asd</p><p>dsa</p>",
+  } as HTMLElement,
+  {
+    innerHTML: "<p>asd1</p><p>asd1</p>",
+  } as HTMLElement,
+]);
+const pageNumber = ref<number>(1);
+const isLandscape = ref(false);
+const autoPagination = ref(false);
+const padding = ref("");
+const textEditor = ref();
+const loadingExport = ref(false);
+const exportFileName = ref<string>("export");
 
 function handleParamDblClick(event: any) {
-  pages.value[pageNumber.value - 1] +=
-    `<p><span style="color: rgb(0, 102, 204)">@${event.target.innerHTML}</span></p>`
+  pages.value[
+    pageNumber.value - 1
+  ] += `<p><span style="color: rgb(0, 102, 204)">@${event.target.innerHTML}</span></p>`;
 }
 
 async function exporter(extenstion: string) {
-  loadingExport.value = true
-  const paperToDownload = document.getElementById('paper') as HTMLElement
-  paperToDownload.style.borderRadius = '0'
+  loadingExport.value = true;
+  const paperToDownload = document.getElementById("paper") as HTMLElement;
+  paperToDownload.style.borderRadius = "0";
 
-  if (extenstion.includes('png'))
+  if (extenstion.includes("png"))
     await htmlToImage
       .toPng(paperToDownload)
-      .then((url: string) => downloadInBrowser(url, exportFileName.value + '.png'))
+      .then((url: string) =>
+        downloadInBrowser(url, exportFileName.value + ".png")
+      );
 
   // if (extenstion.includes('pdf'))
   //   await new jsPDF({
@@ -117,12 +152,12 @@ async function exporter(extenstion: string) {
   //     .html(paperToDownload)
   //     .save(exportFileName.value + '.pdf')
 
-  if (extenstion.includes('doc'))
+  if (extenstion.includes("doc"))
     downloadInBrowser(
       URL.createObjectURL(
         new Blob(
           [
-            '\ufeffdata:application/vnd.ms-word;charset=utf-8,' +
+            "\ufeffdata:application/vnd.ms-word;charset=utf-8," +
               encodeURIComponent(
                 `<html
                   xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -132,17 +167,17 @@ async function exporter(extenstion: string) {
                   <head><meta charset="utf-8" /></head>
                   <body>${paperToDownload.innerHTML}</body>
                 </html>`
-              )
+              ),
           ],
-          { type: 'application/msword' }
+          { type: "application/msword" }
         )
       ),
-      exportFileName.value + '.doc'
-    )
+      exportFileName.value + ".doc"
+    );
 
   setTimeout(() => {
-    loadingExport.value = false
-  }, 300)
+    loadingExport.value = false;
+  }, 300);
 }
 </script>
 

@@ -1,12 +1,12 @@
-using Main.Data.Contexts;
+using Main.Features.CRUDs;
 using Main.Modules.Adm;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
 using Main.Modules.Chat;
 using Main.Modules.Drive;
+using Main.Modules.Gov;
+using Main.Modules.Gov.Models;
 using Main.Modules.Sessions;
-using Main.Standards.Data.Models;
-using Main.Standards.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -35,7 +35,7 @@ Action<DbContextOptionsBuilder> dbOptions = options =>
     }
 };
 
-// Modules
+// Features
 builder.Services.AddDbContext<AdmContext>(dbOptions);
 builder.Services.AddScoped<IAdmService, AdmService>();
 
@@ -57,7 +57,7 @@ builder.Services.AddSingleton<SSEClientManager>();
 builder.Services.AddDbContext<GovContext>(dbOptions);
 builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, AuthContext>>();
 builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, AdmContext>>();
-builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
+builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();  
 
 // Standards
 builder.Services.AddHttpContextAccessor();
@@ -68,8 +68,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     ValidateAudience = true,
     ValidateLifetime = true,
     ValidateIssuerSigningKey = true,
-    ValidIssuer = config["Server"],
-    ValidAudience = config["Origin"],
+    ValidIssuer = config["HOST_Server"],
+    ValidAudience = config["HOST_Client"],
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
 });
 builder.Services.AddSwaggerGen(options =>
@@ -101,15 +101,12 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthentication();
 app.UseAuthorization();
 
 #pragma warning disable ASP0014 // Suggest using top level route registrations
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers().RequireAuthorization();
-});
+app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); });
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 if (app.Environment.IsDevelopment())
@@ -120,7 +117,7 @@ if (app.Environment.IsDevelopment())
         options.DefaultModelsExpandDepth(-1);
         options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
     });
-    app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["Origin"]!));
+    app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["HOST_Client"]!));
 }
 else
 {

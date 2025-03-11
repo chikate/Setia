@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Standards\Data\Migrations\" />
+	  <Folder Include="Modules\Home\" />
 	</ItemGroup>
 
 	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -6,13 +6,10 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const AuthService: (typeof import('./src/global/services'))['AuthService']
   const DEFAULT_ROWS_INDEX: typeof import('./src/globals/config')['DEFAULT_ROWS_INDEX']
   const DEFAULT_ROWS_OPTIONS: typeof import('./src/globals/config')['DEFAULT_ROWS_OPTIONS']
   const EffectScope: typeof import('vue')['EffectScope']
   const FILE_ICONS: typeof import('./src/globals/config')['FILE_ICONS']
-  const FileManager: (typeof import('./src/global/services'))['FileManager']
-  const HelperService: (typeof import('./src/global/services'))['HelperService']
   const INPUT_CLASS: typeof import('./src/globals/config')['INPUT_CLASS']
   const MENU_ICONS: typeof import('./src/globals/config')['MENU_ICONS']
   const TOAST_LIFETIME: typeof import('./src/globals/config')['TOAST_LIFETIME']
@@ -21,20 +18,24 @@ declare global {
   const canUserAccessRoute: typeof import('./src/globals/helpers')['canUserAccessRoute']
   const capitalizeString: typeof import('./src/globals/helpers')['capitalizeString']
   const capitalizeWords: typeof import('./src/globals/helpers')['capitalizeWords']
+  const clearCookie: typeof import('./src/globals/helpers')['clearCookie']
   const computed: typeof import('vue')['computed']
-  const connection: typeof import('./src/globals/signals.ts')['connection']
   const createApp: typeof import('vue')['createApp']
   const customRef: typeof import('vue')['customRef']
+  const darkMode: typeof import('./src/globals/darkMode')['darkMode']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
   const downloadInBrowser: typeof import('./src/globals/helpers')['downloadInBrowser']
   const effectScope: typeof import('vue')['effectScope']
   const fileManager: typeof import('./src/globals/services')['fileManager']
+  const generateGuid: typeof import('./src/globals/helpers')['generateGuid']
+  const getCookie: typeof import('./src/globals/helpers')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const h: typeof import('vue')['h']
   const helperService: typeof import('./src/globals/services')['helperService']
   const inject: typeof import('vue')['inject']
+  const isDarkMode: typeof import('./src/globals/darkMode')['isDarkMode']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
@@ -43,7 +44,6 @@ declare global {
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
   const notificationsCRUDService: typeof import('./src/globals/services')['notificationsCRUDService']
-  const notificationsConnection: typeof import('./src/globals/signals.ts')['notificationsConnection']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -69,21 +69,24 @@ declare global {
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
   const resolveComponent: typeof import('vue')['resolveComponent']
+  const setCookie: typeof import('./src/globals/helpers')['setCookie']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const signalRConnection: typeof import('./src/globals/services')['signalRConnection']
   const stringToColor: typeof import('./src/globals/helpers')['stringToColor']
   const tagsCRUDService: typeof import('./src/globals/services')['tagsCRUDService']
+  const theme: typeof import('./src/globals/darkMode')['theme']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
+  const toggleDarkMode: typeof import('./src/globals/darkMode')['toggleDarkMode']
   const triggerRef: typeof import('vue')['triggerRef']
   const unref: typeof import('vue')['unref']
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
+  const useDarkMode: typeof import('./src/globals/darkMode')['useDarkMode']
   const useId: typeof import('vue')['useId']
   const useLink: typeof import('vue-router')['useLink']
   const useModel: typeof import('vue')['useModel']
@@ -125,14 +128,18 @@ declare module 'vue' {
     readonly canUserAccessRoute: UnwrapRef<typeof import('./src/globals/helpers')['canUserAccessRoute']>
     readonly capitalizeString: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeString']>
     readonly capitalizeWords: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeWords']>
+    readonly clearCookie: UnwrapRef<typeof import('./src/globals/helpers')['clearCookie']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
+    readonly darkMode: UnwrapRef<typeof import('./src/globals/darkMode')['darkMode']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly downloadInBrowser: UnwrapRef<typeof import('./src/globals/helpers')['downloadInBrowser']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly fileManager: UnwrapRef<typeof import('./src/globals/services')['fileManager']>
+    readonly generateGuid: UnwrapRef<typeof import('./src/globals/helpers')['generateGuid']>
+    readonly getCookie: UnwrapRef<typeof import('./src/globals/helpers')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
@@ -171,6 +178,7 @@ declare module 'vue' {
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly setCookie: UnwrapRef<typeof import('./src/globals/helpers')['setCookie']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
