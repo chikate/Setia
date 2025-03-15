@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import type { Question, QuestionAnswer } from '@/global/interfaces'
+import type { Question, QuestionAnswer } from "src/global/interfaces";
 
-const answerMode = defineModel('answerMode', { type: Boolean, default: false })
-const customAnswere = defineModel('customAnswere', {
+const answerMode = defineModel("answerMode", { type: Boolean, default: false });
+const customAnswere = defineModel("customAnswere", {
   type: String,
-  default: ''
-})
-const thisQuestionData = defineModel('questionData', {
+  default: "",
+});
+const thisQuestionData = defineModel("questionData", {
   type: Object as PropType<Question>,
   required: true,
-  default: {} as Question
-})
+  default: {} as Question,
+});
 
-const checksList = ref([])
-const answered = ref<boolean>()
+const checksList = ref([]);
+const answered = ref<boolean>();
 
-onBeforeMount(async () => await refresh())
+onBeforeMount(async () => await refresh());
 
 async function refresh() {
-  await useQuestionAnswersCRUDStore().get()
+  await useQuestionAnswersCRUDStore().get();
   answered.value = useQuestionAnswersCRUDStore().allLoadedItems?.find(
     (elem: QuestionAnswer) =>
       elem.author == authService().userData?.username &&
       elem.questionId == thisQuestionData.value.id
-  )
+  );
 }
 </script>
 
@@ -56,21 +56,32 @@ async function refresh() {
         v-if="!answered"
         v-model="checksList[i]"
         @update:modelValue="
-          ((thisQuestionData.selection = []),
-          checksList.forEach((elem: Boolean, i) =>
-            elem ? thisQuestionData.selection.push(thisQuestionData.options[i]) : ''
-          ))
+          (thisQuestionData.selection = []),
+            checksList.forEach((elem: Boolean, i) =>
+              elem
+                ? thisQuestionData.selection.push(thisQuestionData.options[i])
+                : ''
+            )
         "
         binary
       />
       <div class="text-md" v-if="answerMode">
         {{ thisQuestionData.options[i] }}
       </div>
-      <InputText v-else :readonly="answerMode" v-model="thisQuestionData.options[i]" />
+      <InputText
+        v-else
+        :readonly="answerMode"
+        v-model="thisQuestionData.options[i]"
+      />
       <i
         v-if="!answerMode"
         class="pi pi-minus hover:text-red-700"
-        @click="thisQuestionData.options.splice(thisQuestionData.options.indexOf(option), 1)"
+        @click="
+          thisQuestionData.options.splice(
+            thisQuestionData.options.indexOf(option),
+            1
+          )
+        "
       />
     </div>
 
@@ -83,7 +94,9 @@ async function refresh() {
         icon="pi pi-plus"
         label="Add option"
         class="flex-grow-1 shadow-1"
-        @click="thisQuestionData.options.push('') ?? (thisQuestionData.options = [''])"
+        @click="
+          thisQuestionData.options.push('') ?? (thisQuestionData.options = [''])
+        "
       />
       <Button
         v-if="answerMode && !customAnswere"
@@ -92,7 +105,9 @@ async function refresh() {
         class="flex-grow-1 shadow-1"
         @click="customAnswere = 'My answere'"
       />
-      <div v-else-if="customAnswere">Remove everything to return to options</div>
+      <div v-else-if="customAnswere">
+        Remove everything to return to options
+      </div>
       <Button
         v-if="answerMode"
         class="shadow-1"
@@ -107,8 +122,8 @@ async function refresh() {
                   ? [customAnswere]
                   : checksList
                       .map((value, index) => (value ? index.toString() : null))
-                      .filter((index) => index != null)
-              }
+                      .filter((index) => index != null),
+              },
             ])
             .then(async () => await refresh())
         "
@@ -125,8 +140,8 @@ async function refresh() {
         :model="[
           {
             label: 'Submit with custom option',
-            command: () => useQuestionsCRUDStore().add()
-          }
+            command: () => useQuestionsCRUDStore().add(),
+          },
         ]"
       />
     </div>

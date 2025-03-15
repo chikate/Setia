@@ -1,9 +1,6 @@
 <template>
   <div class="flex-row gap-2 border-round overflow-auto">
-    <div
-      class="bg-primary w-full border-round overflow-auto"
-      style="line-height: 0"
-    >
+    <div class="bg-primary w-full border-round overflow-auto">
       <video
         controls
         class="w-full"
