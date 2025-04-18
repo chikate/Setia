@@ -1,4 +1,4 @@
-﻿using Main.Modules.Gov.Models;
+﻿using Main.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Main.Modules.Audit;

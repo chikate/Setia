@@ -1,7 +1,7 @@
 ﻿using Main.Modules.Auth;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Main.Modules.Gov.Models;
+namespace Main.Data.Models;
 
 public class BaseModel
 {

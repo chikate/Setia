@@ -4,12 +4,9 @@ using Main.Modules.Audit;
 using Main.Modules.Auth;
 using Main.Modules.Chat;
 using Main.Modules.Drive;
-using Main.Modules.Gov;
-using Main.Modules.Gov.Models;
 using Main.Modules.Sessions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -25,6 +22,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationO
 
 builder.Configuration.AddConfiguration(config);
 
+// DB
 Action<DbContextOptionsBuilder> dbOptions = options =>
 {
     switch (config["DBTech"])
@@ -54,10 +52,10 @@ builder.Services.AddTransient<IChatService, ChatService>();
 builder.Services.AddDbContext<SessionsContext>(dbOptions);
 builder.Services.AddSingleton<SSEClientManager>();
 
-builder.Services.AddDbContext<GovContext>(dbOptions);
+//builder.Services.AddDbContext<GovContext>(dbOptions);
 builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, AuthContext>>();
 builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, AdmContext>>();
-builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();  
+//builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
 
 // Standards
 builder.Services.AddHttpContextAccessor();
@@ -89,6 +87,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+#if RELEASE
+builder.Services.AddSpaStaticFiles(cfg => cfg.RootPath = "dist");
+#endif
+
 WebApplication app = builder.Build();
 
 // Dynamicaly run all migrations
@@ -98,30 +100,29 @@ using (var scope = app.Services.CreateScope())
         .ForEach(dbContextType => ((DbContext)scope.ServiceProvider.GetRequiredService(dbContextType)).Database.Migrate());
 }
 
+// Standards
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); }); // Suppresed ASP0014 Warning
 
-#pragma warning disable ASP0014 // Suggest using top level route registrations
-app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); });
-#pragma warning restore ASP0014 // Suggest using top level route registrations
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.DefaultModelsExpandDepth(-1);
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+});
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.DefaultModelsExpandDepth(-1);
-        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-    });
-    app.UseSpa(options => options.UseProxyToSpaDevelopmentServer(config["HOST_Client"]!));
-}
-else
-{
-    app.UseSpaStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "dist")) });
-}
+#if RELEASE
+app.UseSpaStaticFiles();
+app.UseSpa(spa => spa.Options.SourcePath = "dist");
+#endif
+
+#if DEBUG
+app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer(config["HOST_Client"]!));
+#endif
 
 await app.RunAsync();

@@ -1,5 +1,5 @@
 <template>
-  <div class="card p-1" style="min-width: 300px">
+  <div class="card" style="min-width: 300px">
     <DataTable
       :value="valueitems"
       :loading="!valueitems"
@@ -26,7 +26,7 @@
     >
       <template #header>
         <div class="flex-row gap-2 align-items-center px-2">
-          <h2 class="w-full m-0 p-0 font-bold">{{ formattedServiceName }}</h2>
+          <h2 class="m-0 p-0 font-bold">{{ formattedServiceName }}</h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Main.Modules.Gov.Models
+namespace Main.Data.Models
 {
     public class QuestionModel : BaseModel
     {

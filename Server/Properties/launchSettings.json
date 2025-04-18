@@ -1,20 +1,21 @@
 {
   "profiles": {
+    "https": {
+      "applicationUrl": "https://localhost:5000",
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "launchBrowser": true
+    },
     "Swagger": {
+      "applicationUrl": "https://localhost:5000",
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "launchBrowser": true,
       "launchUrl": "swagger/index.html"
-    },
-    "WebApp": {
-      "applicationUrl": "http://localhost:5000",
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "launchBrowser": true
     }
   }
 }

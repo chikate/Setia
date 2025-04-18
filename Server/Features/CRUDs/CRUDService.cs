@@ -1,6 +1,6 @@
+using Main.Data.Models;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
-using Main.Modules.Gov.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;

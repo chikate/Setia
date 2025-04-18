@@ -1,4 +1,4 @@
-﻿namespace Main.Modules.Gov.Models;
+﻿namespace Main.Data.Models;
 
 public class GetFilterDTO<T>
 {

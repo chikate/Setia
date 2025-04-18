@@ -1,5 +1,5 @@
-﻿using Main.Modules.Audit;
-using Main.Modules.Gov.Models;
+﻿using Main.Data.Models;
+using Main.Modules.Audit;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

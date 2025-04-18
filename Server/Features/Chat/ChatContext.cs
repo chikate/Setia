@@ -10,6 +10,6 @@ public partial class ChatContext(DbContextOptions<ChatContext> options, IConfigu
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("base");
+        modelBuilder.HasDefaultSchema("chat");
     }
 }

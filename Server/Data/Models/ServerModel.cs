@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Main.Modules.Gov.Models
+namespace Main.Data.Models
 {
     public class ServerModel : BaseModel
     {
