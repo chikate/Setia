@@ -44,7 +44,7 @@
             : undefined
         "
       >
-        <div class="align-self-center">
+        <div class="align-self-center" style="line-height: 0">
           <img
             v-if="getFileIcon(file) == 'pi pi-image'"
             :src="`${folderLocation}/${file}`"

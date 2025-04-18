@@ -54,10 +54,6 @@ body > * {
   padding: 0;
 }
 
-*:has(img, video) {
-  line-height: 0;
-}
-
 /* bg-primary-reverse border-round border-1 shadow-1 border-gray-200 p-1 */
 .card {
   /* padding: 0.25rem !important; */
