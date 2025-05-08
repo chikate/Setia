@@ -9,8 +9,12 @@ public interface IAdmService
     Task<Dictionary<string, List<string>>> GetAllAPIs();
 }
 
-public class AdmService(AdmContext admContext, ILogger<AdmService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration config) : IAdmService
+public class AdmService() : IAdmService
 {
+    /// <summary>
+    /// Get all APIs in the project.
+    /// </summary>
+    /// <returns></returns>
     public async Task<Dictionary<string, List<string>>> GetAllAPIs() => await Task.Run(() =>
         Assembly.GetExecutingAssembly()
                 .GetTypes()

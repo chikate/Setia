@@ -3,7 +3,6 @@ definePage({
   meta: {
     title: "Chat",
     description: "Chat with your friends and family",
-    roles: ["user", "admin"],
   },
 });
 

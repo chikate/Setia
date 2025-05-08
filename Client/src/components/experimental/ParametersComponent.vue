@@ -24,10 +24,10 @@ async function dragStart(ev: any) {
 function handleAddParameter(event: KeyboardEvent) {
   const target = event.target as HTMLInputElement;
   const inputValue = target.value;
-  const toastMessage = {
+  const toastMessage: ToastMessageOptions = {
     severity: "info",
     summary: "Adding parameter",
-  } as ToastMessageOptions;
+  };
 
   if (
     !target.value ||

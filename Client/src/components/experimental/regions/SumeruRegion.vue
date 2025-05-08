@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
@@ -109,7 +109,7 @@ const items = ref([
   },
 ]);
 
-onMounted(() => {
+onBeforeMount(() => {
   active.value = items.value.findIndex(
     (item) => route.path === router.resolve(item.route).path
   );

@@ -43,6 +43,7 @@ declare global {
   const isValidISODate: typeof import('./src/globals/helpers')['isValidISODate']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const notificationService: typeof import('./src/globals/services')['notificationService']
   const notificationsCRUDService: typeof import('./src/globals/services')['notificationsCRUDService']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -104,10 +105,10 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { IAuthenticationDTO, IBaseAudit, IDefinition, User, Post, Pontaj, Taging, Question, QuestionAnswer, UserTag, UserCollection, INotification } from './src/globals/interfaces'
+  export type { IAuthenticationDTO, IBaseAudit, IDefinition, User, IPost, Pontaj, Taging, Question, QuestionAnswer, UserTag, UserCollection, INotification } from './src/globals/interfaces'
   import('./src/globals/interfaces')
 }
 
@@ -122,7 +123,6 @@ declare module 'vue' {
     readonly FILE_ICONS: UnwrapRef<typeof import('./src/globals/config')['FILE_ICONS']>
     readonly INPUT_CLASS: UnwrapRef<typeof import('./src/globals/config')['INPUT_CLASS']>
     readonly MENU_ICONS: UnwrapRef<typeof import('./src/globals/config')['MENU_ICONS']>
-    readonly TOAST_LIFETIME: UnwrapRef<typeof import('./src/globals/config')['TOAST_LIFETIME']>
     readonly apiRequest: UnwrapRef<typeof import('./src/globals/helpers')['apiRequest']>
     readonly authService: UnwrapRef<typeof import('./src/globals/services')['authService']>
     readonly canUserAccessRoute: UnwrapRef<typeof import('./src/globals/helpers')['canUserAccessRoute']>
@@ -152,7 +152,6 @@ declare module 'vue' {
     readonly isValidISODate: UnwrapRef<typeof import('./src/globals/helpers')['isValidISODate']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly notificationsCRUDService: UnwrapRef<typeof import('./src/globals/services')['notificationsCRUDService']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>

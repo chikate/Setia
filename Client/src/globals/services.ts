@@ -6,7 +6,7 @@ import type {
   INotification,
   UserCollection,
   Pontaj,
-  Post,
+  IPost,
   QuestionAnswer,
   Question,
   Taging,
@@ -61,10 +61,10 @@ export const authService = new (class AuthService {
     });
 
   register = (email: string, username: string, password: string) =>
-    apiRequest(`Auth/Register`, { email, username, password }, "post");
+    apiRequest(`Auth/Register`, { email, username, password });
 
   recoverAccount = (email: string) =>
-    apiRequest(`Auth/RecoverAccount`, { email }, "post");
+    apiRequest(`Auth/RecoverAccount`, { email });
 
   checkUserRight = (right: string) =>
     (
@@ -77,7 +77,7 @@ export const authService = new (class AuthService {
   };
 })();
 
-// CRUDs
+// region CRUDS
 class CRUDService {
   name: string = "";
   defaultValues: object = {};
@@ -116,10 +116,6 @@ class CRUDService {
       return response;
     });
 }
-export const notificationsCRUDService = new CRUDService(
-  "Notifications",
-  {} as INotification
-);
 export const userCollectionCRUDService = new CRUDService(
   "UserCollection",
   {} as UserCollection
@@ -131,7 +127,7 @@ export const pontajCRUDService = new CRUDService("Pontaj", {
 } as Pontaj);
 export const postsCRUDService = new CRUDService("Posts", {
   message: "",
-} as Post);
+} as IPost);
 export const questionAnswersCRUDService = new CRUDService("QuestionAnswers", {
   author: "",
   questionData: { title: "" },

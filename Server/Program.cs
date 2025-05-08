@@ -1,11 +1,12 @@
+using Main.Data.Context;
 using Main.Features.CRUDs;
 using Main.Modules.Adm;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
-using Main.Modules.Chat;
 using Main.Modules.Drive;
 using Main.Modules.Sessions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -33,33 +34,22 @@ Action<DbContextOptionsBuilder> dbOptions = options =>
     }
 };
 
+builder.Services.AddDbContext<BaseContext>(dbOptions);
+
 // Features
-builder.Services.AddDbContext<AdmContext>(dbOptions);
 builder.Services.AddScoped<IAdmService, AdmService>();
-
-builder.Services.AddDbContext<AuditContext>(dbOptions);
 builder.Services.AddScoped<IAuditService, AuditService>();
-
-builder.Services.AddDbContext<AuthContext>(dbOptions);
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-builder.Services.AddDbContext<DriveContext>(dbOptions);
 builder.Services.AddTransient<IDriveService, DriveService>();
-
-builder.Services.AddDbContext<ChatContext>(dbOptions);
-builder.Services.AddTransient<IChatService, ChatService>();
-
-builder.Services.AddDbContext<SessionsContext>(dbOptions);
 builder.Services.AddSingleton<SSEClientManager>();
-
-//builder.Services.AddDbContext<GovContext>(dbOptions);
-builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel, AuthContext>>();
-builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel, AdmContext>>();
-//builder.Services.AddScoped<ICRUDService<PostModel>, CRUDService<PostModel, GovContext>>();
+// CRUDs
+builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel>>();
+builder.Services.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel>>();
 
 // Standards
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
 {
     ValidateIssuer = true,

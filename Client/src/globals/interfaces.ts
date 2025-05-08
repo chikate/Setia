@@ -20,7 +20,7 @@ export interface User extends IDefinition {
   name: string
   avatar: string
 }
-export interface Post extends IDefinition {
+export interface IPost extends IDefinition {
   id?: string
   message?: string
   questionId?: string
@@ -64,7 +64,7 @@ export interface UserTag extends IDefinition {
 export interface UserCollection extends IDefinition {
   id?: string
   postId: string
-  postData: Post
+  postData: IPost
 }
 export interface INotification extends IDefinition {
   id?: string

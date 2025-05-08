@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 const diagramData = ref<any[]>([]);
-onMounted(() => {
+onBeforeMount(() => {
   document
     .getElementById("fileInput")
     ?.addEventListener("change", async (event: any) => {

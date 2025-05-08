@@ -1,90 +1,35 @@
-using Main.Modules.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Main.Modules.Drive;
 
 [Route("api/[controller]/[action]")]
-public class DriveController(IDriveService driveService, IAuthService auth) : ControllerBase
+public class DriveController(IDriveService driveService) : ControllerBase
 {
-    [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile formFile, string saveToPath = "")
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            return Ok(await driveService.Upload(formFile, saveToPath));
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
-
     [HttpGet]
-    public async Task<IActionResult> Download([FromQuery] string filePath)
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            return Ok(await driveService.Download(filePath));
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public Task Download([FromQuery] string filePath)
+        => driveService.Download(filePath);
+
+    [HttpGet] // GetFileContent
+    public Task GetFolderContent([FromQuery] string filePath = "")
+        => driveService.GetFolderContent(filePath);
+
+    [HttpPost]
+    public Task Upload(IFormFile formFile, string saveToPath = "")
+        => driveService.Upload(formFile, saveToPath);
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(string filePath)
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            await driveService.Delete(filePath);
-            return Ok("Deleted");
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public Task Delete(string filePath)
+        => driveService.Delete(filePath);
 
     [HttpGet]
-    public async Task<IActionResult> GetFolderContent([FromQuery] string filePath = "")
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            return Ok(await driveService.GetFolderContent(filePath));
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public Task GetAllPartitions()
+        => driveService.GetAllPartitions();
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPartitions()
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            return Ok(await driveService.GetAllPartitions());
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public Task GetFileRegistry([FromQuery] string filePath)
+        => driveService.GetFileRegistry(filePath);
 
     [HttpGet]
-    public async Task<IActionResult> GetFileRegistry([FromQuery] string filePath)
-    {
-        try
-        {
-            await auth.CheckUserRight();
-
-            if (filePath == null)
-                throw new ArgumentNullException(nameof(filePath));
-
-            return Ok(await driveService.GetFileRegistry(filePath));
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> SearchAndGetFile([FromQuery] string input)
-    {
-        try
-        {
-            await auth.CheckUserRight();
-            return Ok(await driveService.SearchAndGetFile(input));
-        }
-        catch (Exception ex) { return BadRequest(ex.Message); }
-    }
+    public Task SearchAndGetFile([FromQuery] string input)
+        => driveService.SearchAndGetFile(input);
 }

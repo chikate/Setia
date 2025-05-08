@@ -68,8 +68,9 @@ export const setCookie = (name, value, days = 7, path = "/") => {
   document.cookie = `${name}=${value}; ${expires}; path=${path}; SameSite=Strict; Secure`;
 };
 
-export const clearCookie = (name, path = "/") =>
-  (document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; SameSite=Strict; Secure`);
+export const clearCookie = () => {
+  document.cookie = `cookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Strict; Secure`;
+};
 
 export const capitalizeString = (input: string) =>
   input.charAt(0).toUpperCase() + input.slice(1);

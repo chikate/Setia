@@ -1,8 +1,8 @@
-using Main.Modules.Audit;
+using Main.Data.Context;
 using Main.Modules.Sessions;
 using Microsoft.AspNetCore.Mvc;
 
-public class SSEController(AuditContext auditContext, ILogger<SSEController> logger) : ControllerBase
+public class SSEController(BaseContext auditContext, ILogger<SSEController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task StreamSSE([FromServices] SSEClientManager clientManager)

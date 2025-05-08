@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "https": {
+    "Https": {
       "applicationUrl": "https://localhost:5000",
       "commandName": "Project",
       "environmentVariables": {

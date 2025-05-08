@@ -1,3 +1,4 @@
+using Main.Data.Context;
 using Main.Modules.Auth;
 using System.Reflection;
 using System.Text.Json;
@@ -6,27 +7,44 @@ namespace Main.Modules.Audit;
 
 public interface IAuditService
 {
+    Task<AuditModel> LogAuditTrail<T>(T model, T? oldModel = default);
     Task<string> CompareObjects<T>(T obj1, T obj2);
-    Task LogAuditTrail<T>(T model, T? oldModel = default);
 }
 
-public class AuditService(AuditContext auditContext, ILogger<AuditService> logger, IAuthService auth) : IAuditService
+public class AuditService(BaseContext context, ILogger<AuditService> logger, IAuthService auth) : IAuditService
 {
-    public async Task LogAuditTrail<T>(T model, T? oldModel = default)
+    /// <summary>
+    /// Logs the audit trail of a model.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="model"></param>
+    /// <param name="oldModel"></param>
+    /// <returns></returns>
+    public async Task<AuditModel> LogAuditTrail<T>(T model, T? oldModel = default)
     {
         try
         {
-            await auditContext.Set<AuditModel>().AddAsync(new AuditModel()
+            var newAudit = new AuditModel()
             {
                 AuthorId = (await auth.GetCurrentUser())?.Id,
                 Entity = typeof(T).FullName!,
                 EntityId = typeof(T).GetProperties().FirstOrDefault()?.GetValue(model)?.ToString(),
                 Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
-            });
-            await auditContext.SaveChangesAsync();
+            };
+            await context.Set<AuditModel>().AddAsync(newAudit);
+            await context.SaveChangesAsync();
+            return newAudit;
         }
         catch (Exception ex) { logger.LogError(ex, GetType().FullName, ex.Message); throw; }
     }
+
+    /// <summary>
+    /// Compares two objects of the same type and returns a string representation of the differences.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj1"></param>
+    /// <param name="obj2"></param>
+    /// <returns></returns>
     public async Task<string> CompareObjects<T>(T obj1, T obj2)
     {
         Dictionary<string, string> differences = [];
@@ -43,6 +61,14 @@ public class AuditService(AuditContext auditContext, ILogger<AuditService> logge
         await Task.CompletedTask;
         return differences.ToString()!;
     }
+
+    /// <summary>
+    /// Compares two models of the same type and returns a dictionary of differences.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="oldModel"></param>
+    /// <param name="newModel"></param>
+    /// <returns></returns>
     private IDictionary<string, Dictionary<string, string>> CompareModels<T>(T oldModel, T newModel)
     {
         Dictionary<string, Dictionary<string, string>> differences = [];

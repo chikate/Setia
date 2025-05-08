@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Main.Modules.Drive;
 
+/// <summary>
+/// Model for file metadata.
+/// </summary>
 public class FileModel : BaseModel
 {
     [Key]

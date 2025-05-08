@@ -8,16 +8,16 @@ public class AuthController(IAuthService auth) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromQuery] AuthenticationDTO loginCredentials) => await auth.Login(loginCredentials)
-        is var result ? Ok(result) : BadRequest("Error");
+    public Task<string> Login([FromQuery] AuthenticationDTO credentials)
+        => auth.Login(credentials);
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromQuery] RegistrationDTO registration) => await auth.Register(registration)
-        is var result ? Ok(result) : BadRequest("Error");
+    public Task<UserModel> Register([FromQuery] RegistrationDTO registrationInfo)
+        => auth.Register(registrationInfo);
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> RecoverAccount([FromQuery] string email) => await auth.RecoverAccount(email)
-        is var result ? Ok(result) : BadRequest("Error");
+    public Task RecoverAccount([FromQuery] RecoveryDTO recoveryInfo)
+        => auth.RecoverAccount(recoveryInfo);
 }

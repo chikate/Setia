@@ -1,5 +1,8 @@
 ﻿namespace Main.Modules.Drive;
 
+/// <summary>
+/// DriveInfoDTO
+/// </summary>
 public class DriveInfoDTO
 {
     public required string Name { get; set; }

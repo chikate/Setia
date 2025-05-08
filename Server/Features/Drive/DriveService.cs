@@ -11,7 +11,7 @@ public interface IDriveService
     Task<IFormFile> AppendRegistryToFile(IFormFile formFile);
     Task AppendRegistryToFile(string filePath);
     Task<bool> CreateFolder(string filePath);
-    Task Delete(string filePath);
+    Task<bool> Delete(string filePath);
     Task<FileContentResult> Download(string filePath);
     Task<string?> FindFileByName(string fileName);
     Task<List<DriveInfoDTO>> GetAllPartitions();
@@ -24,14 +24,19 @@ public interface IDriveService
     Task<string> Upload(IFormFile formFile, string? saveToPath);
 }
 
-public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger, IConfiguration config, IAuthService auth) : IDriveService
+public class DriveService(IWebHostEnvironment env, IAuthService auth) : IDriveService
 {
     private readonly Dictionary<Guid, string> _registryCache = new Dictionary<Guid, string>();
     private string _lastCheckedFile = "";
     private const int _registryByteSize = 16; // Size of a GUID in bytes
-    private const long _maxFileSizeBytes = 50 * 1024 * 1024; // 50 MB
 
-    #region File Manager CRUD
+    /// <summary>
+    /// Uploads a file to the server. It checks if the file is null or empty, creates the directory if it doesn't exist, and saves the file to the specified path. It also appends a registry GUID to the end of the file.
+    /// </summary>
+    /// <param name="formFile"></param>
+    /// <param name="saveToPath"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<string> Upload(IFormFile formFile, string? saveToPath)
     {
         if (formFile == null || formFile.Length == 0)
@@ -59,6 +64,12 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         //File.Delete(saveToPath);
         //return zipFilePath;
     }
+
+    /// <summary>
+    /// Downloads a file from the server. It checks if the file exists, and if it does, it reads its content and returns it as a FileContentResult with the appropriate content type.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     public async Task<FileContentResult> Download(string filePath)
     {
         filePath = CleanUpPath(filePath);
@@ -68,7 +79,14 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
 
         return new FileContentResult(await File.ReadAllBytesAsync(Path.Combine(env.WebRootPath, filePath)), contentType) { FileDownloadName = Path.GetFileName(filePath) };
     }
-    public async Task Delete(string filePath)
+
+    /// <summary>
+    /// Deletes a file from the server. It checks if the file exists, and if it does, it deletes it using the FileSystem class to send it to the recycle bin.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    public async Task<bool> Delete(string filePath)
     {
         filePath = Path.Combine(env.WebRootPath, CleanUpPath(filePath));
 
@@ -78,16 +96,32 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         //File.Delete(filePath);
         FileSystem.DeleteFile(filePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
         await Task.CompletedTask;
-    }
-    #endregion
 
-    #region File Registry Manager
+        return true;
+    }
+
+    /// <summary>
+    /// Generates a new registry GUID as a byte array. This is used to create a registry table in the database and send that as a GUID.
+    /// </summary>
+    /// <returns></returns>
     public byte[] GetNewRegistryAsBytes() => Guid.NewGuid().ToByteArray(); // To generate a regestry table in db and send that as guid
+
+    /// <summary>
+    /// Appends a registry GUID to the end of the file. It opens the file in append mode and writes the registry bytes to it.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     public async Task AppendRegistryToFile(string filePath)
     {
         await using FileStream fileStream = new FileStream(CleanUpPath(filePath), FileMode.Append, FileAccess.Write, FileShare.None, 4096, true);
         await fileStream.WriteAsync(GetNewRegistryAsBytes());
     }
+
+    /// <summary>
+    /// Appends a registry GUID to the end of the file. It creates a memory stream, copies the original file content to it, appends the registry bytes, and returns a new IFormFile with the updated content.
+    /// </summary>
+    /// <param name="formFile"></param>
+    /// <returns></returns>
     public async Task<IFormFile> AppendRegistryToFile(IFormFile formFile)
     {
         MemoryStream memoryStream = new();
@@ -103,6 +137,11 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         };
     }
 
+    /// <summary>
+    /// Gets the registry GUID from the last bytes of the file. It opens the file in read mode, seeks to the end minus the size of a GUID, and reads the last bytes as a GUID.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     public async Task<Guid> GetFileRegistry(string filePath)
     {
         filePath = Path.Combine(env.WebRootPath, CleanUpPath(filePath));
@@ -112,6 +151,12 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         await fileStream.ReadExactlyAsync(buffer, 0, _registryByteSize);
         return new Guid(buffer);
     }
+
+    /// <summary>
+    /// Gets the file associated with the given registry GUID. It searches through files in the web root path, checking their size and comparing the last bytes to the registry GUID.
+    /// </summary>
+    /// <param name="registry"></param>
+    /// <returns></returns>
     public async Task<string?> GetFileFromRegistry(Guid registry)
     {
         string[] files = Directory.GetFiles(env.WebRootPath, "*", System.IO.SearchOption.AllDirectories);
@@ -136,6 +181,12 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
 
         return null;
     }
+
+    /// <summary>
+    /// Finds a file by its name in the web root path.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
     public async Task<string?> FindFileByName(string fileName)
     {
         foreach (string file in Directory.GetFiles(env.WebRootPath, "*.*", System.IO.SearchOption.TopDirectoryOnly))
@@ -145,6 +196,12 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         await Task.CompletedTask;
         return null;
     }
+
+    /// <summary>
+    /// Searches for a file by name or registry GUID. If the input is a valid GUID, it retrieves the file associated with that GUID. Otherwise, it searches for the file by name.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public async Task<string?> SearchAndGetFile(string input)
     {
         if (Guid.TryParse(input, out var registry))
@@ -157,9 +214,19 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
 
         return await FindFileByName(cleanedPath);
     }
-    private string CleanUpPath(string filePath) => Regex.Replace(filePath, @"^[a-zA-Z]:[\\/]", string.Empty).TrimStart('/', '\\');
-    #endregion
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    private string CleanUpPath(string filePath) => Regex.Replace(filePath, @"^[a-zA-Z]:[\\/]", string.Empty).TrimStart('/', '\\');
+
+    /// <summary>
+    /// Gets the file size in bytes.
+    /// </summary>
+    /// <param name="formFile"></param>
+    /// <returns></returns>
     public bool IsFileCompressed(IFormFile formFile)
     {
         const int signatureLength = 6; // Enough to check most signatures
@@ -177,6 +244,13 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
                 // Check for 7Z signature "7z"
                 || signatureBuffer[0] == 0x37 && signatureBuffer[1] == 0x7A && signatureBuffer[2] == 0xBC && signatureBuffer[3] == 0xAF;
     }
+
+    /// <summary>
+    /// Gets the content of a folder.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    /// <exception cref="DirectoryNotFoundException"></exception>
     public async Task<List<string>> GetFolderContent(string filePath)
     {
         filePath = CleanUpPath(filePath);
@@ -196,6 +270,11 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         await Task.CompletedTask;
         return contentList;
     }
+
+    /// <summary>
+    /// Gets all partitions on the system.
+    /// </summary>
+    /// <returns></returns>
     public async Task<List<DriveInfoDTO>> GetAllPartitions()
     {
         List<DriveInfoDTO> driveDescriptions = new();
@@ -214,6 +293,13 @@ public class DriveService(IWebHostEnvironment env, ILogger<DriveService> logger,
         await Task.CompletedTask;
         return driveDescriptions;
     }
+
+    /// <summary>
+    /// Creates a folder at the specified path.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task<bool> CreateFolder(string filePath)
     {
         filePath = CleanUpPath(filePath);

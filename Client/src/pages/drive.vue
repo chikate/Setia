@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-column gap-2 p-2">
-    <div id="driveBreadCrumb" class="flex-wrap gap-2">
+  <div class="flex-column">
+    <div id="driveBreadCrumb" class="flex-wrap gap-2 p-2 overflow-auto">
       <Button
         v-for="(folderName, index) in ['Home', ...folderLocation.split('/')]"
         :key="index"
@@ -16,19 +16,21 @@
         "
       />
     </div>
-    <InputText
-      placeholder="Search after name, path, regestry number"
-      @keyup.enter="searchFile"
-    />
-    <div class="container gap-2 w-full align-items-start">
+    <div d="driveSearchContainer" class="px-2">
+      <InputText
+        placeholder="Search after name, path, regestry number"
+        @keyup.enter="searchFile"
+      />
+    </div>
+    <div class="flex-wrap gap-2 w-full h-full overflow-auto p-2">
       <BaseCardComponent
         v-for="file in folderContet"
         :key="file"
         :label="file"
         :icon="getFileIcon(file)"
-        class="border-round border-1"
+        class="border-round border-1 border-gray-200 custom-shadow-1 flex-grow-1"
         :class="file.includes('.') ? '' : 'bg-yellow-200'"
-        style="max-height: 400px"
+        style="min-width: 250px; max-height: 400px"
         aria-haspopup
         aria-controls="overlay_menu"
         @detailsClick="$refs.menuu?.toggle($event)"
@@ -44,17 +46,18 @@
             : undefined
         "
       >
-        <div class="align-self-center" style="line-height: 0">
+        <div
+          class="w-full h-full flex justify-content-center"
+          style="line-height: 0"
+        >
           <img
             v-if="getFileIcon(file) == 'pi pi-image'"
             :src="`${folderLocation}/${file}`"
-            style="width: 100%; object-fit: cover"
             loading="lazy"
           />
           <video
             v-else-if="getFileIcon(file) == 'pi pi-video'"
             controls
-            style="width: 100%; object-fit: cover"
             loading="lazy"
           >
             <source
@@ -66,6 +69,7 @@
           <iframe
             v-else-if="file.includes('.')"
             :src="`${folderLocation}/${file}`"
+            class="w-full h-full"
             loading="lazy"
           />
         </div>
@@ -89,7 +93,7 @@ const folderLocation = defineModel("folderLocation", {
   default: "",
 });
 const folderContet = ref();
-const fileInFocus = ref(); // urmeaza
+const fileInFocus = ref();
 
 const menuActions = ref([
   {

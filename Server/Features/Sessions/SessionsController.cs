@@ -4,7 +4,7 @@ using System.Text;
 namespace Main.Modules.Sessions;
 
 [Route("api/[controller]/[action]")]
-public class SessionsController(ILogger<SessionsController> logger) : ControllerBase
+public class SessionsController() : ControllerBase
 {
     private readonly List<HttpResponse> Clients = new();
     private readonly object Lock = new();

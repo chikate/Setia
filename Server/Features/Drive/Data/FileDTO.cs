@@ -2,6 +2,9 @@
 
 namespace Main.Modules.Drive;
 
+/// <summary>
+/// DTO for file content result.
+/// </summary>
 public class FileDTO : FileContentResult
 {
     public FileDTO(byte[] fileContents, string contentType) : base(fileContents, contentType) { }

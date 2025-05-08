@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/@/': RouteRecordInfo<'/@/', '/@', Record<never, never>, Record<never, never>>,
     '/@/[profile]': RouteRecordInfo<'/@/[profile]', '/@/:profile', { profile: ParamValue<true> }, { profile: ParamValue<false> }>,
     '/administration/': RouteRecordInfo<'/administration/', '/administration', Record<never, never>, Record<never, never>>,
     '/administration/settings/': RouteRecordInfo<'/administration/settings/', '/administration/settings', Record<never, never>, Record<never, never>>,
@@ -41,6 +42,7 @@ declare module 'vue-router/auto-routes' {
     '/my-space/': RouteRecordInfo<'/my-space/', '/my-space', Record<never, never>, Record<never, never>>,
     '/my-space/friends/': RouteRecordInfo<'/my-space/friends/', '/my-space/friends', Record<never, never>, Record<never, never>>,
     '/my-space/friends/[id]': RouteRecordInfo<'/my-space/friends/[id]', '/my-space/friends/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/notifications': RouteRecordInfo<'/notifications', '/notifications', Record<never, never>, Record<never, never>>,
     '/nutrition': RouteRecordInfo<'/nutrition', '/nutrition', Record<never, never>, Record<never, never>>,
     '/others/messanger': RouteRecordInfo<'/others/messanger', '/others/messanger', Record<never, never>, Record<never, never>>,
     '/others/news': RouteRecordInfo<'/others/news', '/others/news', Record<never, never>, Record<never, never>>,
