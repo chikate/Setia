@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-column gap-2 align-items-center justify-content-center">
+  <div class="flex flex-column gap-2 align-items-center justify-content-center">
     <div class="pages-container">
       <div class="page">
         <div
@@ -13,7 +13,7 @@
         />
       </div>
     </div>
-    <div class="flex-row align-items-center gap-2">
+    <div class="flex flex-row align-items-center gap-2">
       <InputNumber
         :min="1"
         :max="pages?.length"

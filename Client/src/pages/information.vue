@@ -1,14 +1,14 @@
 <template>
-  <div class="h-full flex-column p-2">
+  <div class="h-full flex flex-column p-2">
     <div
-      class="h-full flex-row align-items-center justify-content-center w-full"
+      class="h-full flex flex-row align-items-center justify-content-center w-full"
     >
       <img
         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-hQ3atw-HFLYiFyDBkdZlUvwWu0OOJMl8fQx2j6lE0PQKvW4iRHjeZhY-JAcmjGLs1j8&usqp=CAU"
       />
       <Accordion style="width: 300px">
         <AccordionTab header="Language">
-          <div class="flex-column gap-3 mt-2">
+          <div class="flex flex-column gap-3 mt-2">
             <div
               v-for="language in languages"
               :key="language"
@@ -17,10 +17,10 @@
                 color: stringToColor(language),
                 animation: 'electricBorder 1.5s infinite alternate',
               }"
-              class="flex-row border-3 border-round align-items-center text-start"
+              class="flex flex-row border-3 border-round align-items-center text-start"
             >
               <label class="text-start w-full p-3">{{ language }}</label>
-              <div v-tooltip="'Natives'" class="flex-row gap-2 px-2">
+              <div v-tooltip="'Natives'" class="flex flex-row gap-2 px-2">
                 <i class="pi pi-user" /> 2000
               </div>
             </div>
@@ -61,6 +61,11 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "Information",
+  icon: "ℹ️",
+});
+
 interface TimelineEvent {
   year: string;
   title: string;

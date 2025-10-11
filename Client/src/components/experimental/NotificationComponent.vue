@@ -6,7 +6,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex-row">
+  <div class="flex flex-row">
     <Button :label="title" text @click="$emit('clickMain')" />
     <Button icon="pi pi-check" text @click="$emit('cliclAccept')" />
     <Button icon="pi pi-times" text @click="$emit('clickCancel')" />

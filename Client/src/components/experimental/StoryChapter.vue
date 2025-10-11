@@ -14,7 +14,7 @@
         </Panel>
       </TabPanel>
       <TabPanel header="World of Setia">
-        <div class="flex flex-column gap-4">
+        <div class="flex flex flex-column gap-4">
           <Panel header="Big Bang" toggleable>
             <p class="m-0">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor

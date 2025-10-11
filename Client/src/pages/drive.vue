@@ -1,101 +1,82 @@
 <template>
-  <div class="flex-column">
-    <div id="driveBreadCrumb" class="flex-wrap gap-2 p-2 overflow-auto">
-      <Button
-        v-for="(folderName, index) in ['Home', ...folderLocation.split('/')]"
-        :key="index"
-        text
-        :label="folderName"
-        class="cursor-pointer p-2"
-        @click="
-          goToFolderLocation(
-            index == 0
-              ? ''
-              : folderLocation.split('/').slice(0, index).join('/')
-          )
-        "
-      />
-    </div>
-    <div d="driveSearchContainer" class="px-2">
-      <InputText
-        placeholder="Search after name, path, regestry number"
-        @keyup.enter="searchFile"
-      />
-    </div>
-    <div class="flex-wrap gap-2 w-full h-full overflow-auto p-2">
+  <div class="flex flex-column gap-2">
+    <SelectButton v-model="viewStyle" :options="['table']" />
+
+    <Breadcrumb :home="{ icon: 'pi pi-folder' }" :model="pathParts">
+    </Breadcrumb>
+
+    <InputText placeholder="Search..." @keyup.enter="search" />
+
+    <DataTable
+      v-if="viewStyle == 'table'"
+      :value="files"
+      selection-mode="multiple"
+      class="h-full overflow-auto"
+      striped-rows
+    >
+      <Column header="#" class="text-center">
+        <template #body="{ index }">
+          {{ index + 1 }}
+        </template>
+      </Column>
+
+      <Column>
+        <template #body="{ data: file }">
+          <FileViewer :src="`${folder}/${file}`" />
+        </template>
+      </Column>
+
+      <Column header="Name" class="w-full">
+        <template #body="{ data }">
+          {{ data }}
+        </template>
+      </Column>
+
+      <Column class="text-right">
+        <template #body>
+          <i class="pi pi-ellipsis-v" />
+        </template>
+      </Column>
+    </DataTable>
+
+    <div v-else class="flex flex-column gap-2 h-full overflow-auto">
       <BaseCardComponent
-        v-for="file in folderContet"
+        v-for="file in files"
         :key="file"
         :label="file"
-        :icon="getFileIcon(file)"
+        :icon="getIcon(file)"
         class="border-round border-1 border-gray-200 custom-shadow-1 flex-grow-1"
-        :class="file.includes('.') ? '' : 'bg-yellow-200'"
-        style="min-width: 250px; max-height: 400px"
-        aria-haspopup
-        aria-controls="overlay_menu"
+        :class="{ 'bg-yellow-200': isFolder(file) }"
+        @click="file.includes('.') ? undefined : go(`${folder}/${file}`)"
         @detailsClick="$refs.menuu?.toggle($event)"
-        @click="
-          file.includes('.')
-            ? undefined
-            : goToFolderLocation(`${folderLocation}/${file}`)
-        "
-        @click.middle="openPublicFile(`${folderLocation}/${file}`)"
+        @click.middle="openPublicFile(`${folder}/${file}`)"
         @dblclick="
-          file.includes('.')
-            ? openPublicFile(`${folderLocation}/${file}`)
-            : undefined
+          file.includes('.') ? openPublicFile(`${folder}/${file}`) : undefined
         "
       >
-        <div
-          class="w-full h-full flex justify-content-center"
-          style="line-height: 0"
-        >
-          <img
-            v-if="getFileIcon(file) == 'pi pi-image'"
-            :src="`${folderLocation}/${file}`"
-            loading="lazy"
-          />
-          <video
-            v-else-if="getFileIcon(file) == 'pi pi-video'"
-            controls
-            loading="lazy"
-          >
-            <source
-              :src="`${folderLocation}/${file}`"
-              type="video/mp4"
-              loading="lazy"
-            />
-          </video>
-          <iframe
-            v-else-if="file.includes('.')"
-            :src="`${folderLocation}/${file}`"
-            class="w-full h-full"
-            loading="lazy"
-          />
-        </div>
+        <FileViewer :src="`${folder}/${file}`" />
       </BaseCardComponent>
-      <!-- <Menu ref="menuu" id="overlay_menu" popup :model="menuActions" /> -->
     </div>
+
+    <Menu ref="menuu" popup :model="menuActions" />
   </div>
 </template>
 
 <script setup lang="ts">
-definePage({
-  meta: {
-    title: "Drive",
-    description: "",
-    roles: ["user", "admin"],
-  },
+import type { MenuItem } from "primevue/menuitem";
+
+defineOptions({
+  name: "Drive",
+  icon: "📁",
 });
 
-const folderLocation = defineModel("folderLocation", {
-  type: String,
-  default: "",
-});
-const folderContet = ref();
+const folder = defineModel("folder", { type: String });
+const files = ref([]);
 const fileInFocus = ref();
 
-const menuActions = ref([
+const viewStyle = ref<"table">();
+
+const menuActions = ref<MenuItem[]>([
   {
     label: "Actions",
     items: [
@@ -117,7 +98,7 @@ const menuActions = ref([
         icon: "pi pi-hashtag",
         command: () => {
           navigator.clipboard.writeText(
-            menuActions.value[1].items[0].label ?? ""
+            'menuActions.value[1].items[0].label ?? ""'
           );
         },
       },
@@ -125,31 +106,30 @@ const menuActions = ref([
   },
 ]);
 
-async function goToFolderLocation(folderPath = "") {
-  folderLocation.value = folderPath.replace(/^\//, "");
-  folderContet.value = await fileManager.getFolderContent(folderLocation.value);
+const pathParts = computed(() =>
+  folder.value.split("/").map((label, i, arr) => ({
+    label,
+    to: arr.slice(0, i + 1).join("/"),
+  }))
+);
+
+const isFolder = (f: string) => !f.includes(".");
+
+onBeforeMount(go);
+async function go(folderPath: string = "") {
+  files.value = await fileManager.getFolderContent(
+    (folder.value = folderPath.replace(/^\//, ""))
+  );
 }
 
-onBeforeMount(goToFolderLocation);
-
-const getFileIcon = (file: string) =>
+const getIcon = (file: string) =>
   FILE_ICONS[file.split(".")?.pop() || "folder"] || "pi pi-folder";
+
 const openPublicFile = async (file: string) => window.open(file, "_blank");
 
-async function searchFile(event: KeyboardEvent) {
-  const target = event.target as HTMLInputElement;
-  // if (target.value)
-  //   [folderLocation.value, fileInFocus.value] = await fileManager.SearchAndGetFile(target.value)
-  console.log(await fileManager.SearchAndGetFile(target.value));
+async function search(event: KeyboardEvent) {
+  [folder.value, fileInFocus.value] = await fileManager.SearchAndGetFile(
+    (event.target as HTMLInputElement).value
+  );
 }
 </script>
-
-<style scoped>
-.container {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(300px, 1fr)
-  ); /* Adjust item size */
-}
-</style>

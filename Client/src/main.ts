@@ -42,33 +42,4 @@ app.use(ToastService, {
 
 app.mount("body");
 
-// SSE Stream (Server Side Events)
-(async () => {
-  try {
-    const reader = (
-      await fetch("/api/sse/StreamSSE", {
-        headers: {
-          Authorization: `Bearer ${getCookie("token")}`,
-          "Content-Type": "text/event-stream",
-          CacheControl: "no-cache",
-          Connection: "keep-alive",
-        },
-      })
-    ).body?.getReader();
-
-    if (!reader) return;
-
-    while (true) {
-      const { value, done } = await reader.read();
-
-      if (done) break;
-
-      localStorage.setItem(
-        "notifications",
-        JSON.parse(new TextDecoder().decode(value))
-      );
-    }
-  } catch (error) {
-    console.error(error);
-  }
-})();
+// signalRConn.start();

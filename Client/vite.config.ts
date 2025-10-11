@@ -16,7 +16,7 @@ export default defineConfig({
     AutoImport({
       imports: ["vue", VueRouterAutoImports, "vue-router"],
       vueTemplate: true,
-      dirs: ["src/globals/**"],
+      dirs: ["src/composables/**"],
     }),
     Components({
       resolvers: [PrimeVueResolver()],
@@ -24,29 +24,30 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: "autoUpdate",
-      devOptions: {
-        enabled: process.env.NODE_ENV == "development",
-      },
       manifest: {
-        name: "Dragos App",
-        short_name: "App",
-        scope: "/",
-        start_url: "/",
-        display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#ffffff",
+        short_name: "Carrot",
+        name: "Carrot",
         icons: [
           {
-            src: "/Calories.png",
+            src: "/Carrot.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/Calories.png",
+            src: "/Carrot.png",
             sizes: "512x512",
             type: "image/png",
           },
         ],
+        start_url: ".",
+        display: "standalone",
+        theme_color: "black",
+        background_color: "white",
+      },
+      workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
+        globPatterns: ["**/*.{html,js,css,png,jpg,jpeg,svg}"],
       },
     }),
   ],

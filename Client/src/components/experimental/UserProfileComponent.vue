@@ -3,7 +3,7 @@ import type { User } from "src/global/interfaces";
 
 const profileUserData = ref<User>({} as User);
 const isMyProfile = computed<boolean>(
-  () => profileUserData.value.id === authService.user?.id
+  () => profileUserData.value.id == authService.user?.id
 );
 
 const props = defineProps({
@@ -36,7 +36,7 @@ onBeforeMount(async () => {
       />
     </div>
 
-    <div class="flex flex-column text-center align-items-start">
+    <div class="flex flex flex-column text-center align-items-start">
       <a class="font-bold sm:w-full">{{ profileUserData.username }}</a>
       <!-- <a class="opacity-50">
         Joined in

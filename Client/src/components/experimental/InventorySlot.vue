@@ -3,7 +3,7 @@ import type { User } from "src/global/interfaces";
 
 const profileUserData = ref<User>({} as User);
 const isMyProfile = computed<boolean>(
-  () => profileUserData.value.id === authService.user?.id
+  () => profileUserData.value.id == authService.user?.id
 );
 
 const props = defineProps({
@@ -19,11 +19,11 @@ onBeforeMount(async () => {
 
 <template>
   <div
-    class="flex-column border-round justify-content-center align-self-start overflow-auto"
+    class="flex flex-column border-round justify-content-center align-self-start h-full overflow-auto"
   >
     <Divider layout="vertical" />
     <img :src="``" />
-    <div class="flex-column">
+    <div class="flex flex-column">
       <label>Title{{ title }}</label>
       <label class="text-justify">Asdasd{{ description }}</label>
       <label class="text-justify">{{ price }}</label>

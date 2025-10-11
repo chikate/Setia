@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="w-full flex-row justify-content-between">
+    <div class="w-full flex flex-row justify-content-between">
       <Button label="find session" />
       <AvatarGroup>
         <Avatar
@@ -62,19 +62,13 @@
       :key="cursorPosition_index"
       :id="`cursor_${cursorPosition_index}`"
       class="fixed pointer-events-none"
-      style="z-index: 2147483647"
       :style="{
         top: cursorPosition.y + 'px',
         left: cursorPosition.x + 'px',
       }"
     >
       <div
-        style="
-          width: 20px;
-          height: 20px;
-          z-index: 2147483647;
-          border-radius: 0 5px 5px 5px;
-        "
+        style="width: 20px; height: 20px; border-radius: 0 5px 5px 5px"
         class="absolute"
         :style="{
           'background-color': stringToColor(
@@ -87,7 +81,6 @@
         :image="sessionsConnections[cursorPosition_index].avatar"
         shape="circle"
         class="absolute border-2"
-        style="z-index: 2147483647"
         :style="{
           'border-color': stringToColor(
             sessionsConnections[cursorPosition_index].avatar,
@@ -101,6 +94,11 @@
 </template>
 
 <script lang="ts" setup>
+defineOptions({
+  name: "Canvas",
+  icon: "⬜",
+});
+
 const sessionsConnections = ref([
   {
     avatar:
@@ -122,44 +120,13 @@ const cursorsPositions = ref([
   { x: 300, y: 300 },
 ]);
 
-async function startSSE() {
-  try {
-    const sse = await fetch("/api/sse/StreamSSE", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${getCookie("token")}`,
-        "Content-Type": "text/event-stream",
-        CacheControl: "no-cache",
-        Connection: "keep-alive",
-      },
-    });
+signalRConn.on("ReceiveMousePosition", (data) => {
+  cursorsPositions.value[0] = data;
+});
 
-    const reader = sse.body?.getReader();
-    if (!reader)
-      return console.error("Failed to get reader from response body");
-
-    while (reader) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      const chunk = new TextDecoder("utf-8").decode(value, { stream: true });
-      const newPositions = JSON.parse(chunk);
-      const alpha = 0.9;
-      cursorsPositions.value.forEach((element, i) => {
-        if (newPositions[i]) {
-          element.x += (newPositions[i].x - element.x) * alpha;
-          element.y += (newPositions[i].y - element.y) * alpha;
-        }
-      });
-    }
-  } catch (error) {
-    console.error("Error with SSE connection:", error);
-  }
-}
-
-startSSE();
 let sendCursorData = true;
 let lastMousePosition = { x: 0, y: 0 };
-document.addEventListener("mousemove", async (event: MouseEvent) => {
+document.addEventListener("mousemove", (event: MouseEvent) => {
   if (
     sendCursorData &&
     (lastMousePosition.x != event.clientX ||
@@ -167,8 +134,10 @@ document.addEventListener("mousemove", async (event: MouseEvent) => {
   ) {
     sendCursorData = false;
     lastMousePosition = { x: event.clientX, y: event.clientY };
-    setTimeout(async () => {
-      await apiRequest(`Sessions/MousePosition`, lastMousePosition, "post");
+    setTimeout(() => {
+      signalRConn
+        .invoke("SendMousePosition", lastMousePosition.x, lastMousePosition.y)
+        .catch((err) => console.error("Error sending mouse position:", err));
       sendCursorData = true;
     }, 2);
   }

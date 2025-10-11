@@ -65,7 +65,7 @@ const generateVoronoi = () => {
       const x = point.x + Math.cos(angle) * (radius + randomOffset);
       const y = point.y + Math.sin(angle) * (radius + randomOffset);
 
-      if (j === 0) {
+      if (j == 0) {
         ctx.moveTo(x, y); // Move to the starting point
       } else {
         ctx.lineTo(x, y); // Draw line to the next point

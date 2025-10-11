@@ -19,18 +19,54 @@ namespace Main.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("base")
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Main.Data.Models.MessageModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.PrimitiveCollection<List<Guid>>("Attachments")
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid?>("AuthorDataId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ExecutionDate")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.Property<Guid?>("To")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorDataId");
+
+                    b.ToTable("Posts", "base");
+                });
+
             modelBuilder.Entity("Main.Modules.Adm.SettingsModel", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("AuthorDataId")
                         .HasColumnType("uuid");
@@ -50,7 +86,6 @@ namespace Main.Data.Migrations
                         .HasColumnType("text");
 
                     b.PrimitiveCollection<List<string>>("Tags")
-                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Value")
@@ -96,7 +131,6 @@ namespace Main.Data.Migrations
                         .HasColumnType("text");
 
                     b.PrimitiveCollection<List<string>>("Tags")
-                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.HasKey("Id");
@@ -154,7 +188,6 @@ namespace Main.Data.Migrations
                         .HasColumnType("text");
 
                     b.PrimitiveCollection<List<string>>("Tags")
-                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Username")
@@ -166,6 +199,15 @@ namespace Main.Data.Migrations
                     b.HasIndex("AuthorDataId");
 
                     b.ToTable("Users", "base");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.MessageModel", b =>
+                {
+                    b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
+                        .WithMany()
+                        .HasForeignKey("AuthorDataId");
+
+                    b.Navigation("AuthorData");
                 });
 
             modelBuilder.Entity("Main.Modules.Adm.SettingsModel", b =>

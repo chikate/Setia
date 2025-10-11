@@ -29,7 +29,7 @@ async function refresh() {
 
 <template>
   <div
-    class="flex flex-column gap-2 surface-hover border-round p-2 shadow-1"
+    class="flex flex flex-column gap-2 surface-hover border-round p-2 shadow-1"
     :class="
       answerMode
         ? answered

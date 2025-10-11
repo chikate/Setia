@@ -1,5 +1,5 @@
 <template>
-  <div class="card p-1" style="min-width: 300px">
+  <div class="p-1" style="min-width: 300px">
     <DataTable
       :value="store.loadedItems.value"
       :loading="!store.loadedItems.value"
@@ -25,7 +25,7 @@
       "
     >
       <template #header>
-        <div class="flex-row gap-2 align-items-center px-2">
+        <div class="flex flex-row gap-2 align-items-center px-2">
           <h2 class="w-full m-0 p-0 font-bold">{{ formattedStoreName }}</h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
@@ -79,14 +79,14 @@
         :header="col.header"
         :field="col.field"
         :filterField="col.field"
-        :class="col.type === 'boolean' ? 'text-center' : ''"
-        :style="col.type === 'boolean' ? 'width: 5rem' : ''"
-        :headerClass="col.type === 'boolean' ? 'column-text-center' : ''"
-        :frozen="i === 0"
+        :class="col.type == 'boolean' ? 'text-center' : ''"
+        :style="col.type == 'boolean' ? 'width: 5rem' : ''"
+        :headerClass="col.type == 'boolean' ? 'column-text-center' : ''"
+        :frozen="i == 0"
       >
         <template #body="{ data, field }">
           <i
-            v-if="typeof data[field] === 'boolean'"
+            v-if="typeof data[field] == 'boolean'"
             :class="`pi ${data[field] ? 'pi-verified' : 'pi-circle'}`"
           />
           <div v-else>{{ data[field].toString() }}</div>
@@ -119,7 +119,7 @@
               : "Edit " + store.storeName.toLocaleLowerCase()
           }}
         </h3>
-        <div class="flex-row gap-3 font-bold">
+        <div class="flex flex-row gap-3 font-bold">
           <Button
             class="bg-primary-reverse"
             label="Back"
@@ -144,7 +144,7 @@
           />
         </div>
       </template>
-      <div class="flex flex-column gap-4">
+      <div class="flex flex flex-column gap-4">
         <InputGroup v-for="key in exposedData" :key="key.field">
           <InputGroupAddon :class="INPUT_CLASS" v-if="editItem[key.field]">
             {{ key.header }}
@@ -158,7 +158,7 @@
             filter
           />
           <Dropdown
-            v-else-if="key.field === 'user'"
+            v-else-if="key.field == 'user'"
             :placeholder="`Select a ${key.header}`"
             v-model="editItem[key.field]"
             :options="[]"
@@ -168,17 +168,17 @@
             filter
           />
           <InputNumber
-            v-else-if="typeof key.type === 'number'"
+            v-else-if="typeof key.type == 'number'"
             v-model="editItem[key.field]"
             :placeholder="key.header"
           />
           <Password
-            v-else-if="key.field === 'password'"
+            v-else-if="key.field == 'password'"
             v-model="editItem[key.field]"
             :placeholder="key.header"
           />
           <Checkbox
-            v-else-if="typeof key.type === 'boolean'"
+            v-else-if="typeof key.type == 'boolean'"
             v-model="editItem[key.field]"
             binary
           />

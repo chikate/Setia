@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-column align-items-start gap-2">
+  <div class="flex flex-column align-items-start gap-2">
     <input type="file" id="fileInput" webkitdirectory />
     <div
       class="bg-gray-200 border-round px-3"
@@ -13,6 +13,11 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "Referencer",
+  icon: "🧩",
+});
+
 const diagramData = ref<any[]>([]);
 onBeforeMount(() => {
   document

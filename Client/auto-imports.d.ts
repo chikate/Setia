@@ -6,45 +6,108 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const DEFAULT_ROWS_INDEX: typeof import('./src/globals/config')['DEFAULT_ROWS_INDEX']
-  const DEFAULT_ROWS_OPTIONS: typeof import('./src/globals/config')['DEFAULT_ROWS_OPTIONS']
+  const AdmApi: typeof import('./src/composables/apis/AdmApi')['AdmApi']
+  const AuthApi: typeof import('./src/composables/apis/AuthApi')['AuthApi']
+  const AuthenticationDTOFromJSON: typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOFromJSON']
+  const AuthenticationDTOFromJSONTyped: typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOFromJSONTyped']
+  const AuthenticationDTOToJSON: typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOToJSON']
+  const AuthenticationDTOToJSONTyped: typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOToJSONTyped']
+  const BASE_PATH: typeof import('./src/composables/runtime')['BASE_PATH']
+  const BaseAPI: typeof import('./src/composables/runtime')['BaseAPI']
+  const BlobApiResponse: typeof import('./src/composables/runtime')['BlobApiResponse']
+  const COLLECTION_FORMATS: typeof import('./src/composables/runtime')['COLLECTION_FORMATS']
+  const CommunityApi: typeof import('./src/composables/apis/CommunityApi')['CommunityApi']
+  const CommunityModelFromJSON: typeof import('./src/composables/models/CommunityModel')['CommunityModelFromJSON']
+  const CommunityModelFromJSONTyped: typeof import('./src/composables/models/CommunityModel')['CommunityModelFromJSONTyped']
+  const CommunityModelToJSON: typeof import('./src/composables/models/CommunityModel')['CommunityModelToJSON']
+  const CommunityModelToJSONTyped: typeof import('./src/composables/models/CommunityModel')['CommunityModelToJSONTyped']
+  const Configuration: typeof import('./src/composables/runtime')['Configuration']
+  const DEFAULT_ROWS_INDEX: typeof import('./src/composables/config')['DEFAULT_ROWS_INDEX']
+  const DEFAULT_ROWS_OPTIONS: typeof import('./src/composables/config')['DEFAULT_ROWS_OPTIONS']
+  const DefaultConfig: typeof import('./src/composables/runtime')['DefaultConfig']
+  const DriveApi: typeof import('./src/composables/apis/DriveApi')['DriveApi']
+  const DriveInfoDTOFromJSON: typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOFromJSON']
+  const DriveInfoDTOFromJSONTyped: typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOFromJSONTyped']
+  const DriveInfoDTOToJSON: typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOToJSON']
+  const DriveInfoDTOToJSONTyped: typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOToJSONTyped']
   const EffectScope: typeof import('vue')['EffectScope']
-  const FILE_ICONS: typeof import('./src/globals/config')['FILE_ICONS']
-  const INPUT_CLASS: typeof import('./src/globals/config')['INPUT_CLASS']
-  const MENU_ICONS: typeof import('./src/globals/config')['MENU_ICONS']
-  const TOAST_LIFETIME: typeof import('./src/globals/config')['TOAST_LIFETIME']
-  const apiRequest: typeof import('./src/globals/helpers')['apiRequest']
-  const authService: typeof import('./src/globals/services')['authService']
-  const canUserAccessRoute: typeof import('./src/globals/helpers')['canUserAccessRoute']
-  const capitalizeString: typeof import('./src/globals/helpers')['capitalizeString']
-  const capitalizeWords: typeof import('./src/globals/helpers')['capitalizeWords']
-  const clearCookie: typeof import('./src/globals/helpers')['clearCookie']
+  const FILE_ICONS: typeof import('./src/composables/config')['FILE_ICONS']
+  const FetchError: typeof import('./src/composables/runtime')['FetchError']
+  const INPUT_CLASS: typeof import('./src/composables/config')['INPUT_CLASS']
+  const JSONApiResponse: typeof import('./src/composables/runtime')['JSONApiResponse']
+  const MENU_ICONS: typeof import('./src/composables/config')['MENU_ICONS']
+  const MessageModelFromJSON: typeof import('./src/composables/models/MessageModel')['MessageModelFromJSON']
+  const MessageModelFromJSONTyped: typeof import('./src/composables/models/MessageModel')['MessageModelFromJSONTyped']
+  const MessageModelToJSON: typeof import('./src/composables/models/MessageModel')['MessageModelToJSON']
+  const MessageModelToJSONTyped: typeof import('./src/composables/models/MessageModel')['MessageModelToJSONTyped']
+  const PostsApi: typeof import('./src/composables/apis/PostsApi')['PostsApi']
+  const QuestionAnswersApi: typeof import('./src/composables/apis/QuestionAnswersApi')['QuestionAnswersApi']
+  const QuestionModelFromJSON: typeof import('./src/composables/models/QuestionModel')['QuestionModelFromJSON']
+  const QuestionModelFromJSONTyped: typeof import('./src/composables/models/QuestionModel')['QuestionModelFromJSONTyped']
+  const QuestionModelToJSON: typeof import('./src/composables/models/QuestionModel')['QuestionModelToJSON']
+  const QuestionModelToJSONTyped: typeof import('./src/composables/models/QuestionModel')['QuestionModelToJSONTyped']
+  const RequiredError: typeof import('./src/composables/runtime')['RequiredError']
+  const ResponseError: typeof import('./src/composables/runtime')['ResponseError']
+  const TOAST_LIFETIME: typeof import('./src/composables/config')['TOAST_LIFETIME']
+  const TextApiResponse: typeof import('./src/composables/runtime')['TextApiResponse']
+  const UserModel2FromJSON: typeof import('./src/composables/models/UserModel2')['UserModel2FromJSON']
+  const UserModel2FromJSONTyped: typeof import('./src/composables/models/UserModel2')['UserModel2FromJSONTyped']
+  const UserModel2ToJSON: typeof import('./src/composables/models/UserModel2')['UserModel2ToJSON']
+  const UserModel2ToJSONTyped: typeof import('./src/composables/models/UserModel2')['UserModel2ToJSONTyped']
+  const UserModelFromJSON: typeof import('./src/composables/models/UserModel')['UserModelFromJSON']
+  const UserModelFromJSONTyped: typeof import('./src/composables/models/UserModel')['UserModelFromJSONTyped']
+  const UserModelToJSON: typeof import('./src/composables/models/UserModel')['UserModelToJSON']
+  const UserModelToJSONTyped: typeof import('./src/composables/models/UserModel')['UserModelToJSONTyped']
+  const UsersApi: typeof import('./src/composables/apis/UsersApi')['UsersApi']
+  const VoidApiResponse: typeof import('./src/composables/runtime')['VoidApiResponse']
+  const apiRequest: typeof import('./src/composables/api')['apiRequest']
+  const auditConn: typeof import('./src/composables/ws')['auditConn']
+  const authService: typeof import('./src/composables/services')['authService']
+  const canConsumeForm: typeof import('./src/composables/runtime')['canConsumeForm']
+  const canUserAccessRoute: typeof import('./src/composables/helpers')['canUserAccessRoute']
+  const capitalizeString: typeof import('./src/composables/helpers')['capitalizeString']
+  const capitalizeWords: typeof import('./src/composables/helpers')['capitalizeWords']
+  const clearCookie: typeof import('./src/composables/helpers')['clearCookie']
+  const clearCookies: typeof import('./src/composables/helpers')['clearCookies']
+  const clearCookiess: typeof import('./src/composables/helpers')['clearCookiess']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
   const customRef: typeof import('vue')['customRef']
-  const darkMode: typeof import('./src/globals/darkMode')['darkMode']
+  const darkMode: typeof import('./src/composables/darkMode')['darkMode']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
-  const downloadInBrowser: typeof import('./src/globals/helpers')['downloadInBrowser']
+  const downloadInBrowser: typeof import('./src/composables/helpers')['downloadInBrowser']
   const effectScope: typeof import('vue')['effectScope']
-  const fileManager: typeof import('./src/globals/services')['fileManager']
-  const generateGuid: typeof import('./src/globals/helpers')['generateGuid']
-  const getCookie: typeof import('./src/globals/helpers')['getCookie']
+  const exists: typeof import('./src/composables/runtime')['exists']
+  const fileManager: typeof import('./src/composables/services')['fileManager']
+  const generateGuid: typeof import('./src/composables/helpers')['generateGuid']
+  const getCookie: typeof import('./src/composables/helpers')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getCurrentWatcher: typeof import('vue')['getCurrentWatcher']
   const h: typeof import('vue')['h']
-  const helperService: typeof import('./src/globals/services')['helperService']
+  const helperService: typeof import('./src/composables/services')['helperService']
   const inject: typeof import('vue')['inject']
-  const isDarkMode: typeof import('./src/globals/darkMode')['isDarkMode']
+  const installedApps: typeof import('./src/composables/os')['installedApps']
+  const instanceOfAuthenticationDTO: typeof import('./src/composables/models/AuthenticationDTO')['instanceOfAuthenticationDTO']
+  const instanceOfCommunityModel: typeof import('./src/composables/models/CommunityModel')['instanceOfCommunityModel']
+  const instanceOfDriveInfoDTO: typeof import('./src/composables/models/DriveInfoDTO')['instanceOfDriveInfoDTO']
+  const instanceOfMessageModel: typeof import('./src/composables/models/MessageModel')['instanceOfMessageModel']
+  const instanceOfQuestionModel: typeof import('./src/composables/models/QuestionModel')['instanceOfQuestionModel']
+  const instanceOfUserModel: typeof import('./src/composables/models/UserModel')['instanceOfUserModel']
+  const instanceOfUserModel2: typeof import('./src/composables/models/UserModel2')['instanceOfUserModel2']
+  const isDarkMode: typeof import('./src/composables/darkMode')['isDarkMode']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
-  const isValidISODate: typeof import('./src/globals/helpers')['isValidISODate']
+  const isShallow: typeof import('vue')['isShallow']
+  const isValidISODate: typeof import('./src/composables/helpers')['isValidISODate']
+  const mapValues: typeof import('./src/composables/runtime')['mapValues']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
-  const notificationService: typeof import('./src/globals/services')['notificationService']
-  const notificationsCRUDService: typeof import('./src/globals/services')['notificationsCRUDService']
+  const notificationService: typeof import('./src/composables/services')['notificationService']
+  const notificationsCRUDService: typeof import('./src/composables/services')['notificationsCRUDService']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -61,33 +124,39 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const pontajCRUDService: typeof import('./src/globals/services')['pontajCRUDService']
-  const postsCRUDService: typeof import('./src/globals/services')['postsCRUDService']
+  const pontajCRUDService: typeof import('./src/composables/services')['pontajCRUDService']
+  const postsCRUDService: typeof import('./src/composables/services')['postsCRUDService']
   const provide: typeof import('vue')['provide']
-  const questionAnswersCRUDService: typeof import('./src/globals/services')['questionAnswersCRUDService']
-  const questionsCRUDService: typeof import('./src/globals/services')['questionsCRUDService']
+  const querryParams: typeof import('./src/composables/api')['querryParams']
+  const queryParams: typeof import('./src/composables/api')['queryParams']
+  const querystring: typeof import('./src/composables/runtime')['querystring']
+  const questionAnswersCRUDService: typeof import('./src/composables/services')['questionAnswersCRUDService']
+  const questionsCRUDService: typeof import('./src/composables/services')['questionsCRUDService']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
   const resolveComponent: typeof import('vue')['resolveComponent']
-  const setCookie: typeof import('./src/globals/helpers')['setCookie']
+  const setCookie: typeof import('./src/composables/helpers')['setCookie']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const stringToColor: typeof import('./src/globals/helpers')['stringToColor']
-  const tagsCRUDService: typeof import('./src/globals/services')['tagsCRUDService']
-  const theme: typeof import('./src/globals/darkMode')['theme']
+  const signalRConn: typeof import('./src/composables/ws')['signalRConn']
+  const signalRconn: typeof import('./src/composables/ws')['signalRconn']
+  const stringToColor: typeof import('./src/composables/helpers')['stringToColor']
+  const tagsCRUDService: typeof import('./src/composables/services')['tagsCRUDService']
+  const theme: typeof import('./src/composables/darkMode')['theme']
+  const themeStyle: typeof import('./src/composables/darkMode')['themeStyle']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
-  const toggleDarkMode: typeof import('./src/globals/darkMode')['toggleDarkMode']
+  const toggleDarkMode: typeof import('./src/composables/darkMode')['toggleDarkMode']
   const triggerRef: typeof import('vue')['triggerRef']
   const unref: typeof import('vue')['unref']
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
-  const useDarkMode: typeof import('./src/globals/darkMode')['useDarkMode']
+  const useDarkMode: typeof import('./src/composables/darkMode')['useDarkMode']
   const useId: typeof import('vue')['useId']
   const useLink: typeof import('vue-router')['useLink']
   const useModel: typeof import('vue')['useModel']
@@ -95,21 +164,65 @@ declare global {
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const userCollectionCRUDService: typeof import('./src/globals/services')['userCollectionCRUDService']
-  const usersCRUDService: typeof import('./src/globals/services')['usersCRUDService']
+  const useThemeColor: typeof import('./src/composables/themeMode')['useThemeColor']
+  const userCollectionCRUDService: typeof import('./src/composables/services')['userCollectionCRUDService']
+  const usersCRUDService: typeof import('./src/composables/services')['usersCRUDService']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
   const watchSyncEffect: typeof import('vue')['watchSyncEffect']
+  const windows: typeof import('./src/composables/os')['windows']
 }
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { IAuthenticationDTO, IBaseAudit, IDefinition, User, IPost, Pontaj, Taging, Question, QuestionAnswer, UserTag, UserCollection, INotification } from './src/globals/interfaces'
-  import('./src/globals/interfaces')
+  export type { AdmApi, AdmApi, AdmApi } from './src/composables/apis/AdmApi'
+  import('./src/composables/apis/AdmApi')
+  // @ts-ignore
+  export type { AuthApi, ApiAuthLoginPostRequest, ApiAuthRecoverAccountGetRequest, ApiAuthRegisterGetRequest, AuthApi, AuthApi } from './src/composables/apis/AuthApi'
+  import('./src/composables/apis/AuthApi')
+  // @ts-ignore
+  export type { CommunityApi, ApiCommunityAddPostRequest, ApiCommunityDeleteDeleteRequest, ApiCommunityGetGetRequest, ApiCommunityUpdatePutRequest, CommunityApi, CommunityApi } from './src/composables/apis/CommunityApi'
+  import('./src/composables/apis/CommunityApi')
+  // @ts-ignore
+  export type { DriveApi, ApiDriveDeleteDeleteRequest, ApiDriveDownloadGetRequest, ApiDriveGetFolderContentGetRequest, ApiDriveSearchGetRequest, ApiDriveUploadPostRequest, DriveApi, DriveApi } from './src/composables/apis/DriveApi'
+  import('./src/composables/apis/DriveApi')
+  // @ts-ignore
+  export type { PostsApi, ApiPostsAddPostRequest, ApiPostsDeleteDeleteRequest, ApiPostsGetGetRequest, ApiPostsUpdatePutRequest, PostsApi, PostsApi } from './src/composables/apis/PostsApi'
+  import('./src/composables/apis/PostsApi')
+  // @ts-ignore
+  export type { QuestionAnswersApi, ApiQuestionAnswersAddPostRequest, ApiQuestionAnswersDeleteDeleteRequest, ApiQuestionAnswersGetGetRequest, ApiQuestionAnswersUpdatePutRequest, QuestionAnswersApi, QuestionAnswersApi } from './src/composables/apis/QuestionAnswersApi'
+  import('./src/composables/apis/QuestionAnswersApi')
+  // @ts-ignore
+  export type { UsersApi, ApiUsersAddPostRequest, ApiUsersDeleteDeleteRequest, ApiUsersGetGetRequest, ApiUsersUpdatePutRequest, UsersApi, UsersApi } from './src/composables/apis/UsersApi'
+  import('./src/composables/apis/UsersApi')
+  // @ts-ignore
+  export type { Configuration, BaseAPI, ResponseError, FetchError, RequiredError, JSONApiResponse, VoidApiResponse, BlobApiResponse, TextApiResponse, ConfigurationParameters, FetchAPI, Json, HTTPMethod, HTTPHeaders, HTTPQuery, HTTPBody, HTTPRequestInit, ModelPropertyNaming, InitOverrideFunction, FetchParams, RequestOpts, Consume, RequestContext, ResponseContext, ErrorContext, Middleware, ApiResponse, ResponseTransformer, Configuration, BaseAPI, ResponseError, FetchError, RequiredError, JSONApiResponse, VoidApiResponse, BlobApiResponse, TextApiResponse } from './src/composables/runtime'
+  import('./src/composables/runtime')
+  // @ts-ignore
+  export type { AuthenticationDTO } from './src/composables/models/AuthenticationDTO'
+  import('./src/composables/models/AuthenticationDTO')
+  // @ts-ignore
+  export type { CommunityModel } from './src/composables/models/CommunityModel'
+  import('./src/composables/models/CommunityModel')
+  // @ts-ignore
+  export type { DriveInfoDTO } from './src/composables/models/DriveInfoDTO'
+  import('./src/composables/models/DriveInfoDTO')
+  // @ts-ignore
+  export type { MessageModel } from './src/composables/models/MessageModel'
+  import('./src/composables/models/MessageModel')
+  // @ts-ignore
+  export type { QuestionModel } from './src/composables/models/QuestionModel'
+  import('./src/composables/models/QuestionModel')
+  // @ts-ignore
+  export type { UserModel } from './src/composables/models/UserModel'
+  import('./src/composables/models/UserModel')
+  // @ts-ignore
+  export type { UserModel2 } from './src/composables/models/UserModel2'
+  import('./src/composables/models/UserModel2')
 }
 
 // for vue template auto import
@@ -117,39 +230,97 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/globals/config')['DEFAULT_ROWS_INDEX']>
-    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/globals/config')['DEFAULT_ROWS_OPTIONS']>
+    readonly AdmApi: UnwrapRef<typeof import('./src/composables/apis/AdmApi')['AdmApi']>
+    readonly AuthApi: UnwrapRef<typeof import('./src/composables/apis/AuthApi')['AuthApi']>
+    readonly AuthenticationDTOFromJSON: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOFromJSON']>
+    readonly AuthenticationDTOFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOFromJSONTyped']>
+    readonly AuthenticationDTOToJSON: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOToJSON']>
+    readonly AuthenticationDTOToJSONTyped: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['AuthenticationDTOToJSONTyped']>
+    readonly BASE_PATH: UnwrapRef<typeof import('./src/composables/runtime')['BASE_PATH']>
+    readonly BaseAPI: UnwrapRef<typeof import('./src/composables/runtime')['BaseAPI']>
+    readonly BlobApiResponse: UnwrapRef<typeof import('./src/composables/runtime')['BlobApiResponse']>
+    readonly COLLECTION_FORMATS: UnwrapRef<typeof import('./src/composables/runtime')['COLLECTION_FORMATS']>
+    readonly CommunityApi: UnwrapRef<typeof import('./src/composables/apis/CommunityApi')['CommunityApi']>
+    readonly CommunityModelFromJSON: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['CommunityModelFromJSON']>
+    readonly CommunityModelFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['CommunityModelFromJSONTyped']>
+    readonly CommunityModelToJSON: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['CommunityModelToJSON']>
+    readonly CommunityModelToJSONTyped: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['CommunityModelToJSONTyped']>
+    readonly Configuration: UnwrapRef<typeof import('./src/composables/runtime')['Configuration']>
+    readonly DEFAULT_ROWS_INDEX: UnwrapRef<typeof import('./src/composables/config')['DEFAULT_ROWS_INDEX']>
+    readonly DEFAULT_ROWS_OPTIONS: UnwrapRef<typeof import('./src/composables/config')['DEFAULT_ROWS_OPTIONS']>
+    readonly DefaultConfig: UnwrapRef<typeof import('./src/composables/runtime')['DefaultConfig']>
+    readonly DriveApi: UnwrapRef<typeof import('./src/composables/apis/DriveApi')['DriveApi']>
+    readonly DriveInfoDTOFromJSON: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOFromJSON']>
+    readonly DriveInfoDTOFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOFromJSONTyped']>
+    readonly DriveInfoDTOToJSON: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOToJSON']>
+    readonly DriveInfoDTOToJSONTyped: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['DriveInfoDTOToJSONTyped']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly FILE_ICONS: UnwrapRef<typeof import('./src/globals/config')['FILE_ICONS']>
-    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/globals/config')['INPUT_CLASS']>
-    readonly MENU_ICONS: UnwrapRef<typeof import('./src/globals/config')['MENU_ICONS']>
-    readonly apiRequest: UnwrapRef<typeof import('./src/globals/helpers')['apiRequest']>
-    readonly authService: UnwrapRef<typeof import('./src/globals/services')['authService']>
-    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/globals/helpers')['canUserAccessRoute']>
-    readonly capitalizeString: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeString']>
-    readonly capitalizeWords: UnwrapRef<typeof import('./src/globals/helpers')['capitalizeWords']>
-    readonly clearCookie: UnwrapRef<typeof import('./src/globals/helpers')['clearCookie']>
+    readonly FILE_ICONS: UnwrapRef<typeof import('./src/composables/config')['FILE_ICONS']>
+    readonly FetchError: UnwrapRef<typeof import('./src/composables/runtime')['FetchError']>
+    readonly INPUT_CLASS: UnwrapRef<typeof import('./src/composables/config')['INPUT_CLASS']>
+    readonly JSONApiResponse: UnwrapRef<typeof import('./src/composables/runtime')['JSONApiResponse']>
+    readonly MENU_ICONS: UnwrapRef<typeof import('./src/composables/config')['MENU_ICONS']>
+    readonly MessageModelFromJSON: UnwrapRef<typeof import('./src/composables/models/MessageModel')['MessageModelFromJSON']>
+    readonly MessageModelFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/MessageModel')['MessageModelFromJSONTyped']>
+    readonly MessageModelToJSON: UnwrapRef<typeof import('./src/composables/models/MessageModel')['MessageModelToJSON']>
+    readonly MessageModelToJSONTyped: UnwrapRef<typeof import('./src/composables/models/MessageModel')['MessageModelToJSONTyped']>
+    readonly PostsApi: UnwrapRef<typeof import('./src/composables/apis/PostsApi')['PostsApi']>
+    readonly QuestionAnswersApi: UnwrapRef<typeof import('./src/composables/apis/QuestionAnswersApi')['QuestionAnswersApi']>
+    readonly QuestionModelFromJSON: UnwrapRef<typeof import('./src/composables/models/QuestionModel')['QuestionModelFromJSON']>
+    readonly QuestionModelFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/QuestionModel')['QuestionModelFromJSONTyped']>
+    readonly QuestionModelToJSON: UnwrapRef<typeof import('./src/composables/models/QuestionModel')['QuestionModelToJSON']>
+    readonly QuestionModelToJSONTyped: UnwrapRef<typeof import('./src/composables/models/QuestionModel')['QuestionModelToJSONTyped']>
+    readonly RequiredError: UnwrapRef<typeof import('./src/composables/runtime')['RequiredError']>
+    readonly ResponseError: UnwrapRef<typeof import('./src/composables/runtime')['ResponseError']>
+    readonly TextApiResponse: UnwrapRef<typeof import('./src/composables/runtime')['TextApiResponse']>
+    readonly UserModel2FromJSON: UnwrapRef<typeof import('./src/composables/models/UserModel2')['UserModel2FromJSON']>
+    readonly UserModel2FromJSONTyped: UnwrapRef<typeof import('./src/composables/models/UserModel2')['UserModel2FromJSONTyped']>
+    readonly UserModel2ToJSON: UnwrapRef<typeof import('./src/composables/models/UserModel2')['UserModel2ToJSON']>
+    readonly UserModel2ToJSONTyped: UnwrapRef<typeof import('./src/composables/models/UserModel2')['UserModel2ToJSONTyped']>
+    readonly UserModelFromJSON: UnwrapRef<typeof import('./src/composables/models/UserModel')['UserModelFromJSON']>
+    readonly UserModelFromJSONTyped: UnwrapRef<typeof import('./src/composables/models/UserModel')['UserModelFromJSONTyped']>
+    readonly UserModelToJSON: UnwrapRef<typeof import('./src/composables/models/UserModel')['UserModelToJSON']>
+    readonly UserModelToJSONTyped: UnwrapRef<typeof import('./src/composables/models/UserModel')['UserModelToJSONTyped']>
+    readonly UsersApi: UnwrapRef<typeof import('./src/composables/apis/UsersApi')['UsersApi']>
+    readonly VoidApiResponse: UnwrapRef<typeof import('./src/composables/runtime')['VoidApiResponse']>
+    readonly apiRequest: UnwrapRef<typeof import('./src/composables/api')['apiRequest']>
+    readonly auditConn: UnwrapRef<typeof import('./src/composables/ws')['auditConn']>
+    readonly canConsumeForm: UnwrapRef<typeof import('./src/composables/runtime')['canConsumeForm']>
+    readonly canUserAccessRoute: UnwrapRef<typeof import('./src/composables/helpers')['canUserAccessRoute']>
+    readonly capitalizeString: UnwrapRef<typeof import('./src/composables/helpers')['capitalizeString']>
+    readonly capitalizeWords: UnwrapRef<typeof import('./src/composables/helpers')['capitalizeWords']>
+    readonly clearCookies: UnwrapRef<typeof import('./src/composables/helpers')['clearCookies']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
-    readonly darkMode: UnwrapRef<typeof import('./src/globals/darkMode')['darkMode']>
+    readonly darkMode: UnwrapRef<typeof import('./src/composables/darkMode')['darkMode']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
-    readonly downloadInBrowser: UnwrapRef<typeof import('./src/globals/helpers')['downloadInBrowser']>
+    readonly downloadInBrowser: UnwrapRef<typeof import('./src/composables/helpers')['downloadInBrowser']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
-    readonly fileManager: UnwrapRef<typeof import('./src/globals/services')['fileManager']>
-    readonly generateGuid: UnwrapRef<typeof import('./src/globals/helpers')['generateGuid']>
-    readonly getCookie: UnwrapRef<typeof import('./src/globals/helpers')['getCookie']>
+    readonly exists: UnwrapRef<typeof import('./src/composables/runtime')['exists']>
+    readonly generateGuid: UnwrapRef<typeof import('./src/composables/helpers')['generateGuid']>
+    readonly getCookie: UnwrapRef<typeof import('./src/composables/helpers')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
-    readonly helperService: UnwrapRef<typeof import('./src/globals/services')['helperService']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
+    readonly installedApps: UnwrapRef<typeof import('./src/composables/os')['installedApps']>
+    readonly instanceOfAuthenticationDTO: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['instanceOfAuthenticationDTO']>
+    readonly instanceOfCommunityModel: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['instanceOfCommunityModel']>
+    readonly instanceOfDriveInfoDTO: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['instanceOfDriveInfoDTO']>
+    readonly instanceOfMessageModel: UnwrapRef<typeof import('./src/composables/models/MessageModel')['instanceOfMessageModel']>
+    readonly instanceOfQuestionModel: UnwrapRef<typeof import('./src/composables/models/QuestionModel')['instanceOfQuestionModel']>
+    readonly instanceOfUserModel2: UnwrapRef<typeof import('./src/composables/models/UserModel2')['instanceOfUserModel2']>
+    readonly instanceOfUserModel: UnwrapRef<typeof import('./src/composables/models/UserModel')['instanceOfUserModel']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
-    readonly isValidISODate: UnwrapRef<typeof import('./src/globals/helpers')['isValidISODate']>
+    readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
+    readonly isValidISODate: UnwrapRef<typeof import('./src/composables/helpers')['isValidISODate']>
+    readonly mapValues: UnwrapRef<typeof import('./src/composables/runtime')['mapValues']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
@@ -168,21 +339,19 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly pontajCRUDService: UnwrapRef<typeof import('./src/globals/services')['pontajCRUDService']>
-    readonly postsCRUDService: UnwrapRef<typeof import('./src/globals/services')['postsCRUDService']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
-    readonly questionAnswersCRUDService: UnwrapRef<typeof import('./src/globals/services')['questionAnswersCRUDService']>
-    readonly questionsCRUDService: UnwrapRef<typeof import('./src/globals/services')['questionsCRUDService']>
+    readonly queryParams: UnwrapRef<typeof import('./src/composables/api')['queryParams']>
+    readonly querystring: UnwrapRef<typeof import('./src/composables/runtime')['querystring']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
-    readonly setCookie: UnwrapRef<typeof import('./src/globals/helpers')['setCookie']>
+    readonly setCookie: UnwrapRef<typeof import('./src/composables/helpers')['setCookie']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly stringToColor: UnwrapRef<typeof import('./src/globals/helpers')['stringToColor']>
-    readonly tagsCRUDService: UnwrapRef<typeof import('./src/globals/services')['tagsCRUDService']>
+    readonly signalRConn: UnwrapRef<typeof import('./src/composables/ws')['signalRConn']>
+    readonly stringToColor: UnwrapRef<typeof import('./src/composables/helpers')['stringToColor']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
@@ -199,11 +368,10 @@ declare module 'vue' {
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
-    readonly userCollectionCRUDService: UnwrapRef<typeof import('./src/globals/services')['userCollectionCRUDService']>
-    readonly usersCRUDService: UnwrapRef<typeof import('./src/globals/services')['usersCRUDService']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>
     readonly watchSyncEffect: UnwrapRef<typeof import('vue')['watchSyncEffect']>
+    readonly windows: UnwrapRef<typeof import('./src/composables/os')['windows']>
   }
 }

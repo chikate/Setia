@@ -1,20 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Main.Data.Models
+﻿namespace Main.Data.Models
 {
-    public class QuestionModel : BaseModel
+    public class QuestionModel : BaseModel<Guid>
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        [Required]
         public required string Title { get; set; }
-        public string? Comment { get; set; } = null;
+        public List<string>? Comments { get; set; } = null;
         public List<string>? Options { get; set; } = null;
         public List<string>? Selection { get; set; } = null;
-        public string? EndOption { get; set; } = null;
-        [Column(TypeName = "timestamptz")]
-        public DateTimeOffset? Expires { get; set; } = null;
+        public List<string>? CorrectAnswers { get; set; } = null;
     }
 }

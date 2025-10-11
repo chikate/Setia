@@ -4,7 +4,7 @@ const accountOverlay = ref()
 
 <template>
   <nav
-    class="fixed bg-primary-reverse shadow-3 border-1 border-priamry align-items-center border-round z-5 flex-row"
+    class="fixed bg-primary-reverse shadow-3 border-1 border-priamry align-items-center border-round z-5 flex flex-row"
   >
     <InputText placeholder="Search" class="border-0 shadow-0" />
     <RouterLink
@@ -32,7 +32,7 @@ const accountOverlay = ref()
           ? $router.push(`/profile/${authService().userData?.username}`)
           : accountOverlay.toggle($event)
       "
-      class="cursor-pointer flex-row align-items-center"
+      class="cursor-pointer flex flex-row align-items-center"
     >
       <Avatar
         class="mx-1"

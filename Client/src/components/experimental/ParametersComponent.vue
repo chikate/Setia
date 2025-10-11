@@ -63,13 +63,13 @@ function handleDeleteParameter(index: number) {
 </script>
 
 <template>
-  <div class="flex-column">
+  <div class="flex flex-column">
     <InputText
       placeholder="Add parameter"
       @keydown.enter="handleAddParameter"
     />
     <div
-      class="parameter flex-row gap-2 border-bottom-1 border-gray-200 justify-content-between align-items-center cursor-pointer"
+      class="parameter flex flex-row gap-2 border-bottom-1 border-gray-200 justify-content-between align-items-center cursor-pointer"
       draggable
       v-for="(item, item_index) in parameters"
       :key="item_index"

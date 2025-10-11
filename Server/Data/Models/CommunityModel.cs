@@ -1,12 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Main.Data.Models;
 
-namespace Main.Data.Models;
-
-public class CommunityModel : BaseModel
+public class CommunityModel : BaseModel<Guid>
 {
-    [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
-
     public string? Description { get; set; }
-    public IList<string>? Members { get; set; }
+    public List<Guid>? Members { get; set; }
 }

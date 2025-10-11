@@ -1,5 +1,5 @@
 <template>
-  <footer class="flex-row w-full gap-4 py-4 px-8 border-top-1">
+  <footer class="flex flex-row w-full gap-4 py-4 px-8 border-top-1">
     <label class="flex flex-grow-1">
       © {{ new Date().getFullYear() }} Dragos, Inc. All Rights Reserved.
     </label>

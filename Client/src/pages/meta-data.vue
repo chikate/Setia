@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-row gap-2">
-    <div class="flex-column gap-2">
-      <div class="card font-medium p-2 gap-2 flex-column">
+  <div class="flex flex-row gap-2">
+    <div class="flex flex-column gap-2">
+      <div class="font-medium p-2 gap-2 flex flex-column">
         Parameters
         <InputText
           placeholder="Add parameter"
@@ -37,7 +37,7 @@
           "
         />
         <div
-          class="parameter flex-row justify-content-between align-items-center cursor-pointer"
+          class="parameter flex flex-row justify-content-between align-items-center cursor-pointer"
           :draggable="true"
           :ondrag="dragStart"
           v-for="item in parameters"
@@ -60,6 +60,11 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "MetaData",
+  icon: "☄️",
+});
+
 const parameters = ref([]);
 // const parameters = defineModel('parameters', {
 //   type: Array<{ name: string; type: string }>,

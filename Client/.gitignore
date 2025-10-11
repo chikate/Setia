@@ -30,3 +30,9 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# Custom
+typed-router.d.ts
+components.d.ts
+auto-imports.d.ts
+package-lock.json

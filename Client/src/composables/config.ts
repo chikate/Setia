@@ -1,0 +1,68 @@
+// All these constants sould exist inside a db in the future
+
+export const INPUT_CLASS = `m-0 p-2 px-3 justify-content-start mm-w-130px`;
+export const DEFAULT_ROWS_OPTIONS = [15, 30, 60, 100];
+export const DEFAULT_ROWS_INDEX = 0;
+
+export const FILE_ICONS: Record<string, string> = {
+  folder: "pi pi-folder",
+  png: "pi pi-image",
+  jpg: "pi pi-image",
+  jpeg: "pi pi-image",
+  gif: "pi pi-image",
+  bmp: "pi pi-image",
+  svg: "pi pi-image",
+  zip: "pi pi-book",
+  rar: "pi pi-book",
+  "7z": "pi pi-book",
+  tar: "pi pi-book",
+  gz: "pi pi-book",
+  pdf: "pi pi-file-pdf",
+  doc: "pi pi-file-word",
+  docx: "pi pi-file-word",
+  xls: "pi pi-file-excel",
+  xlsx: "pi pi-file-excel",
+  ppt: "pi pi-file-powerpoint",
+  pptx: "pi pi-file-powerpoint",
+  mp3: "pi pi-volume-up",
+  wav: "pi pi-volume-up",
+  ogg: "pi pi-volume-up",
+  flac: "pi pi-volume-up",
+  mp4: "pi pi-video",
+  avi: "pi pi-video",
+  mkv: "pi pi-video",
+  mov: "pi pi-video",
+  wmv: "pi pi-video",
+  txt: "pi pi-file-word",
+  log: "pi pi-file",
+  html: "pi pi-code",
+  css: "pi pi-code",
+  js: "pi pi-code",
+  json: "pi pi-code",
+  xml: "pi pi-code",
+  exe: "pi pi-cog",
+  bat: "pi pi-cog",
+  sh: "pi pi-cog",
+  code: "pi-code",
+};
+
+export const MENU_ICONS: Record<string, string> = {
+  default: "pi pi-circle",
+  canvas: "pi pi-expand",
+  chat: "pi pi-comments",
+  drive: "pi pi-box",
+  flow: "pi pi-arrow-right-arrow-left",
+  home: "pi pi-home",
+  information: "pi pi-info-circle",
+  lists: "pi pi-bars",
+  maps: "pi pi-map",
+  nutrition: "pi pi-apple",
+  referebcer: "pi pi-book",
+  reports: "pi pi-chart-bar",
+  tasks: "pi pi-check",
+
+  universe: "pi pi-sun",
+  administration: "pi pi-cog",
+  downloads: "pi pi-download",
+  code: "pi pi-code",
+};

@@ -1,7 +1,7 @@
 <template>
   <!-- style="background: linear-gradient(rgba(23, 23, 23, 0) 20%, rgba(23, 23, 23, 1))" -->
-  <div class="flex-column justify-content-center gap-8 align-items-center">
-    <div class="flex-column text-center"></div>
+  <div class="flex flex-column justify-content-center gap-8 align-items-center">
+    <div class="flex flex-column text-center"></div>
     <DataTable
       v-if="loadedItems[0]"
       :value="loadedItems"
@@ -29,6 +29,11 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+  name: "Inventory",
+  icon: "💼",
+});
+
 const loadedItems = ref([{ name: "Test", value: 1 }]);
 const items = ref([{ name: "Test", value: 1 }]);
 

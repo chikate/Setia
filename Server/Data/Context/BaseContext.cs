@@ -1,7 +1,9 @@
-﻿using Main.Modules.Adm;
+﻿using Main.Data.Models;
+using Main.Modules.Adm;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Main.Data.Context;
 
@@ -11,11 +13,17 @@ public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfi
     public required DbSet<UserModel> Users { get; set; }
     public required DbSet<SettingsModel> Settings { get; set; }
     public required DbSet<AuditModel> Audit { get; set; }
+    public required DbSet<MessageModel> Posts { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("base");
+
+        modelBuilder.Entity<MessageModel>(builder =>
+        {
+            builder.HasKey(p => p.Id);
+        });
 
         //#region Default Users
         //new List<UserModel> {

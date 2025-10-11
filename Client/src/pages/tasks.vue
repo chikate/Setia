@@ -1,12 +1,12 @@
 <template>
-  <div class="flex-column align-items-start gap-3 p-3">
+  <div class="flex flex-column align-items-start gap-3 p-3">
     <InputText placeholder="Add task" @keydown.enter="handleAddTask" />
-    <div class="flex-row">
-      <div class="card flex-column gap-3 h-full overflow-auto">
+    <div class="flex flex-row">
+      <div class="flex flex-column gap-3 h-full overflow-auto">
         <div
           v-for="(project, index) in projects"
           :key="index"
-          class="cursor-pointer flex-column gap-1 text-blue-500 h-full overflow-auto"
+          class="cursor-pointer flex flex-column gap-1 text-blue-500 h-full overflow-auto"
         >
           {{ project.name }}
           <div class="h-full overflow-auto">
@@ -20,7 +20,7 @@
               :draggable="true"
             >
               {{ task.description }}
-              <div class="flex-row">
+              <div class="flex flex-row">
                 <Button text label="Pick" />
                 <AvatarGroup>
                   <Avatar
@@ -49,6 +49,12 @@
 <script setup lang="ts">
 import { ToastMessageOptions } from "primevue/toast";
 import { useToast } from "primevue/usetoast";
+
+defineOptions({
+  name: "Tasks",
+  icon: "✅",
+});
+
 const toast = useToast();
 
 export interface IProject {

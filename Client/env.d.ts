@@ -2,6 +2,7 @@
 /// <reference types="vite/client" />
 /// <reference types="vue" />
 /// <reference types="unplugin-vue-router/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
 import { Router, RouteLocationNormalized } from "vue-router";
 

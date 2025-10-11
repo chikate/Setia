@@ -52,14 +52,14 @@ const dragStart = (ev: any) =>
 </script>
 
 <template>
-  <div id="parameters_panel" class="flex-column gap-2">
+  <div id="parameters_panel" class="flex flex-column gap-2">
     <InputText
       placeholder="Add parameter"
       @keydown.enter="addParameter(($event.target as HTMLInputElement).value)"
     />
-    <div class="flex-column">
+    <div class="flex flex-column">
       <div
-        class="flex-row justify-content-between align-params-center cursor-pointer"
+        class="flex flex-row justify-content-between align-params-center cursor-pointer"
         draggable
         :ondragstart="dragStart"
         v-for="(param, param_index) in parameters"

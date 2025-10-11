@@ -1,13 +1,13 @@
 <template>
-  <div class="flex-column">
+  <div class="flex flex-column">
     <div
-      class="w-full h-screen bg-cover bg-center flex flex-column"
+      class="w-full h-screen bg-cover bg-center flex flex flex-column"
       style="
         background-image: url('https://cdnb.artstation.com/p/assets/images/images/020/631/361/4k/maria-puchkova-5.jpg?1568568172');
       "
     >
       <div
-        class="h-screen w-full flex flex-column align-items-center justify-content-center"
+        class="h-screen w-full flex flex flex-column align-items-center justify-content-center"
         style="
           background: linear-gradient(
             rgba(23, 23, 23, 0) 20%,
@@ -19,7 +19,7 @@
         <a class="text-3xl font-bold"></a>
       </div>
     </div>
-    <div class="flex-column p-4">
+    <div class="flex flex-column p-4">
       <img
         src="https://i.ex-cdn.com/mgn.vn/files/content/2022/08/17/one-piece-1245.jpg"
       />
@@ -110,7 +110,7 @@ const items = ref([
 
 onBeforeMount(() => {
   active.value = items.value.findIndex(
-    (item) => route.path === router.resolve(item.route).path
+    (item) => route.path == router.resolve(item.route).path
   );
 });
 
@@ -118,7 +118,7 @@ watch(
   route,
   () => {
     active.value = items.value.findIndex(
-      (item) => route.path === router.resolve(item.route).path
+      (item) => route.path == router.resolve(item.route).path
     );
   },
   { immediate: true }

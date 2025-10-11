@@ -1,12 +1,9 @@
 <template>
-  <div
-    :id="$options.__name"
-    style="min-width: 45rem"
-    class="border-round flex flex-column align-items-start"
-    :class="
-      thisPostData.message || chat ? 'shadow-1 p-4 bg-primary-reverse' : 'gap-4'
-    "
-  >
+  <div :id="$options.__name" class="flex flex-column gap-2">
+    <FileViewer
+      :src="'1/2262535539-98351197-299350c1-875d-457d-82dd-a962bfd00dde.mp4'"
+    />
+
     <div
       v-if="thisPostData.message"
       class="flex flex-wrap gap-4 align-items-center w-full"
@@ -18,7 +15,7 @@
         size="large"
         shape="circle"
       />
-      <div class="flex-grow-1 flex flex-column justify-content-center">
+      <div class="flex-grow-1 flex flex flex-column justify-content-center">
         <div class="text-lg opacity-90">{{ authorData.username }}</div>
         <div class="text-xs opacity-40">
           {{
@@ -45,7 +42,7 @@
       </div>
 
       <Button
-        v-if="authService.user?.username === authorData.username"
+        v-if="authService.user?.username == authorData.username"
         type="button"
         icon="pi pi-ellipsis-v"
         @click="menuRef.toggle($event)"
@@ -68,9 +65,7 @@
               {
                 label: 'Edit',
                 icon: 'pi pi-pencil',
-                command: () => (
-                  (inEdit = true), (localMessage = thisPostData.message)
-                ),
+                command: () => (editing = !editing),
               },
               {
                 label: 'Export',
@@ -94,31 +89,15 @@
       />
     </div>
 
-    <div
-      v-if="thisPostData.message"
-      v-html="thisPostData.message"
-      style="max-width: 45rem"
-    />
-    <Editor
-      v-else
-      v-model="localMessage"
-      class="w-full card border-round bg-cover bg-center"
-      style="max-width: 45rem"
-    />
+    <Editor v-if="editing" v-model="thisPostData.message" />
 
     <QuestionComponent
       answerMode
       v-if="thisPostData.questionId && thisPostData.questionData"
       v-model:question-data="thisPostData.questionData"
-      class="mb-3"
     />
 
-    <QuestionComponent
-      v-if="thisPostData.questionData && !thisPostData.message"
-      v-model:question-data="thisPostData.questionData"
-    />
-
-    <div class="flex flex-column align-items-start gap-4">
+    <div class="flex flex flex-column align-items-start gap-4">
       <Button
         v-if="!thisPostData.message"
         class="shadow-1"
@@ -157,7 +136,7 @@
       />
     </div>
 
-    <div class="flex flex-column gap-4 w-full">
+    <div class="flex flex flex-column gap-4 w-full">
       <!-- Action buttons -->
       <div
         v-if="!chat && thisPostData.message"
@@ -302,12 +281,12 @@
 
 <script setup lang="ts">
 import EmojiPicker from "vue3-emoji-picker";
-import type { Post, User, UserCollection, Question } from "@/global/interfaces";
-
-defineProps({
-  // postData: { type: Object as PropType<Post>, required: false },
-  chat: { type: Boolean, required: false },
-});
+import type {
+  Post,
+  User,
+  UserCollection,
+  Question,
+} from "@/composables/interfaces";
 
 const thisPostData = defineModel("postData", {
   type: Object as PropType<Post>,
@@ -320,7 +299,7 @@ const authorData = ref<User>({} as User);
 const localMessage = ref(thisPostData.value.message);
 const menuRef = ref();
 const user = ref(JSON.parse(localStorage.getItem("user") ?? "null")?.username);
-const inEdit = ref<boolean>(false);
+const editing = ref<boolean>(false);
 
 const icons = ref([
   {
@@ -395,43 +374,25 @@ onBeforeMount(async () => {
   ];
 });
 
-function stringToColor(str: string): string {
-  // Create a hash from the string
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  // Convert the hash to an RGB color
-  const r = (hash >> 16) & 0xff;
-  const g = (hash >> 8) & 0xff;
-  const b = hash & 0xff;
-
-  const alpha = 0.6;
-
-  // Return the color in RGBA format
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-async function post(tags?: string[]) {
-  let questionsData: Question | undefined = undefined;
-  if (thisPostData.value.questionData)
-    questionsData = (
-      await questionsCRUDService.addItems([
-        thisPostData.value.questionData,
-      ] as Question[])
-    )[0];
-  await postsCRUDService.addItems([
-    {
-      ...usePostsCRUDStore().editItem,
-      message: localMessage.value,
-      questionId: questionsData?.id,
-      // comment
-      tags: thisPostData.value.entityId ? ["Comment"] : tags,
-      entityId: thisPostData.value.entityId,
-    },
-  ] as Post[]);
-}
+// async function post(tags?: string[]) {
+//   let questionsData: Question | undefined = undefined;
+//   if (thisPostData.value.questionData)
+//     questionsData = (
+//       await questionsCRUDService.addItems([
+//         thisPostData.value.questionData,
+//       ] as Question[])
+//     )[0];
+//   await postsCRUDService.addItems([
+//     {
+//       ...usePostsCRUDStore().editItem,
+//       message: localMessage.value,
+//       questionId: questionsData?.id,
+//       // comment
+//       tags: thisPostData.value.entityId ? ["Comment"] : tags,
+//       entityId: thisPostData.value.entityId,
+//     },
+//   ] as Post[]);
+// }
 
 async function addLocalQuestion() {
   thisPostData.value.questionData = new Object() as Question;

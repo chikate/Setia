@@ -1,13 +1,13 @@
 <template>
-  <div class="flex-column">
+  <div class="flex flex-column">
     <div
-      class="w-full h-screen bg-cover bg-center flex flex-column"
+      class="w-full h-screen bg-cover bg-center flex flex flex-column"
       style="
         background-image: url('https://www.wallpaperflare.com/static/447/396/936/fantasy-art-egyptian-mesopotamia-concrete-wallpaper-preview.jpg');
       "
     >
       <div
-        class="h-screen w-full flex flex-column align-items-center justify-content-center"
+        class="h-screen w-full flex flex flex-column align-items-center justify-content-center"
         style="
           background: linear-gradient(
             rgba(23, 23, 23, 0) 20%,
@@ -22,7 +22,7 @@
         >
       </div>
     </div>
-    <div class="flex-column p-4 align-items-center justify-content-center">
+    <div class="flex flex-column p-4 align-items-center justify-content-center">
       <h1>Language</h1>
       <iframe
         width="100%"
@@ -109,7 +109,7 @@ const items = ref([
 
 onBeforeMount(() => {
   active.value = items.value.findIndex(
-    (item) => route.path === router.resolve(item.route).path
+    (item) => route.path == router.resolve(item.route).path
   );
 });
 
@@ -117,7 +117,7 @@ watch(
   route,
   () => {
     active.value = items.value.findIndex(
-      (item) => route.path === router.resolve(item.route).path
+      (item) => route.path == router.resolve(item.route).path
     );
   },
   { immediate: true }

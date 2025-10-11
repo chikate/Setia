@@ -1,44 +1,18 @@
-<script setup lang="ts">
-const text = defineModel('text', {
-  type: String,
-  required: false,
-  default: ''
-})
-const checkIn = defineModel('checkIn', {
-  type: Object as PropType<Date>,
-  required: false
-})
-const checkOut = defineModel('checkOut', {
-  type: Object as PropType<Date>,
-  required: false
-})
-const adults = defineModel('adults', {
-  type: Number,
-  required: false,
-  default: 3
-})
-const children = defineModel('children', {
-  type: Number,
-  required: false,
-  default: 0
-})
-
-const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-gray-500') // needs to move to css
-</script>
-
 <template>
   <div
-    class="card custom-shadow-1 p-5 gap-2 flex-column z-2"
-    style="width: 450px; min-width: 450px; max-width: 450px; transform: translateX(80px)"
+    class=" custom-shadow-1 p-5 gap-2 flex flex-column z-2"
+    style="width: 450px; min-width: 450px; max-width: 450px"
   >
     <div class="text-3xl font-bold">The perfect place</div>
-    <div class="font-light mb-4">Make your reservation for the perfect trip.</div>
-    <div class="card flex-column">
+    <div class="font-light mb-4">
+      Make your reservation for the perfect trip.
+    </div>
+    <div class=" flex flex-column">
       <div :class="fieldTextStyle">Details</div>
       <Textarea v-model="text" class="w-full border-0" rows="1" autoResize />
     </div>
-    <div class="card flex-row">
-      <div class="flex-column w-full">
+    <div class=" flex flex-row">
+      <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHECK IN</div>
         <DatePicker
           v-model="checkIn"
@@ -48,7 +22,7 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
         />
       </div>
       <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-100" />
-      <div class="flex-column w-full">
+      <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHECK OUT</div>
         <DatePicker
           v-model="checkOut"
@@ -58,8 +32,8 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
         />
       </div>
     </div>
-    <div class="card flex-row">
-      <div class="flex-column w-full">
+    <div class=" flex flex-row">
+      <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">ADULTS</div>
         <Dropdown
           class="button-gradient-effect w-full cursor-pointer"
@@ -68,7 +42,7 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
         />
       </div>
       <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-100" />
-      <div class="flex-column w-full">
+      <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHILDREN</div>
         <Dropdown
           class="button-gradient-effect w-full cursor-pointer"
@@ -77,9 +51,42 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
         />
       </div>
     </div>
-    <Button class="button-gradient-effect p-3 font-bold text-xl font-bold mt-4" label="Book now" />
+    <Button
+      class="button-gradient-effect p-3 font-bold text-xl font-bold mt-4 border-5 border-gray-200"
+      label="Book now"
+    />
   </div>
 </template>
+
+<script setup lang="ts">
+const text = defineModel("text", {
+  type: String,
+  required: false,
+  default: "",
+});
+const checkIn = defineModel("checkIn", {
+  type: Object as PropType<Date>,
+  required: false,
+});
+const checkOut = defineModel("checkOut", {
+  type: Object as PropType<Date>,
+  required: false,
+});
+const adults = defineModel("adults", {
+  type: Number,
+  required: false,
+  default: 3,
+});
+const children = defineModel("children", {
+  type: Number,
+  required: false,
+  default: 0,
+});
+
+const fieldTextStyle = ref(
+  "p-2 mx-1 pb-0 font-semibold text-xs uppercase text-gray-500"
+); // needs to move to css
+</script>
 
 <style scoped>
 .remove-calendar-border > * {
@@ -99,7 +106,12 @@ const fieldTextStyle = ref('p-2 mx-1 pb-0 font-semibold text-xs uppercase text-g
 
 .p-highlight {
   background-size: 300% 100%;
-  background-image: linear-gradient(42deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%);
+  background-image: linear-gradient(
+    42deg,
+    #4158d0 0%,
+    #c850c0 46%,
+    #ffcc70 100%
+  );
   transition: all 0.4s ease;
 }
 .p-highlight:hover {

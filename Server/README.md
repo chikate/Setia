@@ -32,5 +32,5 @@ Right click on **Main** project > select **"Manage User Secrets"** and paste thi
 To add a new migration:
 
 ```bash
-Add-Migration 1 -Context BaseContext -Output Data/Migrations
+EntityFrameworkCore\Add-Migration 1 -Context BaseContext -Output Data/Migrations
 ```

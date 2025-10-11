@@ -1,14 +1,10 @@
 ﻿using Main.Modules.Audit;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Main.Data.Models
 {
-    public class IntervalModel : BaseModel
+    public class IntervalModel : BaseModel<Guid>
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         [ForeignKey("User")]
         public Guid? UserId { get; set; } = null;
         public AuditModel? UserData { get; set; } = null;

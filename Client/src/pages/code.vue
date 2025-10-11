@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-row gap-3">
-    <div id="variables" class="flex-column p-2">
+  <div class="flex flex-row">
+    <div id="variables" class="flex flex-column p-2">
       <AccordionTab header="Parameters">
         <SimpleParametersComponent
           :parameters
@@ -8,24 +8,9 @@
         />
       </AccordionTab>
     </div>
-    <div class="flex-column w-full">
-      <div class="tabs flex-row">
-        <div
-          v-for="(file, index) in tabs"
-          :key="file"
-          @click="activeTabIndex = index"
-          :class="{ 'bg-blue-200': activeTabIndex == index }"
-          class="flex-row align-items-center"
-        >
-          <i class="pi pi-file text-center" style="min-width: 32px" />
-          <label>
-            {{ file }}
-          </label>
-          <Button text icon="pi pi-times" @click="tabs.splice(index, 1)" />
-        </div>
-      </div>
-      <div class="flex-row gap-2 p-2 border-1 h-full">
-        <div class="flex-column">
+    <div class="flex flex-column w-full">
+      <div class="flex flex-row gap-2 p-2 border-1 h-full">
+        <div class="flex flex-column">
           <span
             style="min-width: 20px"
             class="text-right"
@@ -39,22 +24,30 @@
           ref="contentEditor"
           class="h-full w-full"
           contenteditable
-          :innerText="tabs[activeTabIndex]"
           @input="onInput"
           @keydown="handleKeydown"
         />
       </div>
       <Terminal prompt=">" aria-label="PrimeVue Terminal Service" />
     </div>
+
+    <MonacoEditor />
   </div>
 </template>
 
 <script lang="ts" setup>
-const tabs = ref(["aasdasdsdd1", "aasdassdd2", "aasdsdd3"]);
+defineOptions({
+  name: "Code",
+  icon: "🧬",
+});
+
+const code = ref(`function hello() {
+  console.log("Hello, Monaco in Vue!");
+}`);
+
 const lineCount = ref(1);
 const parameters = ref([]);
 const selectedParam = ref();
-const activeTabIndex = ref(1);
 const contentEditor = ref<HTMLElement>();
 
 // Autocomplete Data
@@ -107,19 +100,19 @@ const updateCaretPosition = () => {
 // Function to handle arrow keys and enter for selecting suggestions
 const handleKeydown = (event: KeyboardEvent) => {
   if (showSuggestions.value) {
-    if (event.key === "ArrowDown") {
+    if (event.key == "ArrowDown") {
       activeSuggestion.value =
         (activeSuggestion.value + 1) % filteredSuggestions.value.length;
       event.preventDefault();
-    } else if (event.key === "ArrowUp") {
+    } else if (event.key == "ArrowUp") {
       activeSuggestion.value =
         (activeSuggestion.value - 1 + filteredSuggestions.value.length) %
         filteredSuggestions.value.length;
       event.preventDefault();
-    } else if (event.key === "Enter") {
+    } else if (event.key == "Enter") {
       event.preventDefault();
       selectSuggestion(filteredSuggestions.value[activeSuggestion.value]);
-    } else if (event.key === "Escape") {
+    } else if (event.key == "Escape") {
       showSuggestions.value = false;
     }
   }
@@ -143,19 +136,3 @@ const selectSuggestion = (suggestion: string) => {
   });
 };
 </script>
-
-<style scoped>
-.tabs > * {
-  border-width: 1px !important;
-  border-style: solid;
-}
-.tabs > *:only-child {
-  border-top: 5px;
-}
-.tabs > *:first-child {
-  border-top-left-radius: 5px;
-}
-.tabs > *:last-child {
-  border-top-right-radius: 5px;
-}
-</style>

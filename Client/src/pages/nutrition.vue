@@ -1,10 +1,98 @@
+<template>
+  <div class="flex flex-row gap-3 h-full">
+    <div class="flex flex-column flex-grow-1 gap-3 h-full" style="width: 20vw">
+      <InputText v-model="search" placeholder="Search" />
+      <div class="flex-wrap h-full overflow-auto">
+        <div
+          v-for="item in items?.filter((food) =>
+            food.name.toLowerCase().includes(search.toLowerCase())
+          )"
+          :key="item.name"
+          @click="selectionName = item.name"
+          class="m-3 border-2 custom-shadow-1 cursor-pointer flex flex-column justify-content-between align-items-center"
+          style="flex: 1 1 auto"
+          :style="{
+            'border-color': selectedItem.name == item.name ? 'blue' : 'gray',
+          }"
+        >
+          <img
+            style="max-width: 100px"
+            :src="`/${item.name}.png`"
+            class="w-full"
+          />
+          <label class="text-center pb-2">{{ item.name }}</label>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex flex-column w-full gap-3 h-full overflow-auto"
+      style="max-width: 800px"
+    >
+      <div
+        class="flex flex-row align-items-center bg-gray-200 border-3 border-orange-500"
+      >
+        <div class="flex flex-column w-full h-full p-4">
+          <label class="text-5xl font-semibold h-full align-items-center flex">
+            {{ selectedItem.name }}
+          </label>
+          <label class="font-semibold text-orange-500">Legendary</label>
+        </div>
+        <img
+          style="max-width: 100px"
+          :src="`/${selectedItem.name}.png`"
+          class="w-full"
+        />
+      </div>
+      <div v-if="selectedItem.profile" class="flex flex-column gap-2">
+        <label class="text-2xl font-semibold">Stats</label>
+        <div
+          class="px-2 flex flex-row gap-2 text-green-400"
+          v-for="item in selectedItem.profile?.sort((a, b) =>
+            a.nutrient.localeCompare(b.nutrient)
+          )"
+          :key="item.nutrient"
+          style="min-width: 200px"
+        >
+          <div
+            class="cursor-pointer w-full flex flex-row align-items-center gap-2"
+            @click=""
+          >
+            <img :src="`/${item.nutrient}.png`" style="width: 32px" />
+            <label class="font-semibold text-xl hover:text-blue-200">
+              {{ item.nutrient }}
+            </label>
+          </div>
+          <label class="font-semibold text-xl text-left">
+            {{ item.value }}
+          </label>
+        </div>
+      </div>
+      <div v-if="selectedItem.effects" class="flex flex-column gap-2">
+        <label class="text-2xl font-semibold">Special effects</label>
+        <div
+          class="px-2 flex flex-row gap-2 text-green-400"
+          v-for="item in selectedItem.effects"
+          :key="item"
+        >
+          <label
+            class="font-semibold text-xl cursor-pointer hover:text-blue-200"
+          >
+            {{ item }}
+          </label>
+        </div>
+      </div>
+      <div class="flex flex-column gap-3">
+        <label class="text-2xl font-semibold">Spawn location</label>
+        <img :src="selectedItem.spawnLocation" class="w-full" />
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-definePage({
-  meta: {
-    title: "Nutrition",
-    description: "",
-    roles: ["user"],
-  },
+defineOptions({
+  name: "Nutrition",
+  icon: "🍎",
 });
 
 interface IFood {
@@ -13,8 +101,8 @@ interface IFood {
   effects: string[];
   spawnLocation: string;
 }
-const foods = defineModel("foods", {
-  type: Array<IFood>,
+const items = defineModel("items", {
+  type: Array<IWeapon>,
   default: [
     {
       name: "Apple",
@@ -129,10 +217,10 @@ const foods = defineModel("foods", {
 const route = useRoute();
 const router = useRouter();
 
-const selectedFood = ref(
-  foods.value.find(
-    (food) => String(food.name) === String(route.query.selection)
-  ) || foods.value[0]
+const selectedItem = ref(
+  items.value.find(
+    (food) => String(food.name) == String(route.query.selection)
+  ) || items.value[0]
 );
 const selectionName = computed({
   get: () => String(route.query.selection || ""),
@@ -140,8 +228,8 @@ const selectionName = computed({
     router.replace({
       query: { ...route.query, selection: value || undefined },
     });
-    selectedFood.value =
-      foods.value.find((food) => String(food.name) === value) || foods.value[0];
+    selectedItem.value =
+      items.value.find((food) => String(food.name) == value) || items.value[0];
   },
 });
 const search = computed({
@@ -157,94 +245,3 @@ const search = computed({
 onBeforeMount(init);
 async function init() {}
 </script>
-
-<template>
-  <div class="flex-row gap-3 p-3 h-full">
-    <div class="flex-column flex-grow-1 gap-3 h-full" style="width: 20vw">
-      <InputText v-model="search" placeholder="Search" />
-      <div class="flex-wrap overflow-auto">
-        <div
-          v-for="item in foods?.filter((food) =>
-            food.name.toLowerCase().includes(search.toLowerCase())
-          )"
-          :key="item.name"
-          @click="selectionName = item.name"
-          class="m-3 border-2 custom-shadow-1 cursor-pointer flex-column justify-content-between align-items-center"
-          style="flex: 1 1 auto"
-          :style="{
-            'border-color': selectedFood.name == item.name ? 'blue' : 'gray',
-          }"
-        >
-          <img
-            style="max-width: 100px"
-            :src="`/${item.name}.png`"
-            class="w-full"
-          />
-          <label class="text-center pb-2">{{ item.name }}</label>
-        </div>
-      </div>
-    </div>
-    <div
-      class="flex-column w-full gap-3 h-full overflow-auto"
-      style="max-width: 800px"
-    >
-      <div
-        class="flex-row align-items-center bg-gray-200 border-3 border-orange-500"
-      >
-        <div class="flex-column w-full h-full p-4">
-          <label class="text-5xl font-semibold h-full align-items-center flex">
-            {{ selectedFood.name }}
-          </label>
-          <label class="font-semibold text-orange-500">Legendary</label>
-        </div>
-        <img
-          style="max-width: 100px"
-          :src="`/${selectedFood.name}.png`"
-          class="w-full"
-        />
-      </div>
-      <div v-if="selectedFood.profile" class="flex-column gap-2">
-        <label class="text-2xl font-semibold">Stats</label>
-        <div
-          class="px-2 flex-row gap-2 text-green-400"
-          v-for="item in selectedFood.profile?.sort((a, b) =>
-            a.nutrient.localeCompare(b.nutrient)
-          )"
-          :key="item.nutrient"
-          style="min-width: 200px"
-        >
-          <div
-            class="cursor-pointer w-full flex-row align-items-center gap-2"
-            @click="console.log"
-          >
-            <img :src="`/${item.nutrient}.png`" style="width: 32px" />
-            <label class="font-semibold text-xl hover:text-blue-200">
-              {{ item.nutrient }}
-            </label>
-          </div>
-          <label class="font-semibold text-xl text-left">
-            {{ item.value }}
-          </label>
-        </div>
-      </div>
-      <div v-if="selectedFood.effects" class="flex-column gap-2">
-        <label class="text-2xl font-semibold">Special effects</label>
-        <div
-          class="px-2 flex-row gap-2 text-green-400"
-          v-for="item in selectedFood.effects"
-          :key="item"
-        >
-          <label
-            class="font-semibold text-xl cursor-pointer hover:text-blue-200"
-          >
-            {{ item }}
-          </label>
-        </div>
-      </div>
-      <div class="flex-column gap-3">
-        <label class="text-2xl font-semibold">Spawn location</label>
-        <img :src="selectedFood.spawnLocation" class="w-full" />
-      </div>
-    </div>
-  </div>
-</template>

@@ -62,7 +62,7 @@ const draggedElement = ref<HTMLElement | null>(null);
 
 function handleDrag(event: DragEvent, type: "start" | "end") {
   if (event.target instanceof HTMLElement) {
-    if (type === "start") {
+    if (type == "start") {
       draggedElement.value = event.target;
       event.target.classList.toggle("opacity-05", true);
     } else {
@@ -95,8 +95,8 @@ function drop(ev: DragEvent) {
 </script>
 
 <template>
-  <div class="flex-column gap-2">
-    <div class="flex-row gap-2 align-items-center">
+  <div class="flex flex-column gap-2">
+    <div class="flex flex-row gap-2 align-items-center">
       <Button
         label="Save / See the result in console log"
         class="button-gradient-effect"
@@ -114,7 +114,7 @@ function drop(ev: DragEvent) {
       />
     </div>
 
-    <div v-if="mode == 0" id="tierList" class="flex-column border-round">
+    <div v-if="mode == 0" id="tierList" class="flex flex-column border-round">
       <div
         v-for="(tierRow, tierRowIndex) in tierData"
         :id="'tierRow-' + tierRowIndex"
@@ -122,14 +122,14 @@ function drop(ev: DragEvent) {
           minHeight: tierListDimension + 'px',
           maxHeight: tierListDimension + 'px',
         }"
-        class="flex-row"
+        class="flex flex-row"
         :key="tierRowIndex"
       >
         <Textarea
           v-if="tierRow.tier != undefined"
           v-model="tierRow.tier"
           auto-resize
-          class="tier text-xl flex-column text-center"
+          class="tier text-xl flex flex-column text-center"
           :style="{
             backgroundColor: tierRow.color,
             maxWidth: tierListDimension + 'px',

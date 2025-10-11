@@ -1,27 +1,27 @@
 <template>
-  <div class="flex-row align-items-center justify-content-around">
+  <div class="flex flex-row align-items-center justify-content-around">
     <Accordion
       style="width: 300px"
       multiple
       :activeIndex="[0, 1]"
       collapseIcon="pi pi-minus text-gray-200"
-      class="custom-shadow-1 border-1 border-round border-gray-200 overflow-auto"
+      class="custom-shadow-1 border-1 border-round border-gray-200 h-full overflow-auto"
     >
       <AccordionTab header="Editor">
-        <div class="flex-row justify-content-between gap-2">
-          <div class="flex-column gap-2 align-items-center">
+        <div class="flex flex-row justify-content-between gap-2">
+          <div class="flex flex-column gap-2 align-items-center">
             <Button icon="pi pi-bars" @click="console.log(textEditor)" />
             <label>Left</label>
           </div>
-          <div class="flex-column gap-2 align-items-center">
+          <div class="flex flex-column gap-2 align-items-center">
             <Button icon="pi pi-bars" @click="console.log(textEditor)" />
             <label>Justify</label>
           </div>
-          <div class="flex-column gap-2 align-items-center">
+          <div class="flex flex-column gap-2 align-items-center">
             <Button icon="pi pi-bars" @click="console.log(textEditor)" />
             <label>Center</label>
           </div>
-          <div class="flex-column gap-2 align-items-center">
+          <div class="flex flex-column gap-2 align-items-center">
             <Button icon="pi pi-bars" @click="console.log(textEditor)" />
             <label>Right</label>
           </div>
@@ -70,8 +70,8 @@
         </div>
       </AccordionTab>
       <AccordionTab header="Properties">
-        <div class="flex-column gap-2">
-          <div class="flex-row gap-2">
+        <div class="flex flex-column gap-2">
+          <div class="flex flex-row gap-2">
             <Checkbox v-model="autoPagination" binary />
             <label>Pagination</label>
           </div>
@@ -82,7 +82,7 @@
         </div>
       </AccordionTab>
       <AccordionTab header="Dimensions">
-        <div class="flex-row gap-2 align-items-center">
+        <div class="flex flex-row gap-2 align-items-center">
           <InputNumber v-model="paperAspectRatio" />
           <Button
             icon="pi pi-clipboard"
@@ -92,11 +92,11 @@
         </div>
       </AccordionTab>
     </Accordion>
-    <div class="flex-column gap-2 align-items-center">
+    <div class="flex flex-column gap-2 align-items-center">
       <label>Editor</label>
       <BetterEditor :pages contenteditable ref="textEditor" />
     </div>
-    <div class="flex-column gap-2 align-items-center">
+    <div class="flex flex-column gap-2 align-items-center">
       <label>View</label>
       <BetterEditor :pages ref="renderer" />
     </div>
@@ -106,6 +106,11 @@
 <script setup lang="ts">
 import * as htmlToImage from "html-to-image";
 import type { IParameter } from "@/components/experimental/ParametersComponent.vue";
+
+defineOptions({
+  name: "Raports",
+  icon: "📜",
+});
 
 const parameters = ref<IParameter[]>([{ name: "test", type: "value" }]);
 const paperAspectRatio = ref<number>(1.414);

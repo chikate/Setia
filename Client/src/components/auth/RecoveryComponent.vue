@@ -1,36 +1,7 @@
-<script setup lang="ts">
-import { useVuelidate } from '@vuelidate/core'
-import { required, email } from '@vuelidate/validators'
-
-const inputEmail = defineModel('inputEmail', { type: String, required: false, default: '' })
-const recoveryState = ref<number>(0)
-const v$ = useVuelidate({ inputEmail: { required, email } }, { inputEmail })
-
-async function requestRecovery() {
-  recoveryState.value = 1
-  if (await v$.value.$validate()) {
-    recoveryState.value = 2
-    if (await authService.recoverAccount(inputEmail.value)) {
-      inputEmail.value = ''
-      recoveryState.value = 3
-    }
-    setTimeout(() => (recoveryState.value = 0), 3000)
-  }
-}
-</script>
-
 <template>
-  <div class="flex flex-column gap-3">
-    <h2>Recover password</h2>
-    <InputGroup>
-      <InputGroupAddon v-if="inputEmail" :class="INPUT_CLASS"> Email </InputGroupAddon>
-      <InputText placeholder="Email" v-model="inputEmail" @keydown.enter="requestRecovery" />
-    </InputGroup>
-
-    <Button
-      label="Send detail on email"
-      class="button-gradient-effect text-xl font-bold"
-      @click="requestRecovery"
-    />
-  </div>
+  <AuthForm v-model:input="input" @submit="authService.recoverAccount" />
 </template>
+
+<script setup lang="ts">
+const input = ref({ email: "" });
+</script>
