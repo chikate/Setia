@@ -1,6 +1,10 @@
+# 🧩 Base Web App Setup Guide
+
+**Status:** 🚧 _Work in Progress_
+
 # Configure secret settings
 
-Right click on **Main** project > select **"Manage User Secrets"** and paste this code in there but dont forget to configure it corespondently
+Right click on **Main** project file > select **"Manage User Secrets"** and paste this code in there but dont forget to configure it corespondently
 
 ```json
 // dotnet user-secrets set "Email-Service-Account:Username" "email-username"
@@ -9,7 +13,7 @@ Right click on **Main** project > select **"Manage User Secrets"** and paste thi
     "Username": "yourusername",
     "Password": "yourpassword"
   },
-  "CryptKey": "uwXk6g6Kxr166TGji80ICeI0udlzm7hT", // 32 alphanumeric string
+  "CryptKey": "uwXk6g6Kxr166TGji80ICeI0udlzm7hT", // 32 alphanumeric string like its shown, recomanded to change it for every instance
   "DBConnectionStrings": "Server=localhost:5432;DataBase=Setia;User ID=postgres;Password=dragos;",
   "DBTech": "PgSQL",
   "HOST_Client": "http://localhost:3000",
