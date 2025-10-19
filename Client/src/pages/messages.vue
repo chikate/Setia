@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row gap-3 p-3 h-full">
-    <DataTable
+    <!-- <DataTable
       id="comunitiesList"
       :value="[{ name: 'asdasd' }]"
       :show-headers="false"
@@ -18,22 +18,12 @@
         />
       </Column>
       <Column field="name" />
-    </DataTable>
+    </DataTable> -->
 
     <div
       id="directMessage"
-      class="flex flex-column gap-2 w-full h-full overflow-auto"
+      class="flex flex-column-reverse gap-2 w-full h-full overflow-auto"
     >
-      <div
-        id="messages"
-        class="flex flex-column-reverse w-full gap-1 h-full overflow-auto"
-      >
-        <div id="message" v-for="message in messages" :key="message.id">
-          <Avatar />
-          <div>{{ message.author }}</div>
-          <label>{{ message.message }}</label>
-        </div>
-      </div>
       <div class="flex flex-row gap-2">
         <Textarea rows="1" class="w-full" v-model="message" />
         <div class="flex flex-row gap-2">
@@ -42,6 +32,13 @@
             label="SEND"
             @click="messages.push({ sender: 'me', message })"
           />
+        </div>
+      </div>
+      <div id="messages" class="flex flex-column w-full gap-1 overflow-auto">
+        <div id="message" v-for="message in messages" :key="message.id">
+          <Avatar />
+          <div>{{ message.author }}</div>
+          <label>{{ message.message }}</label>
         </div>
       </div>
     </div>

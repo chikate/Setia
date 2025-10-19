@@ -1,9 +1,9 @@
 using Main.Data.Context;
 using Main.Features.CRUDs;
-using Main.Modules.Adm;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
 using Main.Modules.Drive;
+using Main.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,8 +22,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationO
 builder.Configuration.AddConfiguration(config);
 
 // DB
-builder.Services
-.AddDbContext<BaseContext>(options =>
+builder.Services.AddDbContext<BaseContext>(options =>
 {
     switch (config["DBTech"])
     {
@@ -31,51 +30,49 @@ builder.Services
         case "PgSQL": options.UseNpgsql(config["DBConnectionStrings"]); break;
         default: throw new NotSupportedException($"Unsupported database technology: {config["DBTech"]}");
     }
-})
+});
 // Features
-.AddScoped<IAdmService, AdmService>()
-.AddScoped<IAuditService, AuditService>()
-.AddScoped<IAuthService, AuthService>()
-.AddTransient<IDriveService, DriveService>()
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddTransient<IDriveService, DriveService>();
 // CRUDs
-.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel>>()
-.AddScoped<ICRUDService<SettingsModel>, CRUDService<SettingsModel>>()
-// Standards
-.AddHttpContextAccessor()
-.AddControllers();
+builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel>>();
+// Essentials
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
 
 builder.Services
-.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-{
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidateLifetime = true,
-    ValidateIssuerSigningKey = true,
-    ValidIssuer = config["HOST_Server"],
-    ValidAudience = config["HOST_Client"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
-});
-builder.Services
-.AddExceptionHandler<CustomExceptionHandler>()
-.AddProblemDetails()
-.AddSignalR();
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = config["HOST_Server"],
+            ValidAudience = config["HOST_Client"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
+        });
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddProblemDetails();
+builder.Services.AddSignalR();
 
 builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document, context, cancellationToken) =>
 {
-    document.Components ??= new OpenApiComponents();
-    document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+    document.Components ??= new();
+    document.Components.SecuritySchemes["Bearer"] = new()
     {
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
     };
-    document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+    document.SecurityRequirements.Add(new()
     {
-        [new OpenApiSecurityScheme
+        [new()
         {
-            Reference = new OpenApiReference
+            Reference = new()
             {
                 Type = ReferenceType.SecurityScheme,
                 Id = "Bearer"
@@ -103,15 +100,20 @@ Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(DbCo
 #endif
 
 // Standards
-app
-.UseHttpsRedirection()
-.UseStaticFiles()
-.UseRouting()
-.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader())
-.UseAuthentication()
-.UseAuthorization()
-.UseExceptionHandler()
-.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); }); // Suppresed ASP0014 Warning
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+app.UseAuthentication();
+app.UseAuthorization();
+//app.UseMiddleware<UserRightsMiddleware>();
+app.UseMiddleware<AuditMiddleware>();
+
+app.UseExceptionHandler();
+app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); }); // Suppresed ASP0014 Warning
+
+app.MapHub<EventsHub>("/events");
 
 app.MapOpenApi();
 app.UseSwaggerUI(options =>

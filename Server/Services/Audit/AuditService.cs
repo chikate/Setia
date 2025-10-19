@@ -1,5 +1,6 @@
 using Main.Data.Context;
 using Main.Modules.Auth;
+using Main.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
 using System.Text.Json;
@@ -12,23 +13,24 @@ public interface IAuditService
     Task<string> CompareObjects<T>(T obj1, T obj2);
 }
 
-public class AuditService(BaseContext context, IAuthService auth, IHubContext<AuditHub> auditHUBContext) : IAuditService
+public class AuditService(BaseContext context, IAuthService auth, IHubContext<EventsHub> auditHUBContext) : IAuditService
 {
     public async Task<AuditModel> LogAuditTrail<T>(T model, T? oldModel = default)
     {
-        var newAudit = new AuditModel()
+        var audit = model as AuditModel ?? new AuditModel
         {
             AuthorId = (await auth.GetCurrentUser())?.Id,
             Entity = typeof(T).FullName!,
             EntityId = typeof(T).GetProperties().FirstOrDefault()?.GetValue(model)?.ToString(),
-            Payload = oldModel == null ? JsonSerializer.Serialize(model) : JsonSerializer.Serialize(CompareModels(oldModel, model))
+            Payload = oldModel == null
+                ? JsonSerializer.Serialize(model)
+                : JsonSerializer.Serialize(CompareModels(oldModel, model))
         };
-        await context.Set<AuditModel>().AddAsync(newAudit);
+
+        await context.AddAsync(audit);
         await context.SaveChangesAsync();
-
-        await auditHUBContext.Clients.All.SendAsync("ReceiveAudit", newAudit);
-
-        return newAudit;
+        await auditHUBContext.Clients.All.SendAsync("ReceiveAudit", audit);
+        return audit;
     }
 
     public async Task<string> CompareObjects<T>(T obj1, T obj2)

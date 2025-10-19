@@ -32,7 +32,11 @@ coverage
 *.tsbuildinfo
 
 # Custom
-typed-router.d.ts
-components.d.ts
 auto-imports.d.ts
+components.d.ts
+typed-router.d.ts
 package-lock.json
+public
+node_modules
+dist
+openapitools.json

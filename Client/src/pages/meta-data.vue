@@ -44,10 +44,11 @@
           :key="item"
         >
           <Dropdown
+            :model-value="{ name: 'Value', type: 'Value' }"
             :options="[
               { name: 'Table', type: 'Table' },
-              { name: 'In line', type: 'In line' },
-              { name: 'Image', type: 'Image' },
+              { name: 'Value', type: 'Value' },
+              { name: 'File', type: 'File' },
             ]"
             option-label="name"
             class="border-0"

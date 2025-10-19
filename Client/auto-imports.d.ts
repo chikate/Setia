@@ -48,7 +48,6 @@ declare global {
   const QuestionModelToJSONTyped: typeof import('./src/composables/models/QuestionModel')['QuestionModelToJSONTyped']
   const RequiredError: typeof import('./src/composables/runtime')['RequiredError']
   const ResponseError: typeof import('./src/composables/runtime')['ResponseError']
-  const TOAST_LIFETIME: typeof import('./src/composables/config')['TOAST_LIFETIME']
   const TextApiResponse: typeof import('./src/composables/runtime')['TextApiResponse']
   const UserModel2FromJSON: typeof import('./src/composables/models/UserModel2')['UserModel2FromJSON']
   const UserModel2FromJSONTyped: typeof import('./src/composables/models/UserModel2')['UserModel2FromJSONTyped']
@@ -60,35 +59,35 @@ declare global {
   const UserModelToJSONTyped: typeof import('./src/composables/models/UserModel')['UserModelToJSONTyped']
   const UsersApi: typeof import('./src/composables/apis/UsersApi')['UsersApi']
   const VoidApiResponse: typeof import('./src/composables/runtime')['VoidApiResponse']
+  const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const apiRequest: typeof import('./src/composables/api')['apiRequest']
   const auditConn: typeof import('./src/composables/ws')['auditConn']
-  const authService: typeof import('./src/composables/services')['authService']
   const canConsumeForm: typeof import('./src/composables/runtime')['canConsumeForm']
   const canUserAccessRoute: typeof import('./src/composables/helpers')['canUserAccessRoute']
   const capitalizeString: typeof import('./src/composables/helpers')['capitalizeString']
   const capitalizeWords: typeof import('./src/composables/helpers')['capitalizeWords']
-  const clearCookie: typeof import('./src/composables/helpers')['clearCookie']
   const clearCookies: typeof import('./src/composables/helpers')['clearCookies']
-  const clearCookiess: typeof import('./src/composables/helpers')['clearCookiess']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
+  const createPinia: typeof import('pinia')['createPinia']
   const customRef: typeof import('vue')['customRef']
   const darkMode: typeof import('./src/composables/darkMode')['darkMode']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
+  const defineStore: typeof import('pinia')['defineStore']
   const downloadInBrowser: typeof import('./src/composables/helpers')['downloadInBrowser']
   const effectScope: typeof import('vue')['effectScope']
   const exists: typeof import('./src/composables/runtime')['exists']
-  const fileManager: typeof import('./src/composables/services')['fileManager']
+  const favorites: typeof import('./src/composables/os')['favorites']
   const generateGuid: typeof import('./src/composables/helpers')['generateGuid']
+  const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCookie: typeof import('./src/composables/helpers')['getCookie']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getCurrentWatcher: typeof import('vue')['getCurrentWatcher']
   const h: typeof import('vue')['h']
-  const helperService: typeof import('./src/composables/services')['helperService']
   const inject: typeof import('vue')['inject']
-  const installedApps: typeof import('./src/composables/os')['installedApps']
+  const installedApps: typeof import('./src/composables/config')['installedApps']
   const instanceOfAuthenticationDTO: typeof import('./src/composables/models/AuthenticationDTO')['instanceOfAuthenticationDTO']
   const instanceOfCommunityModel: typeof import('./src/composables/models/CommunityModel')['instanceOfCommunityModel']
   const instanceOfDriveInfoDTO: typeof import('./src/composables/models/DriveInfoDTO')['instanceOfDriveInfoDTO']
@@ -96,18 +95,20 @@ declare global {
   const instanceOfQuestionModel: typeof import('./src/composables/models/QuestionModel')['instanceOfQuestionModel']
   const instanceOfUserModel: typeof import('./src/composables/models/UserModel')['instanceOfUserModel']
   const instanceOfUserModel2: typeof import('./src/composables/models/UserModel2')['instanceOfUserModel2']
-  const isDarkMode: typeof import('./src/composables/darkMode')['isDarkMode']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
   const isShallow: typeof import('vue')['isShallow']
   const isValidISODate: typeof import('./src/composables/helpers')['isValidISODate']
+  const mapActions: typeof import('pinia')['mapActions']
+  const mapGetters: typeof import('pinia')['mapGetters']
+  const mapState: typeof import('pinia')['mapState']
+  const mapStores: typeof import('pinia')['mapStores']
   const mapValues: typeof import('./src/composables/runtime')['mapValues']
+  const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
-  const notificationService: typeof import('./src/composables/services')['notificationService']
-  const notificationsCRUDService: typeof import('./src/composables/services')['notificationsCRUDService']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -124,39 +125,32 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const pontajCRUDService: typeof import('./src/composables/services')['pontajCRUDService']
-  const postsCRUDService: typeof import('./src/composables/services')['postsCRUDService']
+  const osStore: typeof import('./src/stores/osStore')['osStore']
   const provide: typeof import('vue')['provide']
-  const querryParams: typeof import('./src/composables/api')['querryParams']
   const queryParams: typeof import('./src/composables/api')['queryParams']
   const querystring: typeof import('./src/composables/runtime')['querystring']
-  const questionAnswersCRUDService: typeof import('./src/composables/services')['questionAnswersCRUDService']
-  const questionsCRUDService: typeof import('./src/composables/services')['questionsCRUDService']
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
   const resolveComponent: typeof import('vue')['resolveComponent']
+  const setActivePinia: typeof import('pinia')['setActivePinia']
   const setCookie: typeof import('./src/composables/helpers')['setCookie']
+  const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
   const signalRConn: typeof import('./src/composables/ws')['signalRConn']
-  const signalRconn: typeof import('./src/composables/ws')['signalRconn']
+  const storeToRefs: typeof import('pinia')['storeToRefs']
   const stringToColor: typeof import('./src/composables/helpers')['stringToColor']
-  const tagsCRUDService: typeof import('./src/composables/services')['tagsCRUDService']
-  const theme: typeof import('./src/composables/darkMode')['theme']
-  const themeStyle: typeof import('./src/composables/darkMode')['themeStyle']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
-  const toggleDarkMode: typeof import('./src/composables/darkMode')['toggleDarkMode']
   const triggerRef: typeof import('vue')['triggerRef']
   const unref: typeof import('vue')['unref']
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
-  const useDarkMode: typeof import('./src/composables/darkMode')['useDarkMode']
   const useId: typeof import('vue')['useId']
   const useLink: typeof import('vue-router')['useLink']
   const useModel: typeof import('vue')['useModel']
@@ -164,14 +158,10 @@ declare global {
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const useThemeColor: typeof import('./src/composables/themeMode')['useThemeColor']
-  const userCollectionCRUDService: typeof import('./src/composables/services')['userCollectionCRUDService']
-  const usersCRUDService: typeof import('./src/composables/services')['usersCRUDService']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
   const watchSyncEffect: typeof import('vue')['watchSyncEffect']
-  const windows: typeof import('./src/composables/os')['windows']
 }
 // for type re-export
 declare global {
@@ -283,6 +273,7 @@ declare module 'vue' {
     readonly UserModelToJSONTyped: UnwrapRef<typeof import('./src/composables/models/UserModel')['UserModelToJSONTyped']>
     readonly UsersApi: UnwrapRef<typeof import('./src/composables/apis/UsersApi')['UsersApi']>
     readonly VoidApiResponse: UnwrapRef<typeof import('./src/composables/runtime')['VoidApiResponse']>
+    readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly apiRequest: UnwrapRef<typeof import('./src/composables/api')['apiRequest']>
     readonly auditConn: UnwrapRef<typeof import('./src/composables/ws')['auditConn']>
     readonly canConsumeForm: UnwrapRef<typeof import('./src/composables/runtime')['canConsumeForm']>
@@ -292,21 +283,24 @@ declare module 'vue' {
     readonly clearCookies: UnwrapRef<typeof import('./src/composables/helpers')['clearCookies']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
+    readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly darkMode: UnwrapRef<typeof import('./src/composables/darkMode')['darkMode']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
+    readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
     readonly downloadInBrowser: UnwrapRef<typeof import('./src/composables/helpers')['downloadInBrowser']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly exists: UnwrapRef<typeof import('./src/composables/runtime')['exists']>
     readonly generateGuid: UnwrapRef<typeof import('./src/composables/helpers')['generateGuid']>
+    readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCookie: UnwrapRef<typeof import('./src/composables/helpers')['getCookie']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
-    readonly installedApps: UnwrapRef<typeof import('./src/composables/os')['installedApps']>
+    readonly installedApps: UnwrapRef<typeof import('./src/composables/config')['installedApps']>
     readonly instanceOfAuthenticationDTO: UnwrapRef<typeof import('./src/composables/models/AuthenticationDTO')['instanceOfAuthenticationDTO']>
     readonly instanceOfCommunityModel: UnwrapRef<typeof import('./src/composables/models/CommunityModel')['instanceOfCommunityModel']>
     readonly instanceOfDriveInfoDTO: UnwrapRef<typeof import('./src/composables/models/DriveInfoDTO')['instanceOfDriveInfoDTO']>
@@ -320,7 +314,12 @@ declare module 'vue' {
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
     readonly isValidISODate: UnwrapRef<typeof import('./src/composables/helpers')['isValidISODate']>
+    readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
+    readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>
+    readonly mapState: UnwrapRef<typeof import('pinia')['mapState']>
+    readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
     readonly mapValues: UnwrapRef<typeof import('./src/composables/runtime')['mapValues']>
+    readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
@@ -339,6 +338,7 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly osStore: UnwrapRef<typeof import('./src/stores/osStore')['osStore']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly queryParams: UnwrapRef<typeof import('./src/composables/api')['queryParams']>
     readonly querystring: UnwrapRef<typeof import('./src/composables/runtime')['querystring']>
@@ -346,11 +346,14 @@ declare module 'vue' {
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setCookie: UnwrapRef<typeof import('./src/composables/helpers')['setCookie']>
+    readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly signalRConn: UnwrapRef<typeof import('./src/composables/ws')['signalRConn']>
+    readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly stringToColor: UnwrapRef<typeof import('./src/composables/helpers')['stringToColor']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
@@ -372,6 +375,5 @@ declare module 'vue' {
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>
     readonly watchSyncEffect: UnwrapRef<typeof import('vue')['watchSyncEffect']>
-    readonly windows: UnwrapRef<typeof import('./src/composables/os')['windows']>
   }
 }

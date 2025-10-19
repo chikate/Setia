@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-column align-items-start gap-3 p-3">
+  <div class="flex flex-column align-items-start gap-1 p-1">
     <InputText placeholder="Add task" @keydown.enter="handleAddTask" />
     <div class="flex flex-row">
-      <div class="flex flex-column gap-3 h-full overflow-auto">
+      <div class="flex flex-column gap-3 px-1 h-full overflow-auto">
         <div
           v-for="(project, index) in projects"
           :key="index"

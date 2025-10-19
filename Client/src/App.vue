@@ -1,5 +1,10 @@
 <template>
-  <!-- <div class="p-2 align-items-center flex gap-4">
+  <DrawingBoard
+    v-if="ctrlKeyPressed"
+    class="fixed w-full h-full"
+    style="z-index: 99999"
+  />
+  <div class="p-2 align-items-center flex gap-4">
     <i class="sm:hidden flex pi pi-bars pl-3 cursor-pointer" />
     <Breadcrumb
       class="m-0 p-2 bg-transparent sm:flex hidden"
@@ -8,19 +13,67 @@
         $route.fullPath
           .split('/')
           .map((elem) => ({
-            label: capitalizeString(elem),
+            label: capitalizeWords(elem.replaceAll('-', ' ')),
             command: () => $router.push(`/${elem}`),
           }))
           .slice(1)
       "
     />
-
     <div class="flex-grow-1" />
-
-    <Avatar
-      class="shadow-1"
-      :image="`https://www.youtube.com/embed/zrFWHAyI2W0`"
-      shape="circle"
+    <OverlayBadge
+      value="2"
+      size="small"
+      class="cursor-pointer-none cursor-pointer flex align-items-center h-full"
+      @click="$refs.notificationsMenu.toggle($event)"
+    >
+      <i class="pi pi-bell" />
+    </OverlayBadge>
+    <div
+      class="cursor-pointer-none cursor-pointer flex align-items-center h-full"
+      @click="$refs.avatarMenu.toggle($event)"
+    >
+      <Avatar
+        class="flex align-items-center cursor-pointer"
+        :image="`https://frankfurt.apollo.olxcdn.com/v1/files/qr0k1ccnla9p2-RO/image;s=1000x700`"
+        shape="circle"
+      />
+    </div>
+    <TieredMenu
+      ref="avatarMenu"
+      :model="[
+        { label: 'Profile', icon: 'pi pi-user' },
+        {
+          separator: true,
+        },
+        {
+          label: 'Online',
+          icon: 'pi pi-filled-dot',
+          items: [
+            { label: 'Online', icon: '' },
+            {
+              label: 'Busy',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
+            },
+            {
+              label: 'Away',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
+            },
+            {
+              label: 'Invisible',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
+            },
+          ],
+        },
+      ]"
+      popup
+    />
+    <Menu
+      ref="notificationsMenu"
+      :model="[{ label: 'Notification1', icon: '5' }]"
+      popup
     />
   </div>
   <div class="flex h-full w-full overflow-auto">
@@ -28,69 +81,47 @@
       class="sm:flex hidden h-full overflow-auto"
       style="min-width: 250px; width: 250px; max-width: 20vw"
     >
-      <Tree
+      <PanelMenu
         dragdrop
         v-model:selectionKeys="selectedKey"
-        class="p-0 bg-transparent w-full h-full"
-        :value="[
+        multiple
+        class="w-full h-full px-2"
+        :model="[
           {
-            key: '0',
             label: 'Favorites',
-            data: '.github folder',
             icon: 'pi pi-fw pi-star',
-            children: [
-              {
-                key: '0-0',
-                label: 'workflows',
-                data: 'workflows folder',
-                icon: 'pi pi-fw pi-folder',
-              },
-            ],
+            items: osStore().favorites,
           },
           {
-            key: '1',
             label: 'Computer',
-            data: 'src folder',
             icon: 'pi pi-fw pi-folder',
-            children: [
+            items: [
               {
-                key: '1-0',
                 label: 'OS: System',
-                data: 'assets folder',
                 icon: 'pi pi-fw pi-folder',
-                children: [
+                items: [
                   {
-                    key: '1-0-0',
                     label: 'vue.svg',
-                    data: 'vue.svg file',
                     icon: 'pi pi-fw pi-file',
                   },
                 ],
               },
               {
-                key: '1-1',
                 label: 'A: Disk',
-                data: 'components folder',
                 icon: 'pi pi-fw pi-folder',
-                children: [
+                items: [
                   {
-                    key: '1-1-0',
                     label: 'HelloWorld.vue',
-                    data: 'HelloWorld.vue file',
                     icon: 'pi pi-fw pi-file',
                   },
                 ],
               },
               {
-                key: '1-2',
                 label: 'B: USB',
-                data: 'components folder',
                 icon: 'pi pi-fw pi-folder',
-                children: [
+                items: [
                   {
-                    key: '1-2-0',
                     label: 'HelloWorld.vue',
-                    data: 'HelloWorld.vue file',
                     icon: 'pi pi-fw pi-file',
                   },
                 ],
@@ -98,96 +129,79 @@
             ],
           },
           {
-            key: '2',
             label: 'Apps',
             icon: 'pi pi-fw pi-th-large',
-            children: installedApps.map((app, i) => ({
-              key: `2-${i}`,
+            route: '/',
+            items: installedApps?.map((app, i) => ({
               label: `${app.icon} ${app.name}`,
+              route: app.__name,
             })),
           },
         ]"
-      />
+      >
+        <template #item="{ item }">
+          <div class="flex justify-content-between">
+            <router-link
+              v-slot="{ href, navigate }"
+              :to="item.route"
+              custom
+              class="no-underline text-primary"
+            >
+              <a
+                v-ripple
+                class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 gap-2 p-2"
+                :href="href"
+                :target="item.target"
+                @click="navigate"
+              >
+                <span :class="item.icon" />
+                {{ item.label }}
+              </a>
+            </router-link>
+            <span
+              v-if="item.items?.length"
+              class="pi pi-angle-down text-primary p-2"
+            />
+          </div>
+        </template>
+      </PanelMenu>
     </div>
     <div
-      class="h-full w-full bg-gray-800 overflow-auto"
+      id="board"
+      class="h-full w-full bg-gray-800 overflow-auto relative"
       style="border-top-left-radius: 5px"
-    > -->
-  <router-view />
-  <!-- </div>
+    >
+      <router-view />
+    </div>
   </div>
-  <Toast position="top-right" :life="6000" /> -->
+  <Toast position="top-right" :life="6000" />
 </template>
 
 <script setup lang="ts">
+import OverlayBadge from "primevue/overlaybadge";
+
 const selectedKey = ref([]);
-// const showSidebar = ref(false);
-// const menuItems = ref(
-//   useRouter()
-//     .getRoutes() // Get all routes from the Vue Router
-//     .reduce((acc, route) => {
-//       // Reduce the routes into a hierarchical structure
-//       // Skip routes containing dynamic paths or specific keywords
-//       if ([":", "register", "login"].some((path) => route.path.includes(path)))
-//         return acc;
+const ctrlKeyPressed = ref(false);
 
-//       // Split the route path into parts, separating by "/"
-//       const [_, root, ...children] = route.path.split("/");
+window.addEventListener(
+  "keydown",
+  (event) => (ctrlKeyPressed.value = event.ctrlKey)
+);
+window.addEventListener(
+  "keyup",
+  (event) => (ctrlKeyPressed.value = event.ctrlKey)
+);
 
-//       // If there's no root or the route path is invalid, skip this route
-//       if (!(root || _)) return acc;
-
-//       // Try to find an existing node with the same root key, or create a new node
-//       const node = acc.find((item) => item.key == root) ?? {
-//         key: root, // Unique key for this menu item
-//         icon: MENU_ICONS[root?.toLowerCase() ?? "default"] ?? "pi pi-circle", // Icon for the root node (fallback to default)
-//         label: capitalizeWords(route.meta?.title ?? root.replace(/[-_]/g, " ")), // Display label (capitalize and format the root if title does not exist)
-//         children: [], // Initialize children as an empty array
-//       };
-
-//       // If the node is newly created, add it to the accumulator
-//       if (!acc.includes(node)) acc.push(node);
-
-//       // Special case for the "Drive" menu - initialize children to an empty TreeNode
-//       if (node.label == "Drive") node.children = [{} as TreeNode];
-
-//       // If there are child routes, add them as children to this node
-//       children.length
-//         ? node.children?.push({
-//             key: route.path.slice(1), // Use the full path (excluding leading "/") as the key
-//             label: capitalizeWords(children.join(" ")), // Generate a label for the child route
-//           })
-//         : (node.leaf = true); // Mark the node as a leaf if there are no children
-
-//       return acc; // Return the updated accumulator
-//     }, [] as TreeNode[]) // Initialize the accumulator as an empty array of TreeNode
-// );
-
-// const onNodeClick = async (event: any) => (window.location.href = event);
-
-// const onNodeExpand = async (event: any) =>
-//   event.key.startsWith("drive")
-//     ? (event.children = await fileContentToTreeNode(
-//         event.leaf ? "" : event.key,
-//         2
-//       ))
-//     : undefined;
-
-// const fileContentToTreeNode = async (
-//   key: string,
-//   level: number
-// ): Promise<TreeNode[]> =>
-//   Promise.all(
-//     (await fileManager.getFolderContent(key)).map(async (elem: string) => ({
-//       key: `${key}${key ? "/" : ""}${elem}`,
-//       label: elem,
-//       children:
-//         !elem.includes(".") && level > 1
-//           ? await fileContentToTreeNode(`${key}/${elem}`, level - 1)
-//           : undefined,
-//       icon: FILE_ICONS[elem.split(".").pop() ?? "folder"],
-//     }))
-//   );
+onBeforeUnmount(() => {
+  window.removeEventListener(
+    "keydown",
+    (event) => (ctrlKeyPressed.value = event.ctrlKey)
+  );
+  window.removeEventListener(
+    "keyup",
+    (event) => (ctrlKeyPressed.value = event.ctrlKey)
+  );
+});
 </script>
 
 <style>

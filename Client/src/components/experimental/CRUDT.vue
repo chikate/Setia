@@ -56,7 +56,7 @@
       <template #expansion><slot name="expansion" /></template>
       <Column
         v-if="
-          showMultipleDelete && selectedColumns.length !== exposedData.length
+          showMultipleDelete && selectedColumns.length != exposedData.length
         "
         selectionMode="multiple"
         class="pr-0 pt-0"
@@ -64,7 +64,7 @@
         key="select"
       />
       <Column
-        v-if="selectedColumns.length !== exposedData.length"
+        v-if="selectedColumns.length != exposedData.length"
         style="width: 1px"
         header="#"
         headerClass="column-text-center"
@@ -148,7 +148,7 @@
             {{ key.header }}
           </InputGroupAddon>
           <AutoComplete
-            v-if="key.field.includes('tag') && service.serviceName !== 'tags'"
+            v-if="key.field.includes('tag') && service.serviceName != 'tags'"
             multiple
             :placeholder="key.header"
             v-model="editItem[key.field]"

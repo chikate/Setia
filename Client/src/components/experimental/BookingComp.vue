@@ -1,51 +1,53 @@
 <template>
-  <div
-    class=" custom-shadow-1 p-5 gap-2 flex flex-column z-2"
-    style="width: 450px; min-width: 450px; max-width: 450px"
-  >
+  <div class="custom-shadow-1 p-5 gap-2 flex flex-column w-3 m-5">
     <div class="text-3xl font-bold">The perfect place</div>
     <div class="font-light mb-4">
       Make your reservation for the perfect trip.
     </div>
-    <div class=" flex flex-column">
+    <div class="flex flex-column">
       <div :class="fieldTextStyle">Details</div>
-      <Textarea v-model="text" class="w-full border-0" rows="1" autoResize />
+      <Textarea
+        v-model="text"
+        class="w-full border-0 bg-transparent"
+        rows="1"
+        autoResize
+      />
     </div>
-    <div class=" flex flex-row">
+    <div class="flex flex-row">
       <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHECK IN</div>
-        <DatePicker
+        <Calendar
           v-model="checkIn"
           :minDate="new Date()"
           :disabledDates="[]"
-          class="remove-calendar-border"
+          class="bg-transparent"
         />
       </div>
-      <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-100" />
+      <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-300" />
       <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHECK OUT</div>
-        <DatePicker
+        <Calendar
           v-model="checkOut"
           :minDate="new Date()"
           :disabledDates="[]"
-          class="remove-calendar-border"
+          class="bg-transparent"
         />
       </div>
     </div>
-    <div class=" flex flex-row">
+    <div class="flex flex-row">
       <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">ADULTS</div>
         <Dropdown
-          class="button-gradient-effect w-full cursor-pointer"
+          class="button-gradient-effect w-full cursor-pointer bg-transparent"
           v-model="adults"
           :options="[3, 4, 5]"
         />
       </div>
-      <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-100" />
+      <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-300" />
       <div class="flex flex-column w-full">
         <div :class="fieldTextStyle">CHILDREN</div>
         <Dropdown
-          class="button-gradient-effect w-full cursor-pointer"
+          class="button-gradient-effect w-full cursor-pointer bg-transparent"
           v-model="children"
           :options="[0, 1, 2, 3]"
         />
@@ -85,36 +87,14 @@ const children = defineModel("children", {
 
 const fieldTextStyle = ref(
   "p-2 mx-1 pb-0 font-semibold text-xs uppercase text-gray-500"
-); // needs to move to css
+);
 </script>
 
 <style scoped>
-.remove-calendar-border > * {
-  border-style: none;
-  cursor: pointer;
-}
-
-.p-image > * {
-  border-radius: var(--border-radius) !important;
-}
-
-.p-inputtext {
-  padding-top: 1px;
-  min-height: 35px !important;
-  max-height: 300px !important;
-}
-
-.p-highlight {
-  background-size: 300% 100%;
-  background-image: linear-gradient(
-    42deg,
-    #4158d0 0%,
-    #c850c0 46%,
-    #ffcc70 100%
-  );
-  transition: all 0.4s ease;
-}
-.p-highlight:hover {
-  background-position: 100% 0;
+:deep().p-inputtext,
+.p-textarea,
+.p-select {
+  background-color: transparent;
+  box-shadow: none;
 }
 </style>

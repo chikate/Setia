@@ -139,10 +139,25 @@ public class AuthService(BaseContext context, IHttpContextAccessor httpContextAc
         return "A recovery email has been sent. Please check your inbox.";
     }
 
-    public async Task<UserModel?> GetCurrentUser() =>
-        httpContextAccessor.HttpContext?.User.Identity is ClaimsIdentity identity
-        ? await context.Set<UserModel>().SingleOrDefaultAsync(u => u.Id == new Guid(identity.FindFirst(ClaimTypes.NameIdentifier)!.Value))
-        : null;
+    public async Task<UserModel?> GetCurrentUser()
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext?.User.Identity is not ClaimsIdentity identity || !identity.IsAuthenticated)
+            return null;
+
+        var idClaim = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId))
+            return null;
+
+        try
+        {
+            return await context.Set<UserModel>().SingleOrDefaultAsync(u => u.Id == userId);
+        }
+        catch (Exception)
+        {
+            return null; // transient DB errors are ignored here
+        }
+    }
 
     public async Task ChangePassword(string email, string username, string currentPassword, string newPassword)
     {

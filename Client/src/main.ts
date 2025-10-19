@@ -9,6 +9,7 @@ import BadgeDirective from "primevue/badgedirective";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import ToastService from "primevue/toastservice";
+import { createPinia } from "pinia";
 
 export const app = createApp(App);
 
@@ -40,6 +41,6 @@ app.use(ToastService, {
   life: 3000,
 });
 
-app.mount("body");
+app.use(createPinia()).mount("body");
 
 // signalRConn.start();

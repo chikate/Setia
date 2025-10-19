@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column align-items-start gap-2">
+  <div class="flex flex-column align-items-start gap-2 p-1">
     <input type="file" id="fileInput" webkitdirectory />
     <div
       class="bg-gray-200 border-round px-3"

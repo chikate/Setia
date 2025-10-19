@@ -14,9 +14,9 @@ export default defineConfig({
     VueRouter(),
     Vue(),
     AutoImport({
-      imports: ["vue", VueRouterAutoImports, "vue-router"],
+      imports: ["vue", VueRouterAutoImports, "vue-router", "pinia"],
       vueTemplate: true,
-      dirs: ["src/composables/**"],
+      dirs: ["src/composables/**", "src/stores/**"],
     }),
     Components({
       resolvers: [PrimeVueResolver()],

@@ -1,9 +1,7 @@
 ﻿using Main.Data.Models;
-using Main.Modules.Adm;
 using Main.Modules.Audit;
 using Main.Modules.Auth;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Main.Data.Context;
 
@@ -11,7 +9,6 @@ public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfi
 {
     #region SQL Tables
     public required DbSet<UserModel> Users { get; set; }
-    public required DbSet<SettingsModel> Settings { get; set; }
     public required DbSet<AuditModel> Audit { get; set; }
     public required DbSet<MessageModel> Posts { get; set; }
     #endregion

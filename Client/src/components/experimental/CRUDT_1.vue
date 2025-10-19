@@ -55,7 +55,7 @@
       <template #expansion><slot name="expansion" /></template>
       <Column
         v-if="
-          showMultipleDelete && selectedColumns.length !== exposedData.length
+          showMultipleDelete && selectedColumns.length != exposedData.length
         "
         selectionMode="multiple"
         class="pr-0 pt-0"
@@ -63,7 +63,7 @@
         key="select"
       />
       <Column
-        v-if="selectedColumns.length !== exposedData.length"
+        v-if="selectedColumns.length != exposedData.length"
         style="width: 1px"
         header="#"
         headerClass="column-text-center"
@@ -114,9 +114,7 @@
       <template #header>
         <h3 class="flex-grow-1 font-bold m-0 p-0">
           {{
-            !editOrAdd
-              ? "Add new "
-              : "Edit " + store.storeName.toLocaleLowerCase()
+            !editOrAdd ? "Add new " : "Edit " + store.storeName.toLowerCase()
           }}
         </h3>
         <div class="flex flex-row gap-3 font-bold">
@@ -150,7 +148,7 @@
             {{ key.header }}
           </InputGroupAddon>
           <AutoComplete
-            v-if="key.field.includes('tag') && store.storeName !== 'tags'"
+            v-if="key.field.includes('tag') && store.storeName != 'tags'"
             multiple
             :placeholder="key.header"
             v-model="editItem[key.field]"

@@ -108,7 +108,7 @@ import * as htmlToImage from "html-to-image";
 import type { IParameter } from "@/components/experimental/ParametersComponent.vue";
 
 defineOptions({
-  name: "Raports",
+  name: "Reports",
   icon: "📜",
 });
 

@@ -13,6 +13,10 @@
   font-family: "Rubik", sans-serif;
   user-select: none;
 }
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
 
 body {
   height: 100vh;

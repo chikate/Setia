@@ -1,530 +1,294 @@
 <template>
-  <div id="desktop" @contextmenu.prevent="openDesktopMenu">
+  <div
+    id="desktop"
+    @click.self="clearSelection"
+    @contextmenu.prevent="showMenu($event, deskMenu)"
+  >
     <div
-      v-for="app in installedApps"
+      v-for="app in apps"
       :key="app.name"
-      :class="selectedApps.has(app.name) ? 'bg-blue-500' : 'hover:bg-blue-200'"
-      class="desktop-item"
-      @click="toggleSelectApp($event, app.name)"
-      @contextmenu.prevent="openAppCtx($event, app)"
-      @dblclick="openWindow(app)"
+      :class="['desktop-item', isSelectedApp(app.name) ? 'selected' : '']"
+      @click="selectApp($event, app.name)"
+      @contextmenu.prevent="showMenu($event, appMenu(app))"
+      @dblclick="launch(app)"
       draggable
     >
-      <label class="text-6xl emoji-outline">{{ app.icon ?? "🌠" }}</label>
+      <label class="icon">{{ app.icon || "🌠" }}</label>
       {{ app.name }}
     </div>
   </div>
-
   <div
-    v-for="window in windows"
-    :id="`window-${window.id}`"
-    :key="window.id"
-    class="window backdrop-blur custom-shadow-1"
+    v-for="[id, win] in openedWindows"
+    :key="id"
+    :id="`win-${id}`"
+    class="window"
     :class="[
-      activeWinId == window.id ? 'border-blue-500' : 'border-gray-50',
-      window.state == 'pinned' && 'pinned',
+      { pinned: win.state == 'pinned' },
+      activeWindowId == id ? 'active' : '',
     ]"
-    style="background-color: rgba(233, 233, 233, 0.99)"
-    @mousedown="focusWindow(window.id)"
+    @mousedown="focusWindow(id)"
   >
-    <div
-      class="flex flex-row justify-content-between align-items-center bg-gray-500 w-full"
-      @mousedown.stop="startDrag($event, window)"
-    >
-      <div class="flex flex-row align-items-center">
-        <div class="p-2">
-          {{ window.app.icon }}
-        </div>
-        <Breadcrumb
-          class="m-0 p-2 bg-transparent"
-          :home="{ label: window.app.name }"
-        />
-        <div
-          s
-          class="hover:text-blue-500 cursor-pointer h-full p-2"
-          @click="setSize(window.id)"
-        >
-          ▣
-        </div>
-        <div
-          style="width: 2rem"
-          class="hover:text-blue-500 cursor-pointer h-full p-2"
-          @click="togglePin(window.id)"
-        >
-          {{ window.state == "pinned" ? "📍" : "📌" }}
-        </div>
-        <div class="tabs flex flex-row">
-          <div
-            v-for="(file, index) in tabs"
-            :key="file"
-            @click="activeTabIndex = index"
-            :class="{ 'bg-blue-200': activeTabIndex == index }"
-            class="flex flex-row align-items-center"
-          >
-            <i class="pi pi-file text-center" style="min-width: 32px" />
-            <label>
-              {{ file }}
-            </label>
-            <Button text icon="pi pi-times" @click="tabs.splice(index, 1)" />
-          </div>
-        </div>
-        <!-- <div
-            style="width: 2rem"
-            class="flex flex-column  justify-content-center hover:text-blue-500 cursor-pointer"
-            @click="minimize(w.id)"
-          >
-            _
-          </div> -->
-      </div>
-      <div
-        style="width: 2rem"
-        class="hover:bg-red-500 cursor-pointer h-full p-2"
-        @click="closeWindow(window.id)"
-      >
-        ✕
-      </div>
+    <div class="title" @mousedown.stop="dragWindow($event, win)">
+      {{ win.app.icon }} {{ win.app.name }}
+      <div class="flex-grow-1" />
+      <span @click="resetWindow(id)">▣</span>
+      <span @click="pinWindow(id)">
+        {{ win.state == "pinned" ? "📍" : "📌" }}
+      </span>
+      <span class="close-window" @click="closeWindow(id)">✕</span>
     </div>
-    <component :is="window.app" class="h-full" />
+    <div class="overflow-auto relative">
+      <component :is="win.app" />
+    </div>
+    <div class="resizer" @mousedown.stop.prevent="resizeWindow($event, win)" />
+  </div>
+  <div id="tray">
     <div
-      class="resizer"
-      @mousedown.stop.prevent="startResize($event, window)"
+      v-for="[id, win] in openedWindows"
+      :key="id"
+      class="tray"
+      :class="activeWindowId == id ? 'active' : ''"
+      @click="maximize(id)"
+      v-tooltip.top="win.app.name"
+    >
+      {{ win.app.icon || "🌠" }}
+    </div>
+  </div>
+  <Dialog modal v-model:visible="search.visible" class="w-3" :closable="false">
+    <template #header> asd </template>
+    <InputText
+      autofocus
+      v-model="search.query"
+      placeholder="Search apps..."
+      class="p-2"
+      @keypress.enter="
+        launch(filtered[0]);
+        search.visible = false;
+      "
     />
-  </div>
-
-  <div id="tray" class="flex flex-row-reverse p-2">
     <div
-      v-for="appWindow in windows"
-      :id="`tray-${appWindow.id}`"
-      :key="appWindow.id"
-      class="border-round"
-      :class="activeWinId == appWindow.id ? 'bg-blue-500' : 'bg-gray-50'"
-      @click="toggleMaximize(appWindow.id)"
+      v-for="app in filtered"
+      :key="app.name"
+      class="app-item"
+      @click="
+        launch(app);
+        search.visible = false;
+      "
     >
-      <div v-tooltip.top="appWindow.app.name ?? 'app'">
-        {{ appWindow.app.icon ?? "🌠" }}
-      </div>
-    </div>
-  </div>
-
-  <Dialog modal id="startMenu" v-model:visible="visibleMenu" class="w-3">
-    <template #header>
-      <div />
-    </template>
-    <div class="flex flex-column gap-3 h-full overflow-auto">
-      <InputText
-        id="searchStart"
-        placeholder="Search apps..."
-        v-model="search"
-        class="flex-1 p-2 rounded-md border-0 bg-white/5 text-[var(--text)]"
-        @keypress.enter="
-          openWindow(filteredApps[0]);
-          visibleMenu = false;
-        "
-      />
-
-      <div class="flex flex-column text-xl h-full overflow-auto">
-        <div
-          v-for="app in filteredApps"
-          :key="app.id"
-          @click="
-            openWindow(app);
-            visibleMenu = false;
-          "
-          class="flex align-items-center cursor-pointer hover:bg-blue-50 p-2 border-round"
-        >
-          {{ app.icon }} {{ app.name }}
-        </div>
-      </div>
+      {{ app.icon }} {{ app.name }}
     </div>
   </Dialog>
-
-  <ContextMenu ref="menu" :model="ctx.items" />
+  <ContextMenu ref="menu" :model="menuItems" />
 </template>
 
 <script setup lang="ts">
+const apps = installedApps;
 const menu = ref();
-const visibleMenu = ref();
-
-// Tabs
-const tabs = ref(["aasdasdsdd1", "aasdassdd2", "aasdsdd3"]);
-const activeTabIndex = ref(1);
-
-const handler = (e: KeyboardEvent) =>
-  e.key == "Escape" && activeWinId.value
-    ? closeWindow(activeWinId.value)
-    : undefined;
-
-onMounted(init);
-function init() {
-  window.addEventListener("keydown", handler);
-  onBeforeUnmount(() => {
-    window.removeEventListener("keydown", handler);
-  });
-}
-
-// --- clock ---
-// const clock = ref("");
-// const clockFormat = ref({
-//   year: "numeric",
-//   month: "2-digit",
-//   day: "2-digit",
-//   hour: "2-digit",
-//   minute: "2-digit",
-//   second: "2-digit",
-//   hour12: true,
-// });
-// const updateClock = () =>
-//   (clock.value = new Date().toLocaleString("en-US", clockFormat.value));
-// updateClock();
-// setInterval(updateClock, 500);
-
+const menuItems = ref([]);
+const activeWindowId = ref<string>();
 const selectedApps = ref(new Set<string>());
-
-// --- start menu ---
-const startVisible = ref(false);
-const search = ref("");
-
-const filteredApps = computed(() =>
-  installedApps
-    ?.filter((a) => a.name?.toLowerCase().includes(search.value?.toLowerCase()))
-    .sort((a, b) => {
-      const aStartsWith = a.name
-        .toLowerCase()
-        .startsWith(search.value.toLowerCase());
-      const bStartsWith = b.name
-        .toLowerCase()
-        .startsWith(search.value.toLowerCase());
-
-      if (aStartsWith && !bStartsWith) {
-        return -1;
-      }
-      if (!aStartsWith && bStartsWith) {
-        return 1;
-      }
-
-      return a.name.localeCompare(b.name);
-    })
-);
-
-// --- context menu ---
-const ctx = reactive({
-  items: [] as { label: string; command: () => void }[],
-});
-function showCtx(ev: MouseEvent, items) {
-  ctx.items = items;
-  menu.value.show(ev);
-}
-const openDesktopMenu = (ev: MouseEvent) =>
-  showCtx(ev, [
-    {
-      label: "Search apps…",
-      command: () => (visibleMenu.value = !visibleMenu.value),
-    },
-    { label: "Refresh", command: () => location.reload() },
-    { label: "New note (desktop)", command: openWindow },
-  ]);
-const openAppCtx = (ev: MouseEvent, a) =>
-  showCtx(ev, [
-    { label: "Open", command: () => openWindow(a) },
-    { label: "Hide", command: () => alert("app") },
-    { label: "Uninstall", command: () => alert("app") },
-  ]);
-
-function toggleSelectApp(event: MouseEvent, appName: string) {
-  const s = selectedApps.value;
-
-  if (event.ctrlKey) {
-    s.has(appName) ? s.delete(appName) : s.add(appName);
-  } else {
-    s.clear();
-    s.add(appName);
-  }
-  selectedApps.value = new Set(s);
-}
-
-// --- window management ---
-
+const openedWindows = ref<Map<string, any>>(new Map());
+const search = ref({ visible: false, query: "" });
 let z = 100;
-
-const activeWinId = ref<string>();
-
-function openWindow(app) {
-  if (!app || !app.name) return;
-
-  const existing = windows.find((w) => w.app.name == app.name);
-  if (existing) {
-    focusWindow(existing.id);
-    return;
-  }
-
+const filtered = computed(() =>
+  apps.filter((app) =>
+    app.name.toLowerCase().includes(search.value.query.toLowerCase())
+  )
+);
+const deskMenu = [
+  { label: "🔍 Search", command: () => (search.value.visible = true) },
+  { label: "🔄 Refresh", command: () => location.reload() },
+];
+const appMenu = (app) => [
+  { label: "▶️ Open", command: () => launch(app) },
+  {
+    label: "⭐ Favorite",
+    command: () =>
+      osStore().addToFavorites({
+        label: `${app.icon} ${app.name}`,
+        route: app.__name,
+      }),
+  },
+  { label: "❌ Uninstall", command: () => alert(`Uninstall ${app.name}`) },
+];
+const showMenu = (e, items) => ((menuItems.value = items), menu.value.show(e));
+const clearSelection = () => selectedApps.value.clear();
+const isSelectedApp = (name) => selectedApps.value.has(name);
+const selectApp = (e, name) => {
+  const selectedApps_local = selectedApps.value;
+  e.ctrlKey
+    ? selectedApps_local.has(name)
+      ? selectedApps_local.delete(name)
+      : selectedApps_local.add(name)
+    : (selectedApps_local.clear(), selectedApps_local.add(name));
+  selectedApps.value = new Set(selectedApps_local);
+};
+const launch = (app) => {
+  if (!app?.name) return;
+  const existing = [...openedWindows.value.values()].find(
+    (w) => w.app.name == app.name
+  );
+  if (existing) return focusWindow(existing.id);
   const id = String(++z);
-  windows.push({
+  openedWindows.value.set(id, {
     id,
     app,
-    state: window.innerWidth <= 768 ? "maximized" : "draggable",
+    state: innerWidth <= 768 ? "maximized" : "draggable",
   });
-  setSize(id);
+  resetWindow(id);
   focusWindow(id);
-}
+};
 
-function focusWindow(id: string) {
-  const w = windows.find((e) => e.id == id);
-  if (!w) return;
-
-  if (w.state != "pinned") {
-    z++;
-    const windowEl = document.getElementById(`window-${w.id}`);
-    if (windowEl) windowEl.style.zIndex = String(z);
-  }
-
-  activeWinId.value = id;
-}
-
-function closeWindow(id: string) {
-  const w = windows.find((e) => e.id == id);
-  if (!w) return;
-
-  if (w.state == "pinned") {
-    const confirmation = confirm(
-      "Are you sure you want to close this pinned window?"
-    );
-    if (!confirmation) return;
-  }
-
-  windows.splice(windows.indexOf(w), 1);
-
-  let top = null;
-  let maxZ = -1;
-  for (const win of windows) {
-    const winEl = document.getElementById(`window-${w.id}`);
-    if (!winEl) continue;
-
-    const zIndex = parseInt(winEl.style.zIndex);
-    if (zIndex > maxZ) {
-      top = win;
-      maxZ = zIndex;
-    }
-  }
-  activeWinId.value = top?.id ?? null;
-}
-
-function toggleMaximize(id: string) {
-  const w = windows.find((w) => w.id == id);
-  if (!w) return;
-
-  const el = document.getElementById(`window-${w.id}`);
+const focusWindow = (id) => {
+  const el = document.getElementById(`win-${id}`);
   if (!el) return;
+  if (!el.classList.contains("pinned")) el.style.zIndex = String(z++);
+  activeWindowId.value = id;
+};
 
-  if (w.state == "maximized") {
-    w.state = "draggable";
-    el.style.width = w.style?.width ?? "400px";
-    el.style.height = w.style?.height ?? "300px";
-    el.style.left = w.style?.left ?? "0";
-    el.style.top = w.style?.top ?? "0";
-  } else {
-    w.state = "maximized";
-    el.style.left = "0px";
-    el.style.top = "0px";
-    el.style.width = `${window.innerWidth}px`;
-    el.style.height = `${window.innerHeight}px`;
-  }
-}
+const closeWindow = (id) => {
+  openedWindows.value.delete(id);
+  activeWindowId.value = [...openedWindows.value.keys()].at(-1);
+};
 
-function setSize(id: string) {
-  const w = windows.find((e) => e.id == id);
-  if (!w) return;
+const maximize = (id) => {
+  const el = document.getElementById(`win-${id}`);
+  const win = openedWindows.value.get(id);
+  if (!el || !win) return;
+  if (win.state == "maximized") return resetWindow(id);
+  Object.assign(el.style, {
+    left: 0,
+    top: 0,
+    width: `${innerWidth}px`,
+    height: `${innerHeight}px`,
+  });
+  win.state = "maximized";
+};
 
-  const el = document.getElementById(`window-${w.id}`);
+const resetWindow = (id) => {
+  const el = document.getElementById(`win-${id}`);
   if (!el) return;
+  Object.assign(el.style, {
+    width: "400px",
+    height: "300px",
+    left: "100px",
+    top: "100px",
+  });
+};
 
-  el.style.width = w.style?.width ?? "400px";
-  el.style.height = w.style?.height ?? "300px";
-  el.style.left = w.style?.left ?? "100px";
-  el.style.top = w.style?.top ?? "100px";
-}
+const resizeWindow = (e, win) => {
+  const el = document.getElementById(`win-${win.id}`);
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const move = (ev) =>
+    Object.assign(el.style, {
+      width: `${Math.max(240, rect.width + ev.clientX - e.clientX)}px`,
+      height: `${Math.max(140, rect.height + ev.clientY - e.clientY)}px`,
+    });
+  const stop = () => (off("mousemove", move), off("mouseup", stop));
+  on("mousemove", move);
+  on("mouseup", stop);
+};
 
-function startDrag(e: MouseEvent, w) {
-  if (w.state == "pinned") return;
+const dragWindow = (e, win) => {
+  if (win.state == "pinned") return;
+  const el = document.getElementById(`win-${win.id}`);
+  const rect = el.getBoundingClientRect();
+  const move = (ev) =>
+    Object.assign(el.style, {
+      left: `${Math.min(
+        Math.max(0, ev.clientX - (e.clientX - rect.left)),
+        innerWidth - rect.width
+      )}px`,
+      top: `${Math.min(
+        Math.max(0, ev.clientY - (e.clientY - rect.top)),
+        innerHeight - rect.height
+      )}px`,
+    });
+  const stop = () => (off("mousemove", move), off("mouseup", stop));
+  on("mousemove", move);
+  on("mouseup", stop);
+};
 
-  e.preventDefault();
+const pinWindow = (id) => {
+  const win = openedWindows.value.get(id);
+  if (win) win.state = win.state == "pinned" ? "draggable" : "pinned";
+};
 
-  const htmlWindowElement = document.getElementById(`window-${w.id}`);
-  if (!htmlWindowElement) return;
-
-  focusWindow(w.id);
-
-  const rect = (e.target as HTMLElement)
-    .closest(".window")
-    .getBoundingClientRect();
-
-  const onMove = (ev: MouseEvent) => {
-    htmlWindowElement.style.left = `${Math.max(
-      0,
-      Math.min(
-        ev.clientX - (e.clientX - rect.left),
-        window.innerWidth - rect.width
-      )
-    )}px`;
-    htmlWindowElement.style.top = `${Math.max(
-      0,
-      Math.min(
-        ev.clientY - (e.clientY - rect.top),
-        window.innerHeight - rect.height
-      )
-    )}px`;
-  };
-
-  const stopDrag = () => {
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", stopDrag);
-  };
-
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", stopDrag);
-}
-
-function startResize(e: MouseEvent, w) {
-  e.preventDefault();
-  const htmlWindowElement = document.getElementById(`window-${w.id}`);
-  if (!htmlWindowElement) return;
-  const rect = htmlWindowElement.getBoundingClientRect();
-  const onMove = (ev: MouseEvent) => {
-    htmlWindowElement.style.width =
-      Math.max(240, rect.width + (ev.clientX - e.clientX)) + "px";
-    htmlWindowElement.style.height =
-      Math.max(140, rect.height + (ev.clientY - e.clientY)) + "px";
-  };
-  const onUp = () => {
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onUp);
-  };
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onUp);
-
-  console.log("asdasdasdasd");
-  window.dispatchEvent(new Event("resizeWindow"));
-}
-
-function togglePin(id: string) {
-  const w = windows.find((e) => e.id == id);
-  if (!w) return;
-
-  if (w.state == "pinned") {
-    z++;
-    const windowEl = document.getElementById(`window-${id}`);
-    if (windowEl) {
-      windowEl.style.zIndex = String(z);
-    }
-  } else {
-    const windowEl = document.getElementById(`window-${id}`);
-    if (windowEl) {
-      windowEl.style.zIndex = String(--z);
-    }
-  }
-
-  if (w.state == "pinned") {
-    const pinnedWindows = windows.filter((win) => win.state == "pinned");
-    const offsetX = 20;
-    const offsetY = 20;
-    const maxOffset = 100;
-    const positionX = (pinnedWindows.length * offsetX) % maxOffset;
-    const positionY = (pinnedWindows.length * offsetY) % maxOffset;
-
-    const windowEl = document.getElementById(`window-${id}`);
-    if (windowEl) {
-      windowEl.style.left = `${window.innerWidth - 520 - positionX}px`;
-      windowEl.style.top = `${window.innerHeight - 350 - positionY}px`;
-    }
-  }
-}
+const on = (ev, fn) => addEventListener(ev, fn);
+const off = (ev, fn) => removeEventListener(ev, fn);
 </script>
 
 <style scoped>
-* {
-  text-shadow: black 1px 1px 2px;
+#desktop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
-
-/* .tabs > * {
-  border-width: 1px !important;
-  border-style: solid;
-}
-.tabs > *:only-child {
-  border-top: 5px;
-}
-.tabs > *:first-child {
-  border-top-left-radius: 5px;
-}
-.tabs > *:last-child {
-  border-top-right-radius: 5px;
-} */
-
-.window {
-  position: absolute;
-  overflow: hidden;
+.desktop-item {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
-  background-color: rgba(233, 233, 233, 0.2);
-  border: 1px solid gray;
-  border-radius: var(--p-content-border-radius);
+  align-items: center;
+  > * {
+    pointer-events: none;
+  }
 }
-
-.emoji-outline {
-  pointer-events: none;
-  /* text-shadow: 2px 0 0 rgba(255, 255, 255, 0.5),
-    -2px 0 0 rgba(255, 255, 255, 0.5), 0 2px 0 rgba(255, 255, 255, 0.5),
-    0 -2px 0 rgba(255, 255, 255, 0.5), 2px 2px 0 rgba(255, 255, 255, 0.5),
-    -2px 2px 0 rgba(255, 255, 255, 0.5), 2px -2px 0 rgba(255, 255, 255, 0.5),
-    -2px -2px 0 rgba(255, 255, 255, 0.5), 1px 1px 0 rgba(255, 255, 255, 0.5),
-    -1px 1px 0 rgba(255, 255, 255, 0.5), 1px -1px 0 rgba(255, 255, 255, 0.5),
-    -1px -1px 0 rgba(255, 255, 255, 0.5); */
+.desktop-item.selected {
+  background: #519fff;
+}
+.desktop-item:hover {
+  background: #bfdbfe;
+}
+.icon {
+  font-size: 2.5rem;
+}
+.window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background: #eee;
+  overflow: hidden;
+}
+.title {
+  background: #555;
+  color: white;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  > span {
+    cursor: pointer;
+    padding: 0.5rem;
+  }
 }
 .resizer {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   cursor: nwse-resize;
 }
-.backdrop-blur {
-  /* backdrop-filter: blur(33px); */
+.tray {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
 }
-.marquee-box {
-  position: absolute;
-  border: 1px dashed #06b6d4;
-  background: rgba(6, 182, 212, 0.2);
-  pointer-events: none;
+.tray.active {
+  background: #3b82f6;
+  color: white;
 }
-
-.desktop {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
+.close-window:hover {
+  background: red;
+  color: white;
 }
-.desktop-item {
-  cursor: pointer;
-  border-radius: var(--p-content-border-radius);
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-#desktop {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-#clock {
-  font-family: "Orbitron", sans-serif;
-  letter-spacing: 2px;
-}
-
 .window.pinned {
-  border-color: #06b6d4; /* Accent color */
+  border-color: #06b6d4;
   z-index: 2147483647;
 }
 </style>

@@ -55,7 +55,7 @@ let isPanning = false;
 let panStart = { x: 0, y: 0, px: 0, py: 0 };
 
 function startPan(e: MouseEvent) {
-  if ((e.target as HTMLElement).tagName === "IMG") return; // don't pan when dragging images
+  if ((e.target as HTMLElement).tagName == "IMG") return; // don't pan when dragging images
   isPanning = true;
   panStart = { x: e.clientX, y: e.clientY, px: pan.x, py: pan.y };
 }
@@ -84,7 +84,7 @@ function startDrag(i: number, e: MouseEvent) {
   window.addEventListener("mouseup", stopDrag);
 }
 function onDrag(e: MouseEvent) {
-  if (draggingIndex !== null) {
+  if (draggingIndex != null) {
     const img = images.value[draggingIndex];
     img.x = e.clientX / zoom.value - dragOffset.x - pan.x / zoom.value;
     img.y = e.clientY / zoom.value - dragOffset.y - pan.y / zoom.value;

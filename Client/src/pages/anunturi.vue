@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-column gap-2 p-2">
     <InputText />
-    <AnuntCompoennt v-for="x in 100" />
+    <AnuntCompoennt v-for="x in 10" />
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row gap-3 h-full">
+  <div class="flex flex-row gap-3 h-full p-1">
     <div class="flex flex-column flex-grow-1 gap-3 h-full" style="width: 20vw">
       <InputText v-model="search" placeholder="Search" />
       <div class="flex-wrap h-full overflow-auto">

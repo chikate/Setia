@@ -66,3 +66,9 @@ export const MENU_ICONS: Record<string, string> = {
   downloads: "pi pi-download",
   code: "pi pi-code",
 };
+
+export const installedApps = Object.values(
+  import.meta.glob("@/pages/*.vue", { eager: true })
+)
+  .map((m: any) => markRaw(m.default))
+  ?.filter((elem) => elem.name);

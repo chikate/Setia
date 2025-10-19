@@ -1,7 +1,5 @@
 <template>
-  <div class="vignette flex justify-content-center align-items-center">
-    <BookingComp />
-  </div>
+  <BookingComp />
 </template>
 
 <script setup lang="ts">

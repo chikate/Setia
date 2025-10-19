@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-column w-full justify-content-around align-items-center"
-  >
+  <div class="flex flex-column w-full justify-content-around gap-3 p-1">
     <Button label="Toggle Dark Mode" @click="darkMode().toggleDarkMode()" />
     <ColorPicker @update:model-value="darkMode().applyThemeColor" />
     <!-- <CRUDT :service="usersCRUDService" class="custom-shadow-1" />

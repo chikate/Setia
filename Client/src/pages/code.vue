@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row">
+  <div class="flex flex-row h-full">
     <div id="variables" class="flex flex-column p-2">
       <AccordionTab header="Parameters">
         <SimpleParametersComponent
@@ -8,8 +8,8 @@
         />
       </AccordionTab>
     </div>
-    <div class="flex flex-column w-full">
-      <div class="flex flex-row gap-2 p-2 border-1 h-full">
+    <div class="flex flex-column w-full h-full border-left-1 bg-gray-700">
+      <div class="flex flex-row gap-2 p-2 h-full overflow-auto">
         <div class="flex flex-column">
           <span
             style="min-width: 20px"
@@ -30,8 +30,6 @@
       </div>
       <Terminal prompt=">" aria-label="PrimeVue Terminal Service" />
     </div>
-
-    <MonacoEditor />
   </div>
 </template>
 
@@ -42,7 +40,7 @@ defineOptions({
 });
 
 const code = ref(`function hello() {
-  console.log("Hello, Monaco in Vue!");
+  console.log("Hello, in Vue!");
 }`);
 
 const lineCount = ref(1);
