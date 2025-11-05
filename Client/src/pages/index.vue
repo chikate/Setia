@@ -1,104 +1,70 @@
 <template>
-  <div
-    id="desktop"
-    @click.self="clearSelection"
-    @contextmenu.prevent="showMenu($event, deskMenu)"
-  >
-    <div
-      v-for="app in apps"
-      :key="app.name"
-      :class="['desktop-item', isSelectedApp(app.name) ? 'selected' : '']"
-      @click="selectApp($event, app.name)"
-      @contextmenu.prevent="showMenu($event, appMenu(app))"
-      @dblclick="launch(app)"
-      draggable
-    >
-      <label class="icon">{{ app.icon || "🌠" }}</label>
-      {{ app.name }}
+  <main class="flex flex-column">
+    <div id="desktop" @click.self="clearSelection">
+      <div
+        v-for="app in installedApps"
+        :key="app.name"
+        :class="['desktop-item', isSelectedApp(app.name) ? 'selected' : '']"
+        @click="
+          isAdmin() ? selectApp($event, app.name) : $router.push(app.__name)
+        "
+        @dblclick="launch(app)"
+        draggable
+      >
+        <!-- @contextmenu.prevent="showMenu($event, appMenu(app))" -->
+        <label class="icon">{{ app.icon || "🌠" }}</label>
+        {{ app.name }}
+      </div>
     </div>
-  </div>
-  <div
-    v-for="[id, win] in openedWindows"
-    :key="id"
-    :id="`win-${id}`"
-    class="window"
-    :class="[
-      { pinned: win.state == 'pinned' },
-      activeWindowId == id ? 'active' : '',
-    ]"
-    @mousedown="focusWindow(id)"
-  >
-    <div class="title" @mousedown.stop="dragWindow($event, win)">
-      {{ win.app.icon }} {{ win.app.name }}
-      <div class="flex-grow-1" />
-      <span @click="resetWindow(id)">▣</span>
-      <span @click="pinWindow(id)">
-        {{ win.state == "pinned" ? "📍" : "📌" }}
-      </span>
-      <span class="close-window" @click="closeWindow(id)">✕</span>
-    </div>
-    <div class="overflow-auto relative">
-      <component :is="win.app" />
-    </div>
-    <div class="resizer" @mousedown.stop.prevent="resizeWindow($event, win)" />
-  </div>
-  <div id="tray">
     <div
       v-for="[id, win] in openedWindows"
       :key="id"
-      class="tray"
-      :class="activeWindowId == id ? 'active' : ''"
-      @click="maximize(id)"
-      v-tooltip.top="win.app.name"
+      :id="`win-${id}`"
+      class="window"
+      :class="[
+        { pinned: win.state == 'pinned' },
+        activeWindowId == id ? 'active' : '',
+      ]"
+      @mousedown="focusWindow(id)"
     >
-      {{ win.app.icon || "🌠" }}
+      <div class="title" @mousedown.stop="dragWindow($event, win)">
+        {{ win.app.icon }} {{ win.app.name }}
+        <div class="flex-grow-1" />
+        <span @click="resetWindow(id)">▣</span>
+        <span @click="pinWindow(id)">
+          {{ win.state == "pinned" ? "📍" : "📌" }}
+        </span>
+        <span class="close-window" @click="closeWindow(id)">✕</span>
+      </div>
+      <div class="overflow-auto relative">
+        <component :is="win.app" />
+      </div>
+      <div
+        class="resizer"
+        @mousedown.stop.prevent="resizeWindow($event, win)"
+      />
     </div>
-  </div>
-  <Dialog modal v-model:visible="search.visible" class="w-3" :closable="false">
-    <template #header> asd </template>
-    <InputText
-      autofocus
-      v-model="search.query"
-      placeholder="Search apps..."
-      class="p-2"
-      @keypress.enter="
-        launch(filtered[0]);
-        search.visible = false;
-      "
-    />
-    <div
-      v-for="app in filtered"
-      :key="app.name"
-      class="app-item"
-      @click="
-        launch(app);
-        search.visible = false;
-      "
-    >
-      {{ app.icon }} {{ app.name }}
+    <div id="tray">
+      <div
+        v-for="[id, win] in openedWindows"
+        :key="id"
+        class="tray"
+        :class="activeWindowId == id ? 'active' : ''"
+        @click="maximize(id)"
+        v-tooltip.top="win.app.name"
+      >
+        {{ win.app.icon || "🌠" }}
+      </div>
     </div>
-  </Dialog>
-  <ContextMenu ref="menu" :model="menuItems" />
+  </main>
 </template>
 
 <script setup lang="ts">
-const apps = installedApps;
-const menu = ref();
-const menuItems = ref([]);
 const activeWindowId = ref<string>();
 const selectedApps = ref(new Set<string>());
 const openedWindows = ref<Map<string, any>>(new Map());
-const search = ref({ visible: false, query: "" });
 let z = 100;
-const filtered = computed(() =>
-  apps.filter((app) =>
-    app.name.toLowerCase().includes(search.value.query.toLowerCase())
-  )
-);
-const deskMenu = [
-  { label: "🔍 Search", command: () => (search.value.visible = true) },
-  { label: "🔄 Refresh", command: () => location.reload() },
-];
+
 const appMenu = (app) => [
   { label: "▶️ Open", command: () => launch(app) },
   {
@@ -111,7 +77,6 @@ const appMenu = (app) => [
   },
   { label: "❌ Uninstall", command: () => alert(`Uninstall ${app.name}`) },
 ];
-const showMenu = (e, items) => ((menuItems.value = items), menu.value.show(e));
 const clearSelection = () => selectedApps.value.clear();
 const isSelectedApp = (name) => selectedApps.value.has(name);
 const selectApp = (e, name) => {
@@ -190,24 +155,21 @@ const resizeWindow = (e, win) => {
   on("mouseup", stop);
 };
 
-const dragWindow = (e, win) => {
-  if (win.state == "pinned") return;
-  const el = document.getElementById(`win-${win.id}`);
-  const rect = el.getBoundingClientRect();
+const dragWindow = (e, w) => {
+  if (w.state == "pinned") return;
+  e.preventDefault();
+  const el = document.getElementById(`win-${w.id}`);
+  el.style.position = "fixed";
+  const r = el.getBoundingClientRect(),
+    dx = e.clientX - r.left,
+    dy = e.clientY - r.top;
   const move = (ev) =>
     Object.assign(el.style, {
-      left: `${Math.min(
-        Math.max(0, ev.clientX - (e.clientX - rect.left)),
-        innerWidth - rect.width
-      )}px`,
-      top: `${Math.min(
-        Math.max(0, ev.clientY - (e.clientY - rect.top)),
-        innerHeight - rect.height
-      )}px`,
+      left: `${ev.clientX - dx}px`,
+      top: `${ev.clientY - dy}px`,
     });
-  const stop = () => (off("mousemove", move), off("mouseup", stop));
   on("mousemove", move);
-  on("mouseup", stop);
+  on("mouseup", () => off("mousemove", move));
 };
 
 const pinWindow = (id) => {
@@ -223,6 +185,8 @@ const off = (ev, fn) => removeEventListener(ev, fn);
 #desktop {
   display: flex;
   flex-wrap: wrap;
+  align-items: start;
+  overflow: auto;
   gap: 0.5rem;
 }
 .desktop-item {
@@ -246,6 +210,7 @@ const off = (ev, fn) => removeEventListener(ev, fn);
   font-size: 2.5rem;
 }
 .window {
+  transition: none;
   position: absolute;
   display: flex;
   flex-direction: column;

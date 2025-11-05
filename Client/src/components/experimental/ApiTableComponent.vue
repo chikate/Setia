@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column gap-2 w-full align-items-start">
+  <div class="flex flex-column align-items-start">
     <DataTable :value="[{ name: '' }]">
       <Column header="#">
         <template #body="slotProps">

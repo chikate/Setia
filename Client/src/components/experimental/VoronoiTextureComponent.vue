@@ -2,7 +2,7 @@
   <canvas ref="canvas" :width="width" :height="height" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 // Props
 const props = defineProps({
   width: {

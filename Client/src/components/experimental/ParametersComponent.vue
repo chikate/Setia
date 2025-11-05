@@ -69,7 +69,7 @@ function handleDeleteParameter(index: number) {
       @keydown.enter="handleAddParameter"
     />
     <div
-      class="parameter flex flex-row gap-2 border-bottom-1 border-gray-200 justify-content-between align-items-center cursor-pointer"
+      class="parameter flex flex-row border-bottom-1 border-gray-200 justify-content-between align-items-center cursor-pointer"
       draggable
       v-for="(item, item_index) in parameters"
       :key="item_index"
@@ -87,7 +87,7 @@ function handleDeleteParameter(index: number) {
         option-value="type"
       >
         <template #option="{ option }">
-          <div class="flex gap-3">
+          <div class="flex ">
             <i
               :class="option.icon"
               class="pi text-center"
@@ -100,7 +100,7 @@ function handleDeleteParameter(index: number) {
       <InputText v-model="item.value" />
       <label
         @dblclick="$emit('paramDblClick', $event)"
-        class="w-full text-right cursor-pointer"
+        class="text-right cursor-pointer"
         :draggable="true"
         :ondragstart="dragStart"
       >

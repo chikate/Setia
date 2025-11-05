@@ -9,14 +9,11 @@ namespace Main.Modules.Auth;
 public class AuthController(IAuthService auth) : ControllerBase
 {
     [HttpPost]
-    public Task<string> Login([FromBody] AuthenticationDTO credentials)
-        => auth.Login(credentials);
+    public Task<string> Login([FromBody] AuthenticationDTO credentials) => auth.Login(credentials);
 
     [HttpGet]
-    public Task<UserModel> Register([FromQuery] RegistrationDTO registrationInfo)
-        => auth.Register(registrationInfo);
+    public Task<UserModel> Register([FromQuery] RegistrationDTO registrationInfo) => auth.Register(registrationInfo);
 
     [HttpGet]
-    public Task RecoverAccount([FromQuery] RecoveryDTO recoveryInfo)
-        => auth.RecoverAccount(recoveryInfo);
+    public Task RecoverAccount([FromQuery] RecoveryDTO recoveryInfo) => auth.RecoverAccount(recoveryInfo);
 }

@@ -6,21 +6,21 @@
         Size<input type="range" min="1" max="60" v-model.number="size" />
         <span> {{ size }}px </span>
       </label>
-      <button @click="mode = 'draw'" :class="{ active: mode == 'draw' }">
+      <Button @click="mode = 'draw'" :class="{ active: mode == 'draw' }">
         Draw
-      </button>
-      <button @click="mode = 'erase'" :class="{ active: mode == 'erase' }">
+      </Button>
+      <Button @click="mode = 'erase'" :class="{ active: mode == 'erase' }">
         Erase
-      </button>
-      <button @click="undo" :disabled="!undoStack.length">Undo</button>
-      <button @click="clearCanvas">Clear</button>
-      <button @click="savePNG">Save PNG</button>
+      </Button>
+      <Button @click="undo" :disabled="!undoStack.length">Undo</Button>
+      <Button @click="clearCanvas">Clear</Button>
+      <Button @click="savePNG">Save PNG</Button>
     </div>
     <canvas ref="canvas" />
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 const props = defineProps({
   showToolbar: { type: Boolean, default: false },
 });
@@ -44,13 +44,13 @@ function undo() {
   if (!undoStack.value.length) return;
   const img = new Image();
   img.onload = () =>
-    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height) ||
-    ctx.value.drawImage(img, 0, 0, canvas.value.width, canvas.value.height);
+    ctx.value.clearRect(0, 0, canvas.value?.width, canvas.value?.height) ||
+    ctx.value.drawImage(img, 0, 0, canvas.value?.width, canvas.value?.height);
   img.src = undoStack.value.pop();
 }
 function clearCanvas() {
   pushUndo();
-  ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+  ctx.value.clearRect(0, 0, canvas.value?.width, canvas.value?.height);
 }
 function savePNG() {
   const a = document.createElement("a");
@@ -94,28 +94,27 @@ function move(e) {
 const up = () => (drawing.value = false);
 
 function resizeCanvas() {
-  const dpr = window.devicePixelRatio || 1,
-    w = canvas.value.clientWidth,
-    h = canvas.value.clientHeight;
+  if (!canvas.value) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.value.clientWidth || 1;
+  const h = canvas.value.clientHeight || 1;
+
   const tmp = document.createElement("canvas");
   tmp.width = canvas.value.width;
   tmp.height = canvas.value.height;
-  tmp.getContext("2d").drawImage(canvas.value, 0, 0);
+  const tmpCtx = tmp.getContext("2d");
+
+  if (tmpCtx && canvas.value instanceof HTMLCanvasElement)
+    tmpCtx.drawImage(canvas.value, 0, 0);
+
   canvas.value.width = w * dpr;
   canvas.value.height = h * dpr;
+
   ctx.value = canvas.value.getContext("2d");
   ctx.value.scale(dpr, dpr);
-  ctx.value.drawImage(
-    tmp,
-    0,
-    0,
-    tmp.width,
-    tmp.height,
-    0,
-    0,
-    canvas.value.width / dpr,
-    canvas.value.height / dpr
-  );
+
+  if (tmpCtx) ctx.value.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, w, h);
 }
 
 onMounted(init);
@@ -125,9 +124,9 @@ async function init() {
   resizeCanvas();
   canvas.value.addEventListener("mousedown", down);
   canvas.value.addEventListener("mousemove", move);
-  window.addEventListener("mouseup", up);
   canvas.value.addEventListener("touchstart", down, { passive: false });
   canvas.value.addEventListener("touchmove", move, { passive: false });
+  window.addEventListener("mouseup", up);
   window.addEventListener("touchend", up);
   const observer = new ResizeObserver(resizeCanvas);
   observer.observe(canvas.value);
@@ -140,19 +139,6 @@ async function init() {
     if (e.key == "d") mode.value = "draw";
   };
   window.addEventListener("keydown", keyHandler);
-  onBeforeUnmount(() => {
-    ["mousedown", "mousemove", "touchstart", "touchmove"]
-      .forEach((ev) =>
-        canvas.value.removeEventListener(
-          ev,
-          ev == "mousemove" || ev == "touchmove" ? move : down
-        )
-      )
-      [("mouseup", "touchend", "keydown")].forEach((ev) =>
-        window.removeEventListener(ev, ev == "keydown" ? keyHandler : up)
-      );
-    observer.disconnect();
-  });
 }
 </script>
 
@@ -167,7 +153,6 @@ async function init() {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
   padding: 8px;
 }
 button {

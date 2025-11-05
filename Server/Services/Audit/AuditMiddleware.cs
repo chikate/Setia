@@ -11,41 +11,33 @@ public class AuditMiddleware(RequestDelegate next)
         context.Request.EnableBuffering();
 
         string? body = null;
-        if (context.Request.ContentLength > 0 && context.Request.ContentType?.Contains("application/json") == true)
+        if (context.Request.ContentLength > 0 &&
+            context.Request.ContentType != null &&
+            context.Request.ContentType.Contains("application/json", StringComparison.OrdinalIgnoreCase))
         {
             using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true);
             body = await reader.ReadToEndAsync();
             context.Request.Body.Position = 0;
         }
 
-        await next(context);
+        UserModel? user = await authService.GetCurrentUser();
 
-        _ = Task.Run(async () =>
-        {
-            try
+        if (user != null)
+            await auditService.LogAuditTrail(new AuditModel
             {
-                AuditModel audit = new AuditModel
+                AuthorId = user.Id,
+                Entity = context.Request.Path,
+                EntityId = Guid.NewGuid().ToString(),
+                Payload = JsonSerializer.Serialize(new
                 {
-                    AuthorId = (await authService.GetCurrentUser())?.Id,
-                    Entity = context.Request.Path,
-                    EntityId = Guid.NewGuid().ToString(),
-                    Payload = JsonSerializer.Serialize(new
-                    {
-                        context.Request.Method,
-                        context.Request.Path,
-                        context.Request.QueryString,
-                        Body = body,
-                        Timestamp = DateTime.UtcNow
-                    })
-                };
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Request.QueryString,
+                    Body = body,
+                    Timestamp = DateTime.UtcNow
+                })
+            });
 
-                await auditService.LogAuditTrail(audit);
-            }
-            catch (Exception ex)
-            {
-                // Never break the request if audit fails
-                Console.WriteLine($"[AUDIT ERROR] {ex.Message}");
-            }
-        });
+        await next(context);
     }
 }

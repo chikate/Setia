@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-column gap-2 align-items-center justify-content-center">
+  <div class="flex flex-column align-items-center justify-content-center">
     <div class="pages-container">
       <div class="page">
         <div
@@ -13,7 +13,7 @@
         />
       </div>
     </div>
-    <div class="flex flex-row align-items-center gap-2">
+    <div class="flex flex-row align-items-center">
       <InputNumber
         :min="1"
         :max="pages?.length"
@@ -32,14 +32,14 @@
           <span class="pi pi-chevron-left" />
         </template>
       </InputNumber>
-      <label class="w-full font-light">
+      <label class="font-light">
         out of <b>{{ pages?.length }}</b> pages
       </label>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { InputNumberInputEvent } from "primevue/inputnumber";
 
 const pages = defineModel("pages", {

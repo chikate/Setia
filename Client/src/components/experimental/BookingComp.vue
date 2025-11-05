@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-shadow-1 p-5 gap-2 flex flex-column w-3 m-5">
+  <div class="custom-shadow-1 p-5 flex flex-column w-3 m-5">
     <div class="text-3xl font-bold">The perfect place</div>
     <div class="font-light mb-4">
       Make your reservation for the perfect trip.
@@ -8,13 +8,13 @@
       <div :class="fieldTextStyle">Details</div>
       <Textarea
         v-model="text"
-        class="w-full border-0 bg-transparent"
+        class="border-0 bg-transparent"
         rows="1"
         autoResize
       />
     </div>
     <div class="flex flex-row">
-      <div class="flex flex-column w-full">
+      <div class="flex flex-column">
         <div :class="fieldTextStyle">CHECK IN</div>
         <Calendar
           v-model="checkIn"
@@ -24,7 +24,7 @@
         />
       </div>
       <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-300" />
-      <div class="flex flex-column w-full">
+      <div class="flex flex-column">
         <div :class="fieldTextStyle">CHECK OUT</div>
         <Calendar
           v-model="checkOut"
@@ -35,20 +35,22 @@
       </div>
     </div>
     <div class="flex flex-row">
-      <div class="flex flex-column w-full">
+      <div class="flex flex-column">
         <div :class="fieldTextStyle">ADULTS</div>
         <Dropdown
-          class="button-gradient-effect w-full cursor-pointer bg-transparent"
+          class="button-gradient-effect cursor-pointer bg-transparent"
           v-model="adults"
+          placeholder="Select number of adults"
           :options="[3, 4, 5]"
         />
       </div>
       <Divider layout="vertical" class="mx-0 my-2 border-1 border-gray-300" />
-      <div class="flex flex-column w-full">
+      <div class="flex flex-column">
         <div :class="fieldTextStyle">CHILDREN</div>
         <Dropdown
-          class="button-gradient-effect w-full cursor-pointer bg-transparent"
+          class="button-gradient-effect cursor-pointer bg-transparent"
           v-model="children"
+          placeholder="Select number of childrens"
           :options="[0, 1, 2, 3]"
         />
       </div>

@@ -29,7 +29,7 @@ async function refresh() {
 
 <template>
   <div
-    class="flex flex flex-column gap-2 surface-hover border-round p-2 shadow-1"
+    class="flex flex flex-column surface-hover border-round p-2 shadow-1"
     :class="
       answerMode
         ? answered
@@ -48,7 +48,7 @@ async function refresh() {
     <InputText v-if="customAnswere" v-model="customAnswere" />
     <div
       v-else
-      class="flex gap-2 align-items-center"
+      class="flex align-items-center"
       v-for="(option, i) in thisQuestionData.options"
       :key="i"
     >
@@ -87,7 +87,7 @@ async function refresh() {
 
     <div
       v-if="!answered"
-      class="flex flex-wrap justify-content-center align-items-center gap-2 w-full"
+      class="flex flex-wrap justify-content-center align-items-center"
     >
       <Button
         v-if="!answerMode"

@@ -19,7 +19,7 @@ onBeforeMount(async () => {
 
 <template>
   <div
-    class="flex flex-wrap p-2 hover:bg-gray-200 column-gap-2 border-round cursor-pointer justify-content-center align-self-start"
+    class="flex flex-wrap p-2 hover:bg-gray-200 column- border-round cursor-pointer justify-content-center align-self-start"
     @click="$emit('click')"
   >
     <div class="align-self-center">
@@ -37,7 +37,7 @@ onBeforeMount(async () => {
     </div>
 
     <div class="flex flex flex-column text-center align-items-start">
-      <a class="font-bold sm:w-full">{{ profileUserData.username }}</a>
+      <a class="font-bold sm:">{{ profileUserData.username }}</a>
       <!-- <a class="opacity-50">
         Joined in
         {{ new Date(profileUserData.executionDate ?? '').toUTCString().replaceAll(' GMT', '') }}

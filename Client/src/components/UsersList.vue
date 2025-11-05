@@ -1,18 +1,16 @@
 <template>
-  <DataTable :value="usersCRUDService.loadedUsers">
+  <DataTable :value="[]">
     <Column field="avatar"> </Column>
     <Column field="name" />
     <Column />
   </DataTable>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { Column } from "primevue";
 
 const usersIds = defineModel("usersIds", { type: String });
 
 onBeforeMount(init);
-async function init() {
-  usersCRUDService.loadItems();
-}
+async function init() {}
 </script>

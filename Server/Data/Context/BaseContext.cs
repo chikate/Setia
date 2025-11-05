@@ -7,20 +7,20 @@ namespace Main.Data.Context;
 
 public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfiguration config*/) : DbContext(options)
 {
-    #region SQL Tables
-    public required DbSet<UserModel> Users { get; set; }
     public required DbSet<AuditModel> Audit { get; set; }
-    public required DbSet<MessageModel> Posts { get; set; }
-    #endregion
+    public required DbSet<GroupModel> Groups { get; set; }
+    public required DbSet<NotificationModel> Notifications { get; set; }
+    public required DbSet<PostModel> Posts { get; set; }
+    public required DbSet<QuestionModel> Questions { get; set; }
+    public required DbSet<UserModel> Users { get; set; }
+    public required DbSet<LinkModel> Links { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("base");
 
-        modelBuilder.Entity<MessageModel>(builder =>
-        {
-            builder.HasKey(p => p.Id);
-        });
+        modelBuilder.Entity<LinkModel>().HasIndex(l => new { l.SourceType, l.SourceId });
+        modelBuilder.Entity<LinkModel>().HasIndex(l => new { l.TargetType, l.TargetId });
 
         //#region Default Users
         //new List<UserModel> {

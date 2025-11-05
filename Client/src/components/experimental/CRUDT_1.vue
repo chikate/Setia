@@ -25,8 +25,8 @@
       "
     >
       <template #header>
-        <div class="flex flex-row gap-2 align-items-center px-2">
-          <h2 class="w-full m-0 p-0 font-bold">{{ formattedStoreName }}</h2>
+        <div class="flex flex-row align-items-center px-2">
+          <h2 class="m-0 p-0 font-bold">{{ formattedStoreName }}</h2>
           <div v-if="showFilters" style="text-align: left">
             <MultiSelect
               v-model:modelValue="selectedColumns"
@@ -117,7 +117,7 @@
             !editOrAdd ? "Add new " : "Edit " + store.storeName.toLowerCase()
           }}
         </h3>
-        <div class="flex flex-row gap-3 font-bold">
+        <div class="flex flex-row font-bold">
           <Button
             class="bg-primary-reverse"
             label="Back"
@@ -142,9 +142,13 @@
           />
         </div>
       </template>
-      <div class="flex flex flex-column gap-4">
+      <div class="flex flex flex-column">
         <InputGroup v-for="key in exposedData" :key="key.field">
-          <InputGroupAddon :class="INPUT_CLASS" v-if="editItem[key.field]">
+          <InputGroupAddon
+            class="m-0 p-2 px-3 justify-content-start"
+            style="min-width: 130px; width: 130px; max-width: 130px"
+            v-if="editItem[key.field]"
+          >
             {{ key.header }}
           </InputGroupAddon>
           <AutoComplete
@@ -152,7 +156,7 @@
             multiple
             :placeholder="key.header"
             v-model="editItem[key.field]"
-            class="w-full"
+            class=""
             filter
           />
           <Dropdown

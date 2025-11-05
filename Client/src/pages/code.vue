@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-row h-full">
-    <div id="variables" class="flex flex-column p-2">
+  <div class="flex flex-row">
+    <div id="variables" class="flex flex-column">
       <AccordionTab header="Parameters">
         <SimpleParametersComponent
           :parameters
@@ -8,8 +8,8 @@
         />
       </AccordionTab>
     </div>
-    <div class="flex flex-column w-full h-full border-left-1 bg-gray-700">
-      <div class="flex flex-row gap-2 p-2 h-full overflow-auto">
+    <div class="flex flex-column border-left-1 bg-gray-700">
+      <div class="flex flex-row p-2 overflow-auto">
         <div class="flex flex-column">
           <span
             style="min-width: 20px"
@@ -22,7 +22,7 @@
         </div>
         <div
           ref="contentEditor"
-          class="h-full w-full"
+          class=""
           contenteditable
           @input="onInput"
           @keydown="handleKeydown"
@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 defineOptions({
   name: "Code",
   icon: "🧬",

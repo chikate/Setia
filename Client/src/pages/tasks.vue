@@ -1,58 +1,47 @@
 <template>
-  <div class="flex flex-column align-items-start gap-1 p-1">
-    <InputText placeholder="Add task" @keydown.enter="handleAddTask" />
-    <div class="flex flex-row">
-      <div class="flex flex-column gap-3 px-1 h-full overflow-auto">
-        <div
-          v-for="(project, index) in projects"
-          :key="index"
-          class="cursor-pointer flex flex-column gap-1 text-blue-500 h-full overflow-auto"
-        >
-          {{ project.name }}
-          <div class="h-full overflow-auto">
-            <div
-              v-for="(task, index) in project.tasks"
-              :key="index"
-              class="flex-wrap gap-2 px-2 align-items-center hover:bg-gray-50 hover:border-blue-500 border-gray-50 justify-content-between cursor-pointer border-1 border-round"
-              style="min-width: 20rem"
-              @click="taskIdInFocus = task.id"
-              @dblclick="$emit('taskDblClick', $event)"
-              :draggable="true"
-            >
-              {{ task.description }}
-              <div class="flex flex-row">
-                <Button text label="Pick" />
-                <AvatarGroup>
-                  <Avatar
-                    v-for="(assignee, assignee_index) in task.assigns"
-                    :key="assignee_index"
-                    :image="assignee"
-                    shape="circle"
-                    class="border-2"
-                    :style="{
-                      'border-color': stringToColor(assignee),
-                    }"
-                  />
-                </AvatarGroup>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        {{ taskIdInFocus }}
-      </div>
+  <div class="flex">
+    <div class="flex flex-column align-items-start">
+      <InputText placeholder="Add task" @keydown.enter="handleAddTask" />
+      <DataTable v-for="value in projects" :value="value.tasks">
+        <Column field="title" header="Title" />
+        <Column field="code" header="Code" />
+        <Column field="assignee" header="Assaignee" />
+      </DataTable>
+    </div>
+
+    <div class="flex flex-column align-items-start">
+      <EditorContent :editor class="editor custom-shadow-1" />
+    </div>
+
+    <div class="flex flex-column align-items-start">
+      1
+      <div class="flex flex-row">t</div>
+      2
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
 import { ToastMessageOptions } from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 
 defineOptions({
   name: "Tasks",
   icon: "✅",
+});
+
+const content = ref();
+const editor = new Editor({
+  extensions: [
+    StarterKit,
+    TextAlign.configure({
+      types: ["heading", "paragraph"],
+    }),
+  ],
+  content: content.value,
 });
 
 const toast = useToast();
@@ -71,12 +60,7 @@ export interface ITask {
   status?: number;
 }
 
-// const projects = defineModel("projects", {
-//   type: Array<IProject>,
-//   default: [{ name: "asd", tasks: [{ name: "asd" }, { name: "asd" }] }],
-// });
-
-const projects = ref<IProject[]>([{ name: "asd", tasks: [] }]);
+const projects = ref<IProject[]>([{ name: "asd", tasks: [{ title: "1" }] }]);
 const projectIndexInFocus = ref<number>();
 const taskIdInFocus = ref();
 
@@ -112,3 +96,12 @@ function handleAddTask(event: KeyboardEvent) {
   target.value = "";
 }
 </script>
+
+<style scoped>
+.editor {
+  border-radius: 5px;
+  aspect-ratio: 1/1.414;
+  padding: 1rem;
+  cursor: text;
+}
+</style>

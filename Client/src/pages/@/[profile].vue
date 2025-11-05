@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-column gap-2 w-full">
+  <div class="flex flex-column align-items-start w-full">
     <LiveVideo v-if="false" :comments="[]" />
-    <div class="relative flex h-full overflow-auto">
+    <div class="relative flex overflow-auto w-full">
       <TabMenu
         class="w-full"
         v-model:activeIndex="activeTabIndex"
@@ -22,23 +22,21 @@
         ]"
       >
         <template #item="{ item, index, props }">
-          <div class="flex flex-column h-full justify-content-end p-2">
-            <div v-if="item.name == 'About'" class="flex flex-row gap-2">
+          <div class="flex flex-column justify-content-end p-2">
+            <div v-if="item.name == 'About'" class="flex flex-row">
               <Avatar
                 class="shadow-1"
                 :image="profileUserData.avatar"
                 style="height: 100px; width: 100px"
                 shape="circle"
-                @click="showUploadAvatar = isMyProfile && !showUploadAvatar"
                 :class="isMyProfile ? 'cursor-pointer' : undefined"
               />
               <div class="flex flex flex-column justify-content-around">
                 <label id="username" class="font-bold text-2xl">
-                  {{ profileUserData.username }}
                   {{ $route.params.profile }}
                 </label>
                 <label>Ceva de scris aici</label>
-                <div class="flex-wrap gap-2">
+                <div class="flex-wrap">
                   <label>Playing</label>
                   <a
                     id="activity"
@@ -47,18 +45,11 @@
                     League of Legends
                   </a>
                 </div>
-                <a class="opacity-50" v-if="profileUserData.executionDate">
-                  Joined
-                  {{
-                    new Date(profileUserData.executionDate ?? "")
-                      .toDateString()
-                      .toLowerCase()
-                  }}
-                </a>
+                <a class="opacity-50" v-if="true"> Joined {{}} </a>
               </div>
             </div>
             <div
-              class="flex gap-1 align-items-center cursor-pointer gap-2"
+              class="flex align-items-center cursor-pointer"
               :class="{ 'font-bold': activeTabIndex == index }"
               v-else
             >
@@ -68,21 +59,35 @@
           </div>
         </template>
       </TabMenu>
-      <div class="absolute top-0 right-0 flex flex-row-reverse gap-2 p-2">
+      <div class="absolute top-0 right-0 flex flex-row-reverse p-2">
         <Button icon="pi pi-heart" label="Subscribe" />
         <Button icon="pi pi-heart" label="Follow" />
       </div>
     </div>
-    <ProfileAbout v-if="activeTabIndex == 0" />
+    <div class="p-1 flex flex-column overflow-auto w-full">
+      <div class="w-full flex align-items-center justify-content-center">
+        <PostComponent
+          v-if="[1, 2, 3, 4].includes(activeTabIndex)"
+          :postData="{
+            attachments: [
+              '1/2262535539-98351197-299350c1-875d-457d-82dd-a962bfd00dde.mp4',
+            ],
+          }"
+          editing
+        />
+      </div>
 
-    <PostsList v-if="activeTabIndex == 1" />
-    <PostsList v-if="activeTabIndex == 2" />
-    <PostsList v-if="activeTabIndex == 3" />
-    <PostsList v-if="activeTabIndex == 4" />
+      <ProfileAbout v-if="activeTabIndex == 0" />
 
-    <UsersList v-if="activeTabIndex == 6" />
-    <UsersList v-if="activeTabIndex == 7" />
-    <UsersList v-if="activeTabIndex == 8" />
+      <PostsList v-if="activeTabIndex == 1" />
+      <PostsList v-if="activeTabIndex == 2" />
+      <PostsList v-if="activeTabIndex == 3" />
+      <PostsList v-if="activeTabIndex == 4" />
+
+      <UsersList v-if="activeTabIndex == 6" />
+      <UsersList v-if="activeTabIndex == 7" />
+      <UsersList v-if="activeTabIndex == 8" />
+    </div>
   </div>
 </template>
 
@@ -94,7 +99,7 @@ defineOptions({
   icon: "👤",
 });
 
-const profileUserData = ref<User>({ avatar: "" } as User);
+const profileUserData = ref({ avatar: "" });
 const showUploadAvatarDialog = ref();
 
 const isMyProfile = ref<boolean>(false);
@@ -103,10 +108,10 @@ const activeTabIndex = ref(0);
 
 onBeforeMount(init);
 async function init() {
-  profileUserData.value = await helperService.getUserProfile(
-    String(useRoute().params.profile)
-  );
-  isMyProfile.value = profileUserData.value.id == user?.id;
+  // profileUserData.value = await helperService.getUserProfile(
+  //   String(useRoute().params.profile)
+  // );
+  // isMyProfile.value = profileUserData.value.id == user?.id;
 }
 </script>
 

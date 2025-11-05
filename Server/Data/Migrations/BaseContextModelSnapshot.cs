@@ -19,12 +19,125 @@ namespace Main.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("base")
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Main.Data.Models.MessageModel", b =>
+            modelBuilder.Entity("Main.Data.Models.GroupModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorDataId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Descriere")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ExecutionDate")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorDataId");
+
+                    b.ToTable("Groups", "base");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.LinkModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorDataId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ExecutionDate")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorDataId");
+
+                    b.HasIndex("SourceType", "SourceId");
+
+                    b.HasIndex("TargetType", "TargetId");
+
+                    b.ToTable("Links", "base");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.NotificationModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.PrimitiveCollection<List<Guid>>("Attachments")
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid?>("AuthorDataId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ExecutionDate")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ReadDate")
+                        .HasColumnType("timestamptz");
+
+                    b.PrimitiveCollection<List<string>>("Tags")
+                        .HasColumnType("text[]");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorDataId");
+
+                    b.ToTable("Notifications", "base");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.PostModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +175,7 @@ namespace Main.Data.Migrations
                     b.ToTable("Posts", "base");
                 });
 
-            modelBuilder.Entity("Main.Modules.Adm.SettingsModel", b =>
+            modelBuilder.Entity("Main.Data.Models.QuestionModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,28 +187,30 @@ namespace Main.Data.Migrations
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("CorrectAnswers")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("ExecutionDate")
                         .HasColumnType("timestamptz");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.PrimitiveCollection<List<string>>("Options")
+                        .HasColumnType("text[]");
+
+                    b.Property<int?>("Selection")
+                        .HasColumnType("integer");
 
                     b.PrimitiveCollection<List<string>>("Tags")
                         .HasColumnType("text[]");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorDataId");
 
-                    b.ToTable("Settings", "base");
+                    b.ToTable("Questions", "base");
                 });
 
             modelBuilder.Entity("Main.Modules.Audit.AuditModel", b =>
@@ -201,7 +316,7 @@ namespace Main.Data.Migrations
                     b.ToTable("Users", "base");
                 });
 
-            modelBuilder.Entity("Main.Data.Models.MessageModel", b =>
+            modelBuilder.Entity("Main.Data.Models.GroupModel", b =>
                 {
                     b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
                         .WithMany()
@@ -210,7 +325,34 @@ namespace Main.Data.Migrations
                     b.Navigation("AuthorData");
                 });
 
-            modelBuilder.Entity("Main.Modules.Adm.SettingsModel", b =>
+            modelBuilder.Entity("Main.Data.Models.LinkModel", b =>
+                {
+                    b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
+                        .WithMany()
+                        .HasForeignKey("AuthorDataId");
+
+                    b.Navigation("AuthorData");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.NotificationModel", b =>
+                {
+                    b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
+                        .WithMany()
+                        .HasForeignKey("AuthorDataId");
+
+                    b.Navigation("AuthorData");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.PostModel", b =>
+                {
+                    b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
+                        .WithMany()
+                        .HasForeignKey("AuthorDataId");
+
+                    b.Navigation("AuthorData");
+                });
+
+            modelBuilder.Entity("Main.Data.Models.QuestionModel", b =>
                 {
                     b.HasOne("Main.Modules.Auth.UserModel", "AuthorData")
                         .WithMany()

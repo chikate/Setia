@@ -52,7 +52,7 @@ const dragStart = (ev: any) =>
 </script>
 
 <template>
-  <div id="parameters_panel" class="flex flex-column gap-2">
+  <div id="parameters_panel" class="flex flex-column">
     <InputText
       placeholder="Add parameter"
       @keydown.enter="addParameter(($event.target as HTMLInputElement).value)"

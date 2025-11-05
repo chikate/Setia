@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-column align-items-center gap-2 p-1">
+  <div class="flex flex-column align-items-center">
     <div
       v-for="(room, room_index) in rooms"
       :key="room_index"
-      class="flex flex-column custom-shadow-1 w-full border-round overflow-auto bg-white"
+      class="flex flex-column custom-shadow-1 border-round overflow-auto bg-white"
       :class="{ 'border-gray-400': tabIndex[0] == room_index }"
       @click="tabIndex[0] = room_index"
     >
       <div
-        class="flex flex-column gap-2 p-2 align-items-start"
+        class="flex flex-column p-2 align-items-start"
         :style="{
           backgroundImage: `linear-gradient(to top right, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0.5)), url(${room.avatar})`,
           backgroundRepeat: 'no-repeat',
@@ -19,9 +19,9 @@
         <InputText
           v-model="rooms[room_index].name"
           readonly
-          class="w-full px-2 text-xl font-semibold border-none shadow-none z-1 bg-transparent text-gray-500"
+          class="px-2 text-xl font-semibold border-none shadow-none z-1 bg-transparent text-gray-500"
         />
-        <div class="flex-wrap align-items-center gap-2">
+        <div class="flex-wrap align-items-center">
           <div
             v-for="(feature, feature_index) in room.features"
             :key="feature_index"
@@ -48,10 +48,10 @@
         </div>
       </div>
       <div
-        class="w-full p-4 pt-3"
+        class="p-4 pt-3"
         v-if="tabIndex[0] == room_index && tabIndex[1] == 0"
       >
-        <div class="flex flex-row gap-5 align-items-center px-3">
+        <div class="flex flex-row align-items-center px-3">
           <label class="pt-1 text-gray-500">
             {{ rooms[room_index].features[0].value }}
             {{
@@ -68,7 +68,7 @@
         </div>
       </div>
       <div
-        class="w-full p-4 pt-3"
+        class="p-4 pt-3"
         v-if="tabIndex[0] == room_index && tabIndex[1] == 1"
       >
         1 2 3 4 5 6 7
@@ -81,6 +81,7 @@
 defineOptions({
   name: "My Home",
   icon: "🏡",
+  role: ["Admin"],
 });
 
 const tabIndex = ref([0, 0]);

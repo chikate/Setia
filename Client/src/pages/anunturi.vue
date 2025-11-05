@@ -1,7 +1,10 @@
 <template>
-  <div class="flex flex-column gap-2 p-2">
+  <div class="flex flex-column gap-2 overflow-auto h-full">
     <InputText />
     <AnuntCompoennt v-for="x in 10" />
+    <div class="flex flex-wrap p-3">
+      <InventorySlot v-for="item in items" :key="item.name" />
+    </div>
   </div>
 </template>
 
@@ -13,6 +16,13 @@ defineOptions({
   name: "Anunturi",
   icon: "📰",
 });
+
+const items = ref([
+  { name: "Test", value: 1 },
+  { name: "Test", value: 1 },
+  { name: "Test", value: 1 },
+  { name: "Test", value: 1 },
+]);
 
 const toast = useToast();
 

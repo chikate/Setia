@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-column overflow-hidden border-round gap-2">
+  <div class="flex flex-column border-round justify-content-center">
     <div
       class="flex flex-row justify-content-between align-items-center cursor-pointer"
     >
-      <i :class="[icon, 'p-2']" @click="$emit('iconClick')" />
+      <i :class="[icon, 'p-3']" @click="$emit('iconClick')" />
       {{ label }}
-      <i class="pi pi-ellipsis-v p-2" @click="$emit('detailsClick')" />
+      <i class="pi pi-ellipsis-v p-3" @click="$emit('detailsClick')" />
     </div>
     <slot />
   </div>

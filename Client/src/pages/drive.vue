@@ -1,9 +1,8 @@
 <template>
-  <div class="flex flex-column gap-2">
+  <div class="flex flex-column h-full overflow-auto gap-2">
     <SelectButton v-model="viewStyle" :options="['table']" />
 
-    <Breadcrumb :home="{ icon: 'pi pi-folder' }" :model="pathParts">
-    </Breadcrumb>
+    <Breadcrumb :home="{ icon: 'pi pi-folder' }" :model="pathParts" />
 
     <InputText placeholder="Search..." @keyup.enter="search" />
 
@@ -11,7 +10,7 @@
       v-if="viewStyle == 'table'"
       :value="files"
       selection-mode="multiple"
-      class="h-full overflow-auto"
+      class="overflow-auto"
       striped-rows
     >
       <Column header="#" class="text-center">
@@ -26,7 +25,7 @@
         </template>
       </Column>
 
-      <Column header="Name" class="w-full">
+      <Column header="Name" class="">
         <template #body="{ data }">
           {{ data }}
         </template>
@@ -39,35 +38,36 @@
       </Column>
     </DataTable>
 
-    <div v-else class="flex flex-column gap-2 h-full overflow-auto">
-      <BaseCardComponent
-        v-for="file in files"
-        :key="file"
-        :label="file"
-        :icon="getIcon(file)"
-        class="border-round border-1 border-gray-200 custom-shadow-1 flex-grow-1"
-        :class="{ 'bg-yellow-200': isFolder(file) }"
-        @click="file.includes('.') ? undefined : go(`${folder}/${file}`)"
-        @detailsClick="$refs.menuu?.toggle($event)"
-        @click.middle="openPublicFile(`${folder}/${file}`)"
-        @dblclick="
-          file.includes('.') ? openPublicFile(`${folder}/${file}`) : undefined
-        "
-      >
-        <FileViewer :src="`${folder}/${file}`" />
-      </BaseCardComponent>
-    </div>
+    <BaseCardComponent
+      v-else
+      v-for="file in files"
+      :key="file"
+      :label="file"
+      :icon="getIcon(file)"
+      class="border-round border-1 border-gray-200 custom-shadow-1 flex-grow-1"
+      :class="{ 'bg-yellow-200': isFolder(file) }"
+      @click="file.includes('.') ? undefined : go(`${folder}/${file}`)"
+      @detailsClick="($refs.menuu as any)?.toggle($event)"
+      @click.middle="openPublicFile(`${folder}/${file}`)"
+      @dblclick="
+        file.includes('.') ? openPublicFile(`${folder}/${file}`) : undefined
+      "
+    >
+      <FileViewer :src="`${folder}/${file}`" />
+    </BaseCardComponent>
 
     <Menu ref="menuu" popup :model="menuActions" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { DriveApi } from "@/composables";
 import type { MenuItem } from "primevue/menuitem";
 
 defineOptions({
   name: "Drive",
   icon: "📁",
+  role: ["Admin"],
 });
 
 const folder = defineModel("folder", { type: String });
@@ -85,7 +85,9 @@ const menuActions = ref<MenuItem[]>([
         label: "Download",
         icon: "pi pi-download",
         command: async () =>
-          await fileManager.download(fileInFocus.value).then(downloadInBrowser),
+          await new DriveApi()
+            .apiDriveDownloadGet(fileInFocus.value)
+            .then(downloadInBrowser),
       },
       { label: "Share", icon: "pi pi-link" },
     ],
@@ -117,9 +119,9 @@ const isFolder = (f: string) => !f.includes(".");
 
 onBeforeMount(go);
 async function go(folderPath: string = "") {
-  files.value = await fileManager.getFolderContent(
-    (folder.value = folderPath.replace(/^\//, ""))
-  );
+  files.value = await new DriveApi().apiDriveGetFolderContentGet({
+    filePath: (folder.value = folderPath.replace(/^\//, "")),
+  });
 }
 
 const getIcon = (file: string) =>
@@ -128,8 +130,8 @@ const getIcon = (file: string) =>
 const openPublicFile = async (file: string) => window.open(file, "_blank");
 
 async function search(event: KeyboardEvent) {
-  [folder.value, fileInFocus.value] = await fileManager.SearchAndGetFile(
-    (event.target as HTMLInputElement).value
-  );
+  [folder.value, fileInFocus.value] = await new DriveApi().apiDriveSearchGet({
+    input: (event.target as HTMLInputElement).value,
+  });
 }
 </script>

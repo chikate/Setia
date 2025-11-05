@@ -1,11 +1,9 @@
 <template>
-  <div class="flex flex-row gap-2">
-    <div class="flex flex-column gap-2">
-      <div class="font-medium p-2 gap-2 flex flex-column">
-        Parameters
-        <InputText
-          placeholder="Add parameter"
-          @keydown.enter="
+  <div class="font-medium flex flex-column">
+    Parameters
+    <InputText
+      placeholder="Add parameter"
+      @keydown.enter="
             (event: any) => {
               if (
                 event.target.value &&
@@ -35,27 +33,25 @@
                 })
             }
           "
-        />
-        <div
-          class="parameter flex flex-row justify-content-between align-items-center cursor-pointer"
-          :draggable="true"
-          :ondrag="dragStart"
-          v-for="item in parameters"
-          :key="item"
-        >
-          <Dropdown
-            :model-value="{ name: 'Value', type: 'Value' }"
-            :options="[
-              { name: 'Table', type: 'Table' },
-              { name: 'Value', type: 'Value' },
-              { name: 'File', type: 'File' },
-            ]"
-            option-label="name"
-            class="border-0"
-          />
-          {{ item }}
-        </div>
-      </div>
+    />
+    <div
+      class="parameter flex flex-row justify-content-between align-items-center cursor-pointer"
+      :draggable="true"
+      :ondrag="dragStart"
+      v-for="item in parameters"
+      :key="item"
+    >
+      <Dropdown
+        :model-value="{ name: 'Value', type: 'Value' }"
+        :options="[
+          { name: 'Table', type: 'Table' },
+          { name: 'Value', type: 'Value' },
+          { name: 'File', type: 'File' },
+        ]"
+        option-label="name"
+        class="border-0"
+      />
+      {{ item }}
     </div>
   </div>
 </template>

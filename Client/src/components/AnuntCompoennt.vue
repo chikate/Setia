@@ -7,7 +7,7 @@
       style="object-fit: contain; height: 100px"
     />
     <div class="flex flex-column p-2">
-      <label class="h-full">Titlu</label>
+      <label class="">Titlu</label>
       <label>location - date</label>
       <label>area</label>
       <label class="absolute text-right top-0 right-0 p-2">Price</label>
@@ -15,13 +15,11 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { Column } from "primevue";
 
 const usersIds = defineModel("usersIds", { type: String });
 
 onBeforeMount(init);
-async function init() {
-  usersCRUDService.loadItems();
-}
+async function init() {}
 </script>

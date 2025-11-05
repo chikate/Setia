@@ -1,187 +1,289 @@
 <template>
-  <DrawingBoard
-    v-if="ctrlKeyPressed"
-    class="fixed w-full h-full"
-    style="z-index: 99999"
-  />
-  <div class="p-2 align-items-center flex gap-4">
-    <i class="sm:hidden flex pi pi-bars pl-3 cursor-pointer" />
-    <Breadcrumb
-      class="m-0 p-2 bg-transparent sm:flex hidden"
-      :home="{ label: `Gov`, command: () => $router.push('/') }"
-      :model="
-        $route.fullPath
-          .split('/')
-          .map((elem) => ({
-            label: capitalizeWords(elem.replaceAll('-', ' ')),
-            command: () => $router.push(`/${elem}`),
-          }))
-          .slice(1)
-      "
-    />
-    <div class="flex-grow-1" />
-    <OverlayBadge
-      value="2"
-      size="small"
-      class="cursor-pointer-none cursor-pointer flex align-items-center h-full"
-      @click="$refs.notificationsMenu.toggle($event)"
-    >
-      <i class="pi pi-bell" />
-    </OverlayBadge>
+  <div
+    v-if="isAuthenticated()"
+    id="layout"
+    class="flex flex-column h-full w-full"
+  >
     <div
-      class="cursor-pointer-none cursor-pointer flex align-items-center h-full"
-      @click="$refs.avatarMenu.toggle($event)"
+      id="navbar"
+      v-if="isAuthenticated() && isAdmin()"
+      class="flex gap-5 align-items-center p-2"
     >
-      <Avatar
-        class="flex align-items-center cursor-pointer"
-        :image="`https://frankfurt.apollo.olxcdn.com/v1/files/qr0k1ccnla9p2-RO/image;s=1000x700`"
-        shape="circle"
+      <i class="sm:hidden flex pi pi-bars pl-2 cursor-pointer" />
+      <Breadcrumb
+        class="m-0 p-0 bg-transparent sm:flex hidden"
+        :home="{ label: `Gov`, command: () => $router.push('/') }"
+        :model="
+          $route.fullPath
+            .split('/')
+            .map((elem) => ({
+              label: capitalizeWords(elem.replaceAll('-', ' ')),
+              command: () => $router.push(`/${elem}`),
+            }))
+            .slice(1)
+            .filter((t) => t.label != '')
+        "
       />
-    </div>
-    <TieredMenu
-      ref="avatarMenu"
-      :model="[
-        { label: 'Profile', icon: 'pi pi-user' },
-        {
-          separator: true,
-        },
-        {
-          label: 'Online',
-          icon: 'pi pi-filled-dot',
-          items: [
-            { label: 'Online', icon: '' },
-            {
-              label: 'Busy',
-              icon: '',
-              items: [{ label: '5 minutes', icon: '' }],
-            },
-            {
-              label: 'Away',
-              icon: '',
-              items: [{ label: '5 minutes', icon: '' }],
-            },
-            {
-              label: 'Invisible',
-              icon: '',
-              items: [{ label: '5 minutes', icon: '' }],
-            },
-          ],
-        },
-      ]"
-      popup
-    />
-    <Menu
-      ref="notificationsMenu"
-      :model="[{ label: 'Notification1', icon: '5' }]"
-      popup
-    />
-  </div>
-  <div class="flex h-full w-full overflow-auto">
-    <div
-      class="sm:flex hidden h-full overflow-auto"
-      style="min-width: 250px; width: 250px; max-width: 20vw"
-    >
-      <PanelMenu
-        dragdrop
-        v-model:selectionKeys="selectedKey"
-        multiple
-        class="w-full h-full px-2"
+      <div class="flex-grow-1" />
+      <Button
+        icon="pi pi-search"
+        label="Search"
+        size="small"
+        outlined
+        class="border-1 custom-shadow-1"
+        @click="search.visible = true"
+      />
+      <OverlayBadge
+        :value="notifications.length"
+        size="small"
+        class="cursor-pointer-none cursor-pointer flex align-items-center"
+        @click="($refs.notificationsMenu as any).toggle($event)"
+      >
+        <i class="pi pi-bell custom-shadow-1" />
+      </OverlayBadge>
+      <div
+        class="cursor-pointer-none cursor-pointer flex align-items-center relative"
+        @click="($refs.avatarMenu as any).toggle($event)"
+      >
+        <Avatar
+          class="flex align-items-center cursor-pointer custom-shadow-1"
+          :image="`https://frankfurt.apollo.olxcdn.com/v1/files/qr0k1ccnla9p2-RO/image;s=1000x700`"
+          shape="circle"
+        />
+        <div
+          class="bg-green-500 border-1 p-1 border-green-600 bottom-0 right-0 border-round absolute"
+        />
+      </div>
+      <TieredMenu
+        ref="avatarMenu"
         :model="[
           {
-            label: 'Favorites',
-            icon: 'pi pi-fw pi-star',
-            items: osStore().favorites,
+            label: 'Profile',
+            icon: 'pi pi-user',
+            command: () => $router.push('/@/dragos'),
           },
           {
-            label: 'Computer',
-            icon: 'pi pi-fw pi-folder',
+            separator: true,
+          },
+          {
+            label: 'Online',
+            icon: 'pi pi-filled-dot',
             items: [
+              { label: 'Online', icon: '' },
               {
-                label: 'OS: System',
-                icon: 'pi pi-fw pi-folder',
-                items: [
-                  {
-                    label: 'vue.svg',
-                    icon: 'pi pi-fw pi-file',
-                  },
-                ],
+                label: 'Busy',
+                icon: '',
+                items: [{ label: '5 minutes', icon: '' }],
               },
               {
-                label: 'A: Disk',
-                icon: 'pi pi-fw pi-folder',
-                items: [
-                  {
-                    label: 'HelloWorld.vue',
-                    icon: 'pi pi-fw pi-file',
-                  },
-                ],
+                label: 'Away',
+                icon: '',
+                items: [{ label: '5 minutes', icon: '' }],
               },
               {
-                label: 'B: USB',
-                icon: 'pi pi-fw pi-folder',
-                items: [
-                  {
-                    label: 'HelloWorld.vue',
-                    icon: 'pi pi-fw pi-file',
-                  },
-                ],
+                label: 'Invisible',
+                icon: '',
+                items: [{ label: '5 minutes', icon: '' }],
               },
             ],
           },
           {
-            label: 'Apps',
-            icon: 'pi pi-fw pi-th-large',
-            route: '/',
-            items: installedApps?.map((app, i) => ({
-              label: `${app.icon} ${app.name}`,
-              route: app.__name,
-            })),
+            label: 'Log Out',
+            icon: 'pi pi-quit',
+            command: () => {
+              clearCookies();
+              $router.go(0);
+            },
           },
         ]"
+        popup
+      />
+      <Menu ref="notificationsMenu" :model="notifications" popup />
+    </div>
+    <div
+      class="flex flex-row gap-2 align-items-start overflow-hidden w-full h-full justify-content-center"
+    >
+      <PanelMenu
+        v-if="isAuthenticated() && isAdmin()"
+        class="sm:flex hidden h-full overflow-auto"
+        dragdrop
+        v-model:selectionKeys="selectedKey"
+        multiple
+        v-model:expandedKeys="expandedKeys"
+        :model="items"
+        style="min-width: 250px; width: 250px"
       >
         <template #item="{ item }">
-          <div class="flex justify-content-between">
-            <router-link
+          <div class="flex justify-content-between align-items-center">
+            <RouterLink
               v-slot="{ href, navigate }"
-              :to="item.route"
+              :to="item.route ?? ''"
               custom
               class="no-underline text-primary"
             >
               <a
-                v-ripple
-                class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 gap-2 p-2"
+                class="flex gap-2 align-items-center cursor-pointer text-surface-700 dark:text-surface-0 p-1"
                 :href="href"
-                :target="item.target"
+                :target="item.target ?? ''"
                 @click="navigate"
               >
                 <span :class="item.icon" />
                 {{ item.label }}
               </a>
-            </router-link>
+            </RouterLink>
             <span
               v-if="item.items?.length"
-              class="pi pi-angle-down text-primary p-2"
+              class="pi pi-angle-down text-primary p-1"
             />
           </div>
         </template>
       </PanelMenu>
-    </div>
-    <div
-      id="board"
-      class="h-full w-full bg-gray-800 overflow-auto relative"
-      style="border-top-left-radius: 5px"
-    >
       <router-view />
     </div>
+    <Dialog
+      modal
+      v-model:visible="search.visible"
+      class="w-3 p-0"
+      dismissableMask
+      :showHeader="false"
+      contentClass="p-2 bg-transparent"
+    >
+      <InputText
+        autofocus
+        v-model="search.query"
+        placeholder="Search apps..."
+        class="p-2"
+        @keypress.enter="
+          // launch(filtered[0]);
+          search.visible = false
+        "
+      />
+      Search result
+      <div class="flex flex-wrap p-2 pt-0">
+        <div
+          v-for="app in filtered"
+          :key="app.name"
+          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round"
+          @click="
+            // launch(app);
+            search.visible = false
+          "
+        >
+          {{ app.icon }} {{ app.name }}
+        </div>
+      </div>
+      Favorites
+      <div class="flex flex-wrap p-2 pt-0">
+        <div
+          v-for="app in osStore().favorites"
+          :key="app.name"
+          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round"
+          @click="
+            // launch(app);
+            search.visible = false
+          "
+        >
+          {{ app.label }}
+        </div>
+      </div>
+    </Dialog>
   </div>
-  <Toast position="top-right" :life="6000" />
+
+  <DrawingBoard
+    v-if="ctrlKeyPressed"
+    class="fixed w-screen h-screen"
+    style="z-index: 99999"
+  />
+
+  <AuthLogin v-if="!isAuthenticated()" />
+
+  <ContextMenu ref="menu" :model="defaultMenuItems" />
+
+  <Toast />
 </template>
 
 <script setup lang="ts">
 import OverlayBadge from "primevue/overlaybadge";
+import Toast from "primevue/toast";
+
+const notifications = ref([{ label: "Notification1", icon: "5" }]);
+
+const menu = ref();
+const search = ref({ visible: false, query: "" });
+const filtered = computed(() =>
+  installedApps?.filter((app) =>
+    app.name.toLowerCase().includes(search.value.query.toLowerCase())
+  )
+);
+const defaultMenuItems = [
+  { label: "🔍 Search", command: () => (search.value.visible = true) },
+  { label: "🔄 Refresh", command: () => location.reload() },
+];
 
 const selectedKey = ref([]);
+const items = ref<any>([
+  {
+    key: 0,
+    label: "Favorites",
+    icon: "pi pi-fw pi-star",
+    items: osStore().favorites,
+  },
+  {
+    key: 1,
+    label: "Computer",
+    icon: "pi pi-fw pi-folder",
+    items: [
+      {
+        label: "OS: System",
+        icon: "pi pi-fw pi-folder",
+        items: [
+          {
+            label: "vue.svg",
+            icon: "pi pi-fw pi-file",
+          },
+        ],
+      },
+      {
+        label: "A: Disk",
+        icon: "pi pi-fw pi-folder",
+        items: [
+          {
+            label: "HelloWorld.vue",
+            icon: "pi pi-fw pi-file",
+          },
+        ],
+      },
+      {
+        label: "B: USB",
+        icon: "pi pi-fw pi-folder",
+        items: [
+          {
+            label: "HelloWorld.vue",
+            icon: "pi pi-fw pi-file",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: 2,
+    label: "Apps",
+    icon: "pi pi-fw pi-th-large",
+    route: "/",
+    items: installedApps?.map((app, i) => ({
+      label: `${app.icon} ${app.name}`,
+      route: app.__name,
+    })),
+  },
+]);
 const ctrlKeyPressed = ref(false);
+
+const expandedKeys = ref([]);
+
+const expandNode = (node) => (expandedKeys.value[node.key] = true);
+
+expandNode(items.value[0]);
+expandNode(items.value[2]);
 
 window.addEventListener(
   "keydown",
@@ -192,53 +294,23 @@ window.addEventListener(
   (event) => (ctrlKeyPressed.value = event.ctrlKey)
 );
 
-onBeforeUnmount(() => {
-  window.removeEventListener(
-    "keydown",
-    (event) => (ctrlKeyPressed.value = event.ctrlKey)
-  );
-  window.removeEventListener(
-    "keyup",
-    (event) => (ctrlKeyPressed.value = event.ctrlKey)
-  );
+// window.addEventListener(
+//   "keydown",
+//   (event) => event.key.toLowerCase() == "s" && (searchDialog.value = true)
+// );
+
+window.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+  menu.value.show(event);
 });
+
+// SignalR
+signalRConnection.on("ReceiveNotification", setNotification);
+function setNotification(data) {
+  notifications.value = data;
+}
+
+// document.getElementById("sendBtn").addEventListener("click", async () => {
+//   await connection.invoke("SendNotification", "Hello from client!");
+// });
 </script>
-
-<style>
-.fade-leave-to,
-.fade-enter-from {
-  opacity: 0;
-}
-.fade-leave-from,
-.fade-enter-to {
-  opacity: 1;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.1s ease;
-}
-
-.p-treeselect-label,
-.p-treeselect.p-treeselect-chip .p-treeselect-token {
-  white-space: wrap !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  row-gap: 0.25rem !important;
-  margin-right: 0.25rem;
-}
-.p-inputwrapper-filled.p-treeselect.p-treeselect-chip .p-treeselect-label {
-  padding: 0.25rem;
-}
-
-#wallpaper {
-  background-size: cover;
-  background-position: center;
-}
-
-/* body {
-  background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/8c9c3684-1124-4459-a82b-f1c63f6abf07/dgo05a4-ea8c4633-cf50-40ce-aec6-1f0f8b93e8bc.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzhjOWMzNjg0LTExMjQtNDQ1OS1hODJiLWYxYzYzZjZhYmYwN1wvZGdvMDVhNC1lYThjNDYzMy1jZjUwLTQwY2UtYWVjNi0xZjBmOGI5M2U4YmMuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.lOBaKSdXWWw6ft43cuUQLPLTBcupAvdNbqOWmnHq40c");
-  background-position: center;
-  background-size: cover;
-  background-color: white;
-} */
-</style>

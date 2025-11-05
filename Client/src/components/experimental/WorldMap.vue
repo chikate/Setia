@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-column">
     <div
-      class="w-full h-screen bg-cover bg-center flex flex flex-column"
+      class="h-screen bg-cover bg-center flex flex flex-column"
       style="background-image: url(WorldMap.png)"
     >
       <div
-        class="h-screen w-full flex flex flex-column align-items-center justify-content-center"
+        class="h-screen flex flex flex-column align-items-center justify-content-center"
         style="
           background: linear-gradient(
             rgba(23, 23, 23, 0) 20%,

@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-row gap-3 h-full p-1">
-    <div class="flex flex-column flex-grow-1 gap-3 h-full" style="width: 20vw">
+  <div class="flex flex-row">
+    <div class="flex flex-column flex-grow-1" style="width: 20vw">
       <InputText v-model="search" placeholder="Search" />
-      <div class="flex-wrap h-full overflow-auto">
+      <div class="flex-wrap overflow-auto">
         <div
           v-for="item in items?.filter((food) =>
             food.name.toLowerCase().includes(search.toLowerCase())
@@ -15,24 +15,17 @@
             'border-color': selectedItem.name == item.name ? 'blue' : 'gray',
           }"
         >
-          <img
-            style="max-width: 100px"
-            :src="`/${item.name}.png`"
-            class="w-full"
-          />
+          <img style="max-width: 100px" :src="`/${item.name}.png`" class="" />
           <label class="text-center pb-2">{{ item.name }}</label>
         </div>
       </div>
     </div>
-    <div
-      class="flex flex-column w-full gap-3 h-full overflow-auto"
-      style="max-width: 800px"
-    >
+    <div class="flex flex-column overflow-auto" style="max-width: 800px">
       <div
         class="flex flex-row align-items-center bg-gray-200 border-3 border-orange-500"
       >
-        <div class="flex flex-column w-full h-full p-4">
-          <label class="text-5xl font-semibold h-full align-items-center flex">
+        <div class="flex flex-column p-4">
+          <label class="text-5xl font-semibold align-items-center flex">
             {{ selectedItem.name }}
           </label>
           <label class="font-semibold text-orange-500">Legendary</label>
@@ -40,13 +33,13 @@
         <img
           style="max-width: 100px"
           :src="`/${selectedItem.name}.png`"
-          class="w-full"
+          class=""
         />
       </div>
-      <div v-if="selectedItem.profile" class="flex flex-column gap-2">
+      <div v-if="selectedItem.profile" class="flex flex-column">
         <label class="text-2xl font-semibold">Stats</label>
         <div
-          class="px-2 flex flex-row gap-2 text-green-400"
+          class="px-2 flex flex-row text-green-400"
           v-for="item in selectedItem.profile?.sort((a, b) =>
             a.nutrient.localeCompare(b.nutrient)
           )"
@@ -54,7 +47,7 @@
           style="min-width: 200px"
         >
           <div
-            class="cursor-pointer w-full flex flex-row align-items-center gap-2"
+            class="cursor-pointer flex flex-row align-items-center"
             @click=""
           >
             <img :src="`/${item.nutrient}.png`" style="width: 32px" />
@@ -67,10 +60,10 @@
           </label>
         </div>
       </div>
-      <div v-if="selectedItem.effects" class="flex flex-column gap-2">
+      <div v-if="selectedItem.effects" class="flex flex-column">
         <label class="text-2xl font-semibold">Special effects</label>
         <div
-          class="px-2 flex flex-row gap-2 text-green-400"
+          class="px-2 flex flex-row text-green-400"
           v-for="item in selectedItem.effects"
           :key="item"
         >
@@ -81,9 +74,9 @@
           </label>
         </div>
       </div>
-      <div class="flex flex-column gap-3">
+      <div class="flex flex-column">
         <label class="text-2xl font-semibold">Spawn location</label>
-        <img :src="selectedItem.spawnLocation" class="w-full" />
+        <img :src="selectedItem.spawnLocation" class="" />
       </div>
     </div>
   </div>

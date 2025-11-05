@@ -115,6 +115,8 @@ public class AuthService(BaseContext context, IHttpContextAccessor httpContextAc
 
         // _sender.SendMail(registration.Email, "Email validation", $"Here is the confirmation link: https://www.google.ro");
 
+        newUser.Password = string.Empty;
+
         return newUser;
     }
 

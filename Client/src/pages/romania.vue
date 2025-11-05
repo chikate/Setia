@@ -1,6 +1,6 @@
 <template><div id="map" /></template>
 
-<script setup>
+<script setup lang="ts">
 import L from "leaflet";
 import osmtogeojson from "osmtogeojson";
 
@@ -42,7 +42,7 @@ onMounted(async () => {
   map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
-  }).setView([45, 25], 5);
+  }).setView([46.1, 25], 8);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
   const ZoomEUControl = L.Control.extend({
@@ -52,7 +52,6 @@ onMounted(async () => {
       btn.title = "Zoom to European Union";
       btn.onclick = (e) => {
         e.stopPropagation();
-        // map.fitBounds(euLayer.getBounds());
         markEUMember();
       };
       return btn;
@@ -66,6 +65,8 @@ onMounted(async () => {
 #map {
   height: 100%;
   width: 100%;
+  min-width: 50vh;
+  min-height: 50vh;
 }
 :deep().zoom-eu-btn {
   background: #0057b7;

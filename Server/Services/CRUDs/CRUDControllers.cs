@@ -3,9 +3,11 @@ using Main.Modules.Auth;
 
 namespace Main.Features.CRUDs;
 
-public class PostsController(ICRUDService<MessageModel> CRUD) : CRUDController<MessageModel>(CRUD);
+public class PostsController(ICRUDService<PostModel> CRUD) : CRUDController<PostModel>(CRUD);
+public class NotificationsController(ICRUDService<NotificationModel> CRUD) : CRUDController<NotificationModel>(CRUD);
+public class LinksController(ICRUDService<LinkModel> CRUD) : CRUDController<LinkModel>(CRUD);
 public class UsersController(ICRUDService<UserModel> CRUD) : CRUDController<UserModel>(CRUD);
-public class CommunityController(ICRUDService<CommunityModel> CRUD) : CRUDController<CommunityModel>(CRUD);
+public class CommunityController(ICRUDService<GroupModel> CRUD) : CRUDController<GroupModel>(CRUD);
 public class QuestionAnswersController(ICRUDService<QuestionModel> CRUD) : CRUDController<QuestionModel>(CRUD);
 //{
 //[HttpGet]
