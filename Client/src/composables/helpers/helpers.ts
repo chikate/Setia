@@ -34,9 +34,8 @@ export function stringToColor(str: string, alpha?: number): string {
   for (let i = 0; i < str.length; i++)
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
 
-  return `rgba(${(hash >> 16) & 0xff}, ${(hash >> 8) & 0xff}, ${hash & 0xff}, ${
-    alpha ?? 0.6
-  })`;
+  return `rgba(${(hash >> 16) & 0xff}, ${(hash >> 8) & 0xff}, ${hash & 0xff}, ${alpha ?? 0.6
+    })`;
 }
 
 export const generateGuid = (): string =>
@@ -68,7 +67,7 @@ export function downloadInBrowser(url: any, name?: string) {
 }
 
 //
-export const isAdmin = () => !false;
+export const isAdmin = () => false;
 export const isAuthenticated = () => getCookie("access_token");
 export const canUserAccessRoute = (to, from, next) =>
   next(!isAuthenticated() && to.path != "/" ? { path: "/" } : undefined);

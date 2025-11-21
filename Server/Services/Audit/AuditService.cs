@@ -1,11 +1,11 @@
-using Main.Data.Context;
-using Main.Modules.Auth;
-using Main.Services;
+using Data.Context;
+using Modules.Auth;
+using Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
 using System.Text.Json;
 
-namespace Main.Modules.Audit;
+namespace Modules.Audit;
 
 public interface IAuditService
 {

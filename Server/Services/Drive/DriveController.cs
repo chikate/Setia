@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.Modules.Drive;
+namespace Modules.Drive;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

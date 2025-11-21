@@ -1,199 +1,129 @@
 <template>
-  <div
-    v-if="isAuthenticated()"
-    id="layout"
-    class="flex flex-column h-full w-full"
-  >
-    <div
-      id="navbar"
-      v-if="isAuthenticated() && isAdmin()"
-      class="flex gap-5 align-items-center p-2"
-    >
+  <div class="fixed left-0 bottom-0 m-2 p-1 flex gap-2 border-round" style="min-width: 10rem;">
+    <img height="64" class="border-round" src="https://i.scdn.co/image/ab67616d0000b2736b219c8d8462bfe254a20469" />
+    <div class="p-2 flex flex-column justify-content-end gap-2">
+      Text
+      <Slider style="min-width: 7rem;" />
+    </div>
+  </div>
+  <div v-if="isAuthenticated()" id="layout" class="flex flex-column h-full w-full">
+    <div id="navbar" v-if="isAuthenticated()" class="flex gap-5 align-items-center p-2">
       <i class="sm:hidden flex pi pi-bars pl-2 cursor-pointer" />
-      <Breadcrumb
-        class="m-0 p-0 bg-transparent sm:flex hidden"
-        :home="{ label: `Gov`, command: () => $router.push('/') }"
-        :model="
-          $route.fullPath
-            .split('/')
-            .map((elem) => ({
-              label: capitalizeWords(elem.replaceAll('-', ' ')),
-              command: () => $router.push(`/${elem}`),
-            }))
-            .slice(1)
-            .filter((t) => t.label != '')
-        "
-      />
+      <Breadcrumb class="m-0 p-0 bg-transparent sm:flex hidden"
+        :home="{ label: `Gov`, command: () => $router.push('/') }" :model="$route.fullPath
+          .split('/')
+          .map((elem) => ({
+            label: capitalizeWords(elem.replaceAll('-', ' ')),
+            command: () => $router.push(`/${elem}`),
+          }))
+          .slice(1)
+          .filter((t) => t.label != '')
+          " />
       <div class="flex-grow-1" />
-      <Button
-        icon="pi pi-search"
-        label="Search"
-        size="small"
-        outlined
-        class="border-1 custom-shadow-1"
-        @click="search.visible = true"
-      />
-      <OverlayBadge
-        :value="notifications.length"
-        size="small"
+      <Button icon="pi pi-search" label="Search" size="small" outlined class="border-1 custom-shadow-1"
+        @click="search.visible = true" />
+      <OverlayBadge :value="notifications.length" size="small"
         class="cursor-pointer-none cursor-pointer flex align-items-center"
-        @click="($refs.notificationsMenu as any).toggle($event)"
-      >
+        @click="($refs.notificationsMenu as any).toggle($event)">
         <i class="pi pi-bell custom-shadow-1" />
       </OverlayBadge>
-      <div
-        class="cursor-pointer-none cursor-pointer flex align-items-center relative"
-        @click="($refs.avatarMenu as any).toggle($event)"
-      >
-        <Avatar
-          class="flex align-items-center cursor-pointer custom-shadow-1"
-          :image="`https://frankfurt.apollo.olxcdn.com/v1/files/qr0k1ccnla9p2-RO/image;s=1000x700`"
-          shape="circle"
-        />
-        <div
-          class="bg-green-500 border-1 p-1 border-green-600 bottom-0 right-0 border-round absolute"
-        />
+      <div class="cursor-pointer-none cursor-pointer flex align-items-center relative"
+        @click="($refs.avatarMenu as any).toggle($event)">
+        <Avatar class="flex align-items-center cursor-pointer custom-shadow-1"
+          :image="`https://frankfurt.apollo.olxcdn.com/v1/files/qr0k1ccnla9p2-RO/image;s=1000x700`" shape="circle" />
+        <div class="bg-green-500 border-1 p-1 border-green-600 bottom-0 right-0 border-round absolute" />
       </div>
-      <TieredMenu
-        ref="avatarMenu"
-        :model="[
-          {
-            label: 'Profile',
-            icon: 'pi pi-user',
-            command: () => $router.push('/@/dragos'),
-          },
-          {
-            separator: true,
-          },
-          {
-            label: 'Online',
-            icon: 'pi pi-filled-dot',
-            items: [
-              { label: 'Online', icon: '' },
-              {
-                label: 'Busy',
-                icon: '',
-                items: [{ label: '5 minutes', icon: '' }],
-              },
-              {
-                label: 'Away',
-                icon: '',
-                items: [{ label: '5 minutes', icon: '' }],
-              },
-              {
-                label: 'Invisible',
-                icon: '',
-                items: [{ label: '5 minutes', icon: '' }],
-              },
-            ],
-          },
-          {
-            label: 'Log Out',
-            icon: 'pi pi-quit',
-            command: () => {
-              clearCookies();
-              $router.go(0);
+      <TieredMenu ref="avatarMenu" :model="[
+        {
+          label: 'Profile',
+          icon: 'pi pi-user',
+          command: () => $router.push('/@/dragos'),
+        },
+        {
+          separator: true,
+        },
+        {
+          label: 'Online',
+          icon: 'pi pi-filled-dot',
+          items: [
+            { label: 'Online', icon: '' },
+            {
+              label: 'Busy',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
             },
+            {
+              label: 'Away',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
+            },
+            {
+              label: 'Invisible',
+              icon: '',
+              items: [{ label: '5 minutes', icon: '' }],
+            },
+          ],
+        },
+        {
+          label: 'Log Out',
+          icon: 'pi pi-quit',
+          command: () => {
+            clearCookies();
+            $router.go(0);
           },
-        ]"
-        popup
-      />
+        },
+      ]" popup />
       <Menu ref="notificationsMenu" :model="notifications" popup />
     </div>
-    <div
-      class="flex flex-row gap-2 align-items-start overflow-hidden w-full h-full justify-content-center"
-    >
-      <PanelMenu
-        v-if="isAuthenticated() && isAdmin()"
-        class="sm:flex hidden h-full overflow-auto"
-        dragdrop
-        v-model:selectionKeys="selectedKey"
-        multiple
-        v-model:expandedKeys="expandedKeys"
-        :model="items"
-        style="min-width: 250px; width: 250px"
-      >
+    <div class="flex flex-row gap-2 align-items-start overflow-hidden w-full h-full justify-content-center">
+      <PanelMenu v-if="isAuthenticated() && isAdmin()" class="sm:flex hidden h-full overflow-auto" dragdrop
+        v-model:selectionKeys="selectedKey" multiple v-model:expandedKeys="expandedKeys" :model="items"
+        style="min-width: 250px; width: 250px">
         <template #item="{ item }">
           <div class="flex justify-content-between align-items-center">
-            <RouterLink
-              v-slot="{ href, navigate }"
-              :to="item.route ?? ''"
-              custom
-              class="no-underline text-primary"
-            >
-              <a
-                class="flex gap-2 align-items-center cursor-pointer text-surface-700 dark:text-surface-0 p-1"
-                :href="href"
-                :target="item.target ?? ''"
-                @click="navigate"
-              >
+            <RouterLink v-slot="{ href, navigate }" :to="item.route ?? ''" custom class="no-underline text-primary">
+              <a class="flex gap-2 align-items-center cursor-pointer text-surface-700 dark:text-surface-0 p-1"
+                :href="href" :target="item.target ?? ''" @click="navigate">
                 <span :class="item.icon" />
                 {{ item.label }}
               </a>
             </RouterLink>
-            <span
-              v-if="item.items?.length"
-              class="pi pi-angle-down text-primary p-1"
-            />
+            <span v-if="item.items?.length" class="pi pi-angle-down text-primary p-1" />
           </div>
         </template>
       </PanelMenu>
       <router-view />
     </div>
-    <Dialog
-      modal
-      v-model:visible="search.visible"
-      class="w-3 p-0"
-      dismissableMask
-      :showHeader="false"
-      contentClass="p-2 bg-transparent"
-    >
-      <InputText
-        autofocus
-        v-model="search.query"
-        placeholder="Search apps..."
-        class="p-2"
-        @keypress.enter="
-          // launch(filtered[0]);
-          search.visible = false
-        "
-      />
+    <Dialog modal v-model:visible="search.visible" class="w-3 p-0" dismissableMask :showHeader="false"
+      contentClass="p-2 bg-transparent">
+      <InputText autofocus v-model="search.query" placeholder="Search apps..." class="p-2" @keypress.enter="
+        // launch(filtered[0]);
+        search.visible = false
+        " />
       Search result
       <div class="flex flex-wrap p-2 pt-0">
-        <div
-          v-for="app in filtered"
-          :key="app.name"
-          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round"
-          @click="
+        <div v-for="app in filtered" :key="app.name"
+          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round" @click="
             // launch(app);
             search.visible = false
-          "
-        >
+            ">
           {{ app.icon }} {{ app.name }}
         </div>
       </div>
       Favorites
       <div class="flex flex-wrap p-2 pt-0">
-        <div
-          v-for="app in osStore().favorites"
-          :key="app.name"
-          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round"
-          @click="
+        <div v-for="app in osStore().favorites" :key="app.name"
+          class="app-item flex-grow-1 cursor-pointer bg-gray-700 p-1 border-round" @click="
             // launch(app);
             search.visible = false
-          "
-        >
+            ">
           {{ app.label }}
         </div>
       </div>
     </Dialog>
   </div>
 
-  <DrawingBoard
-    v-if="ctrlKeyPressed"
-    class="fixed w-screen h-screen"
-    style="z-index: 99999"
-  />
+  <DrawingBoard v-if="ctrlKeyPressed" class="fixed w-screen h-screen" style="z-index: 99999" />
 
   <AuthLogin v-if="!isAuthenticated()" />
 

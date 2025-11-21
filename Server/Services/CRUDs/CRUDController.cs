@@ -1,8 +1,8 @@
-using Main.Data.DTOs;
-using Main.Data.Models;
+using Data.DTOs;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.Features.CRUDs;
+namespace Features.CRUDs;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

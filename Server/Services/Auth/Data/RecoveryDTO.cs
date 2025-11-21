@@ -1,4 +1,4 @@
-﻿namespace Main.Modules.Auth;
+﻿namespace Modules.Auth;
 
 public class RecoveryDTO
 {

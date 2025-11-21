@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  ApiUsersGetGetPageSizeParameter,
   QuestionModel,
 } from '../models/index';
 import {
+    ApiUsersGetGetPageSizeParameterFromJSON,
+    ApiUsersGetGetPageSizeParameterToJSON,
     QuestionModelFromJSON,
     QuestionModelToJSON,
 } from '../models/index';
@@ -32,8 +35,8 @@ export interface ApiQuestionAnswersDeleteDeleteRequest {
 
 export interface ApiQuestionAnswersGetGetRequest {
     items?: Array<QuestionModel>;
-    pageSize?: number;
-    pageNumber?: number;
+    pageSize?: ApiUsersGetGetPageSizeParameter;
+    pageNumber?: ApiUsersGetGetPageSizeParameter;
 }
 
 export interface ApiQuestionAnswersUpdatePutRequest {
@@ -61,14 +64,6 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/QuestionAnswers/Add`;
 
@@ -106,14 +101,6 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/QuestionAnswers/Delete`;
 
@@ -154,14 +141,6 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/QuestionAnswers/Get`;
 
@@ -184,7 +163,7 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiQuestionAnswersUpdatePutRaw(requestParameters: ApiQuestionAnswersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
+    async apiQuestionAnswersUpdatePutRaw(requestParameters: ApiQuestionAnswersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiUsersGetGetPageSizeParameter>> {
         if (requestParameters['questionModel'] == null) {
             throw new runtime.RequiredError(
                 'questionModel',
@@ -198,14 +177,6 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/QuestionAnswers/Update`;
 
@@ -217,16 +188,12 @@ export class QuestionAnswersApi extends runtime.BaseAPI {
             body: requestParameters['questionModel']!.map(QuestionModelToJSON),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<number>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApiUsersGetGetPageSizeParameterFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiQuestionAnswersUpdatePut(requestParameters: ApiQuestionAnswersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+    async apiQuestionAnswersUpdatePut(requestParameters: ApiQuestionAnswersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiUsersGetGetPageSizeParameter> {
         const response = await this.apiQuestionAnswersUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }

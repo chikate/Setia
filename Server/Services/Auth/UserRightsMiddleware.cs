@@ -1,6 +1,6 @@
-﻿using Main.Data.Context;
+﻿using Data.Context;
 
-namespace Main.Modules.Auth;
+namespace Modules.Auth;
 
 public class UserRightsMiddleware(RequestDelegate next)
 {

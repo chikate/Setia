@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Main.Data.Migrations
+namespace Data.Migrations
 {
     /// <inheritdoc />
     public partial class _1 : Migration
@@ -83,7 +83,7 @@ namespace Main.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Descriere = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     AuthorDataId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -133,9 +133,11 @@ namespace Main.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    To = table.Column<Guid>(type: "uuid", nullable: false),
                     Message = table.Column<string>(type: "text", nullable: false),
-                    ReadDate = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    SeenDate = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
                     Attachments = table.Column<List<Guid>>(type: "uuid[]", nullable: true),
+                    Discriminator = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     ExecutionDate = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     AuthorDataId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -153,15 +155,13 @@ namespace Main.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Posts",
+                name: "Parameters",
                 schema: "base",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    To = table.Column<Guid>(type: "uuid", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    SentDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    Attachments = table.Column<List<Guid>>(type: "uuid[]", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     ExecutionDate = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: true),
                     AuthorDataId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -169,9 +169,9 @@ namespace Main.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.PrimaryKey("PK_Parameters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Posts_Users_AuthorDataId",
+                        name: "FK_Parameters_Users_AuthorDataId",
                         column: x => x.AuthorDataId,
                         principalSchema: "base",
                         principalTable: "Users",
@@ -241,9 +241,9 @@ namespace Main.Data.Migrations
                 column: "AuthorDataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_AuthorDataId",
+                name: "IX_Parameters_AuthorDataId",
                 schema: "base",
-                table: "Posts",
+                table: "Parameters",
                 column: "AuthorDataId");
 
             migrationBuilder.CreateIndex(
@@ -279,7 +279,7 @@ namespace Main.Data.Migrations
                 schema: "base");
 
             migrationBuilder.DropTable(
-                name: "Posts",
+                name: "Parameters",
                 schema: "base");
 
             migrationBuilder.DropTable(

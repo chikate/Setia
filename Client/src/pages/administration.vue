@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-column justify-content-around gap-2">
-    <Button label="Toggle Dark Mode" @click="darkMode().toggleDarkMode()" />
+    <div class="card p-1 flex flex-row bg-gray-800 border round">
+      <Button label="Toggle Dark Mode" @click="darkMode().toggleDarkMode()" />
+      <ColorPicker />
+    </div>
     <CRUDT v-for="service in services" :key="service" :service />
   </div>
 </template>

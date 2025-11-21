@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  ApiDriveUploadPostRequestLength,
   DriveInfoDTO,
 } from '../models/index';
 import {
+    ApiDriveUploadPostRequestLengthFromJSON,
+    ApiDriveUploadPostRequestLengthToJSON,
     DriveInfoDTOFromJSON,
     DriveInfoDTOToJSON,
 } from '../models/index';
@@ -43,7 +46,7 @@ export interface ApiDriveUploadPostRequest {
     contentType?: string;
     contentDisposition?: string;
     headers?: { [key: string]: Array<string>; };
-    length?: number;
+    length?: ApiDriveUploadPostRequestLength;
     name?: string;
     fileName?: string;
 }
@@ -64,14 +67,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/Delete`;
 
@@ -107,14 +102,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/Download`;
 
@@ -141,14 +128,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/GetAllPartitions`;
 
@@ -176,14 +155,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/GetBasePath`;
 
@@ -219,14 +190,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/GetFolderContent`;
 
@@ -258,14 +221,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Drive/Search`;
 
@@ -301,14 +256,6 @@ export class DriveApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
         const consumes: runtime.Consume[] = [
             { contentType: 'application/x-www-form-urlencoded' },
         ];
@@ -332,12 +279,12 @@ export class DriveApi extends runtime.BaseAPI {
         }
 
         if (requestParameters['headers'] != null) {
-            formParams.append('Headers', new Blob([JSON.stringify(stringToJSON(requestParameters['headers']))], { type: "application/json", }));
+            formParams.append('Headers', new Blob([JSON.stringify(requestParameters['headers'])], { type: "application/json", }));
                     }
 
         if (requestParameters['length'] != null) {
-            formParams.append('Length', requestParameters['length'] as any);
-        }
+            formParams.append('Length', new Blob([JSON.stringify(ApiDriveUploadPostRequestLengthToJSON(requestParameters['length']))], { type: "application/json", }));
+                    }
 
         if (requestParameters['name'] != null) {
             formParams.append('Name', requestParameters['name'] as any);

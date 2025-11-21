@@ -15,15 +15,18 @@
 
 import * as runtime from '../runtime';
 import type {
-  UserModel2,
+  ApiUsersGetGetPageSizeParameter,
+  UserModel,
 } from '../models/index';
 import {
-    UserModel2FromJSON,
-    UserModel2ToJSON,
+    ApiUsersGetGetPageSizeParameterFromJSON,
+    ApiUsersGetGetPageSizeParameterToJSON,
+    UserModelFromJSON,
+    UserModelToJSON,
 } from '../models/index';
 
 export interface ApiUsersAddPostRequest {
-    userModel2: Array<UserModel2>;
+    userModel: Array<UserModel>;
 }
 
 export interface ApiUsersDeleteDeleteRequest {
@@ -31,13 +34,13 @@ export interface ApiUsersDeleteDeleteRequest {
 }
 
 export interface ApiUsersGetGetRequest {
-    items?: Array<UserModel2>;
-    pageSize?: number;
-    pageNumber?: number;
+    items?: Array<UserModel>;
+    pageSize?: ApiUsersGetGetPageSizeParameter;
+    pageNumber?: ApiUsersGetGetPageSizeParameter;
 }
 
 export interface ApiUsersUpdatePutRequest {
-    userModel2: Array<UserModel2>;
+    userModel: Array<UserModel>;
 }
 
 /**
@@ -47,11 +50,11 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiUsersAddPostRaw(requestParameters: ApiUsersAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel2>>> {
-        if (requestParameters['userModel2'] == null) {
+    async apiUsersAddPostRaw(requestParameters: ApiUsersAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel>>> {
+        if (requestParameters['userModel'] == null) {
             throw new runtime.RequiredError(
-                'userModel2',
-                'Required parameter "userModel2" was null or undefined when calling apiUsersAddPost().'
+                'userModel',
+                'Required parameter "userModel" was null or undefined when calling apiUsersAddPost().'
             );
         }
 
@@ -61,14 +64,6 @@ export class UsersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Users/Add`;
 
@@ -77,22 +72,22 @@ export class UsersApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['userModel2']!.map(UserModel2ToJSON),
+            body: requestParameters['userModel']!.map(UserModelToJSON),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModel2FromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
     }
 
     /**
      */
-    async apiUsersAddPost(requestParameters: ApiUsersAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel2>> {
+    async apiUsersAddPost(requestParameters: ApiUsersAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel>> {
         const response = await this.apiUsersAddPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiUsersDeleteDeleteRaw(requestParameters: ApiUsersDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel2>>> {
+    async apiUsersDeleteDeleteRaw(requestParameters: ApiUsersDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel>>> {
         if (requestParameters['requestBody'] == null) {
             throw new runtime.RequiredError(
                 'requestBody',
@@ -106,14 +101,6 @@ export class UsersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Users/Delete`;
 
@@ -125,19 +112,19 @@ export class UsersApi extends runtime.BaseAPI {
             body: requestParameters['requestBody'],
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModel2FromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
     }
 
     /**
      */
-    async apiUsersDeleteDelete(requestParameters: ApiUsersDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel2>> {
+    async apiUsersDeleteDelete(requestParameters: ApiUsersDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel>> {
         const response = await this.apiUsersDeleteDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiUsersGetGetRaw(requestParameters: ApiUsersGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel2>>> {
+    async apiUsersGetGetRaw(requestParameters: ApiUsersGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<UserModel>>> {
         const queryParameters: any = {};
 
         if (requestParameters['items'] != null) {
@@ -154,14 +141,6 @@ export class UsersApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Users/Get`;
 
@@ -172,23 +151,23 @@ export class UsersApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModel2FromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
     }
 
     /**
      */
-    async apiUsersGetGet(requestParameters: ApiUsersGetGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel2>> {
+    async apiUsersGetGet(requestParameters: ApiUsersGetGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<UserModel>> {
         const response = await this.apiUsersGetGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiUsersUpdatePutRaw(requestParameters: ApiUsersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
-        if (requestParameters['userModel2'] == null) {
+    async apiUsersUpdatePutRaw(requestParameters: ApiUsersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiUsersGetGetPageSizeParameter>> {
+        if (requestParameters['userModel'] == null) {
             throw new runtime.RequiredError(
-                'userModel2',
-                'Required parameter "userModel2" was null or undefined when calling apiUsersUpdatePut().'
+                'userModel',
+                'Required parameter "userModel" was null or undefined when calling apiUsersUpdatePut().'
             );
         }
 
@@ -198,14 +177,6 @@ export class UsersApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Users/Update`;
 
@@ -214,19 +185,15 @@ export class UsersApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['userModel2']!.map(UserModel2ToJSON),
+            body: requestParameters['userModel']!.map(UserModelToJSON),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<number>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApiUsersGetGetPageSizeParameterFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiUsersUpdatePut(requestParameters: ApiUsersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+    async apiUsersUpdatePut(requestParameters: ApiUsersUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiUsersGetGetPageSizeParameter> {
         const response = await this.apiUsersUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }

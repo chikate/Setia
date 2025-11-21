@@ -1,8 +1,11 @@
 // Status: Perfect
 
-const theme = ref(localStorage.getItem("theme") || "light");
+const theme = ref<string>(localStorage.getItem("theme") || "light");
+const hue = ref<number>(Number(localStorage.getItem("themeHue")) || 0);
+const chroma = ref<number>(Number(localStorage.getItem("themeChroma")) || 180);
+
+const hueSecondary = computed(() => (hue.value + 180) % 360);
 const isDarkMode = computed(() => theme.value == "dark");
-const isLightMode = computed(() => theme.value == "light");
 
 const applyThemeClass = () =>
   isDarkMode.value
@@ -21,7 +24,6 @@ applyThemeClass();
 export const darkMode = () => ({
   theme,
   isDarkMode,
-  isLightMode,
   toggleDarkMode,
 
   themeColor,

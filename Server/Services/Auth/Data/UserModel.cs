@@ -1,7 +1,7 @@
-﻿using Main.Data.Models;
+﻿using Data.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Main.Modules.Auth;
+namespace Modules.Auth;
 
 public class UserModel : BaseModel<Guid>
 {

@@ -6,19 +6,19 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@microsoft/signalr": "^9.0.6",
+    "@microsoft/signalr": "^10.0.0",
     "@primevue/themes": "^4.4.1",
-    "@tiptap/extension-placeholder": "^3.10.2",
-    "@tiptap/extension-text-align": "^3.10.2",
-    "@tiptap/pm": "^3.10.2",
-    "@tiptap/starter-kit": "^3.10.2",
-    "@tiptap/vue-3": "^3.10.2",
+    "@tiptap/extension-placeholder": "^3.11.0",
+    "@tiptap/extension-text-align": "^3.11.0",
+    "@tiptap/pm": "^3.11.0",
+    "@tiptap/starter-kit": "^3.11.0",
+    "@tiptap/vue-3": "^3.11.0",
     "@vue-flow/background": "^1.3.2",
     "@vue-flow/core": "^1.47.0",
     "@vue-flow/minimap": "^1.5.4",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
-    "babylonjs": "^8.34.1",
+    "babylonjs": "^8.38.0",
     "html-to-image": "^1.11.13",
     "leaflet": "^1.9.4",
     "osmtogeojson": "^3.0.0-beta.5",
@@ -26,19 +26,22 @@
     "pinia-plugin-persistedstate": "^4.7.1",
     "primeicons": "^7.0.0",
     "primevue": "4.4.1",
-    "vue": "^3.5.22",
+    "vue": "^3.5.24",
     "vue-router": "^4.6.3",
     "vue3-emoji-picker": "^1.1.8"
   },
+  "overrides": {
+    "@xmldom/xmldom": "^0.8.11"
+  },
   "devDependencies": {
-    "@types/node": "^24.10.0",
-    "@vitejs/plugin-vue": "^6.0.1",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.2",
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^20.2.0",
     "unplugin-vue-components": "^30.0.0",
-    "unplugin-vue-router": "^0.16.1",
-    "vite": "^7.2.0",
+    "unplugin-vue-router": "^0.17.1",
+    "vite": "^7.2.4",
     "vite-plugin-pwa": "^1.1.0",
-    "vue-tsc": "^3.1.3"
+    "vue-tsc": "^3.1.4"
   }
 }

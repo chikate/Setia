@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Main.Modules.Auth;
+namespace Modules.Auth;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

@@ -1,10 +1,10 @@
-using Main.Modules.Auth;
+using Modules.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.VisualBasic.FileIO;
 using System.Text.RegularExpressions;
 
-namespace Main.Modules.Drive;
+namespace Modules.Drive;
 
 public interface IDriveService
 {

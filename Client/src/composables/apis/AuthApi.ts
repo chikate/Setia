@@ -16,13 +16,13 @@
 import * as runtime from '../runtime';
 import type {
   AuthenticationDTO,
-  UserModel2,
+  UserModel,
 } from '../models/index';
 import {
     AuthenticationDTOFromJSON,
     AuthenticationDTOToJSON,
-    UserModel2FromJSON,
-    UserModel2ToJSON,
+    UserModelFromJSON,
+    UserModelToJSON,
 } from '../models/index';
 
 export interface ApiAuthLoginPostRequest {
@@ -64,14 +64,6 @@ export class AuthApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Auth/Login`;
 
@@ -108,14 +100,6 @@ export class AuthApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Auth/RecoverAccount`;
 
@@ -137,7 +121,7 @@ export class AuthApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiAuthRegisterGetRaw(requestParameters: ApiAuthRegisterGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserModel2>> {
+    async apiAuthRegisterGetRaw(requestParameters: ApiAuthRegisterGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserModel>> {
         const queryParameters: any = {};
 
         if (requestParameters['username'] != null) {
@@ -157,7 +141,7 @@ export class AuthApi extends runtime.BaseAPI {
         }
 
         if (requestParameters['birthDay'] != null) {
-            queryParameters['BirthDay'] = (requestParameters['birthDay'] as any).toISOString();
+            queryParameters['BirthDay'] = requestParameters['birthDay'];
         }
 
         if (requestParameters['name'] != null) {
@@ -170,14 +154,6 @@ export class AuthApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Auth/Register`;
 
@@ -188,12 +164,12 @@ export class AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserModel2FromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserModelFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiAuthRegisterGet(requestParameters: ApiAuthRegisterGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserModel2> {
+    async apiAuthRegisterGet(requestParameters: ApiAuthRegisterGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserModel> {
         const response = await this.apiAuthRegisterGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

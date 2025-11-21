@@ -1,6 +1,6 @@
-﻿using Main.Data.Models;
+﻿using Data.Models;
 
-namespace Main.Modules.Audit;
+namespace Modules.Audit;
 
 public class AuditModel : BaseModel<long>
 {

@@ -15,15 +15,18 @@
 
 import * as runtime from '../runtime';
 import type {
-  MessageModel,
+  ApiUsersGetGetPageSizeParameter,
+  PostModel,
 } from '../models/index';
 import {
-    MessageModelFromJSON,
-    MessageModelToJSON,
+    ApiUsersGetGetPageSizeParameterFromJSON,
+    ApiUsersGetGetPageSizeParameterToJSON,
+    PostModelFromJSON,
+    PostModelToJSON,
 } from '../models/index';
 
 export interface ApiPostsAddPostRequest {
-    messageModel: Array<MessageModel>;
+    postModel: Array<PostModel>;
 }
 
 export interface ApiPostsDeleteDeleteRequest {
@@ -31,13 +34,13 @@ export interface ApiPostsDeleteDeleteRequest {
 }
 
 export interface ApiPostsGetGetRequest {
-    items?: Array<MessageModel>;
-    pageSize?: number;
-    pageNumber?: number;
+    items?: Array<PostModel>;
+    pageSize?: ApiUsersGetGetPageSizeParameter;
+    pageNumber?: ApiUsersGetGetPageSizeParameter;
 }
 
 export interface ApiPostsUpdatePutRequest {
-    messageModel: Array<MessageModel>;
+    postModel: Array<PostModel>;
 }
 
 /**
@@ -47,11 +50,11 @@ export class PostsApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiPostsAddPostRaw(requestParameters: ApiPostsAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MessageModel>>> {
-        if (requestParameters['messageModel'] == null) {
+    async apiPostsAddPostRaw(requestParameters: ApiPostsAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PostModel>>> {
+        if (requestParameters['postModel'] == null) {
             throw new runtime.RequiredError(
-                'messageModel',
-                'Required parameter "messageModel" was null or undefined when calling apiPostsAddPost().'
+                'postModel',
+                'Required parameter "postModel" was null or undefined when calling apiPostsAddPost().'
             );
         }
 
@@ -61,14 +64,6 @@ export class PostsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Posts/Add`;
 
@@ -77,22 +72,22 @@ export class PostsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['messageModel']!.map(MessageModelToJSON),
+            body: requestParameters['postModel']!.map(PostModelToJSON),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MessageModelFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PostModelFromJSON));
     }
 
     /**
      */
-    async apiPostsAddPost(requestParameters: ApiPostsAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MessageModel>> {
+    async apiPostsAddPost(requestParameters: ApiPostsAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PostModel>> {
         const response = await this.apiPostsAddPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiPostsDeleteDeleteRaw(requestParameters: ApiPostsDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MessageModel>>> {
+    async apiPostsDeleteDeleteRaw(requestParameters: ApiPostsDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PostModel>>> {
         if (requestParameters['requestBody'] == null) {
             throw new runtime.RequiredError(
                 'requestBody',
@@ -106,14 +101,6 @@ export class PostsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Posts/Delete`;
 
@@ -125,19 +112,19 @@ export class PostsApi extends runtime.BaseAPI {
             body: requestParameters['requestBody'],
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MessageModelFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PostModelFromJSON));
     }
 
     /**
      */
-    async apiPostsDeleteDelete(requestParameters: ApiPostsDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MessageModel>> {
+    async apiPostsDeleteDelete(requestParameters: ApiPostsDeleteDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PostModel>> {
         const response = await this.apiPostsDeleteDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiPostsGetGetRaw(requestParameters: ApiPostsGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<MessageModel>>> {
+    async apiPostsGetGetRaw(requestParameters: ApiPostsGetGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PostModel>>> {
         const queryParameters: any = {};
 
         if (requestParameters['items'] != null) {
@@ -154,14 +141,6 @@ export class PostsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Posts/Get`;
 
@@ -172,23 +151,23 @@ export class PostsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(MessageModelFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PostModelFromJSON));
     }
 
     /**
      */
-    async apiPostsGetGet(requestParameters: ApiPostsGetGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<MessageModel>> {
+    async apiPostsGetGet(requestParameters: ApiPostsGetGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PostModel>> {
         const response = await this.apiPostsGetGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiPostsUpdatePutRaw(requestParameters: ApiPostsUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<number>> {
-        if (requestParameters['messageModel'] == null) {
+    async apiPostsUpdatePutRaw(requestParameters: ApiPostsUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiUsersGetGetPageSizeParameter>> {
+        if (requestParameters['postModel'] == null) {
             throw new runtime.RequiredError(
-                'messageModel',
-                'Required parameter "messageModel" was null or undefined when calling apiPostsUpdatePut().'
+                'postModel',
+                'Required parameter "postModel" was null or undefined when calling apiPostsUpdatePut().'
             );
         }
 
@@ -198,14 +177,6 @@ export class PostsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("Bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
 
         let urlPath = `/api/Posts/Update`;
 
@@ -214,19 +185,15 @@ export class PostsApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters['messageModel']!.map(MessageModelToJSON),
+            body: requestParameters['postModel']!.map(PostModelToJSON),
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<number>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApiUsersGetGetPageSizeParameterFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiPostsUpdatePut(requestParameters: ApiPostsUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<number> {
+    async apiPostsUpdatePut(requestParameters: ApiPostsUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiUsersGetGetPageSizeParameter> {
         const response = await this.apiPostsUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -1,7 +1,7 @@
-﻿using Main.Modules.Auth;
+﻿using Modules.Auth;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Main.Data.Models;
+namespace Data.Models;
 
 public class BaseModel<TIDType>
 {

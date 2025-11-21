@@ -74,29 +74,7 @@ function handleDeleteParameter(index: number) {
       v-for="(item, item_index) in parameters"
       :key="item_index"
     >
-      <!-- <Dropdown
-        class="border-0 shadow-none"
-        input-class="p-0"
-        v-model="item.type"
-        :options="[
-          { name: 'Table', icon: 'pi pi-table', type: 'list' },
-          { name: 'Value', icon: 'pi pi-hashtag', type: 'value' },
-          { name: 'Image', icon: 'pi pi-image', type: 'file' },
-        ]"
-        option-label="name"
-        option-value="type"
-      >
-        <template #option="{ option }">
-          <div class="flex ">
-            <i
-              :class="option.icon"
-              class="pi text-center"
-              style="min-width: 20px"
-            />
-            {{ option.name }}
-          </div>
-        </template>
-      </Dropdown> -->
+
       <InputText v-model="item.value" />
       <label
         @dblclick="$emit('paramDblClick', $event)"

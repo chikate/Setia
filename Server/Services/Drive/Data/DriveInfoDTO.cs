@@ -1,4 +1,4 @@
-﻿namespace Main.Modules.Drive;
+﻿namespace Modules.Drive;
 
 /// <summary>
 /// DriveInfoDTO

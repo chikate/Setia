@@ -1,4 +1,4 @@
-﻿namespace Main.Data.DTOs;
+﻿namespace Data.DTOs;
 
 public class EmailDTO
 {

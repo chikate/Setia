@@ -1,4 +1,4 @@
-using Main.Data.Context;
+using Data.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Main.Modules.Auth;
+namespace Modules.Auth;
 
 public interface IAuthService
 {

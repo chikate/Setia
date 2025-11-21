@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <!-- Sidebar -->
+
     <div class="col-3">
       <div class="">
         <h4>Inbox</h4>
@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <!-- Email Content -->
+
     <div class="col-9">
       <div class="" v-if="selectedEmail">
         <div class="mb-2">

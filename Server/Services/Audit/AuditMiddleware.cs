@@ -1,8 +1,8 @@
-using Main.Modules.Auth;
+using Modules.Auth;
 using System.Text;
 using System.Text.Json;
 
-namespace Main.Modules.Audit;
+namespace Modules.Audit;
 
 public class AuditMiddleware(RequestDelegate next)
 {

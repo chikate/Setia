@@ -3,7 +3,7 @@
     :id="$options.__name"
     class="flex flex-column gap-2 border-round overflow-hidden align-items-center"
   >
-    <!-- File Viewer -->
+
     <div v-if="postData.attachments">
       <FileViewer
         class="border-round overflow-hidden"
@@ -44,26 +44,20 @@
       <Menu ref="menuRef" popup :model="menuItems" />
     </div>
 
-    <!-- Editor -->
+
     <EditorContent v-if="editing" class="editor w-full" :editor="editor" />
 
-    <!-- Question -->
+
     <QuestionComponent
       v-if="postData.questionId && postData.questionData"
       v-model:question-data="postData.questionData"
       answerMode
     />
 
-    <!-- Post Creation -->
-    <!-- <SplitButton
-      v-if="editing && !postData.message"
-      class="shadow-1"
-      :disabled="!localMessage"
-      label="Post"
-      :model="postSplitButton"
-    /> -->
 
-    <!-- Actions -->
+
+
+
     <div v-if="postData.message" class="flex flex-column w-full">
       <div
         class="p-1 px-2 bg-gray-700 border-round"
@@ -79,21 +73,21 @@
         />
       </div>
 
-      <!-- Emoji Picker -->
+
       <EmojiPicker
-        v-if="showActions === 0 || showActions === 1"
+        v-if="showActions == 0 || showActions == 1"
         native
         @select="handleEmoji"
       />
 
-      <!-- Comments -->
-      <div v-if="showActions === 2" class="h-8">
+
+      <div v-if="showActions == 2" class="h-8">
         <PostComponent :postData="{ entityId: postData.id }" />
       </div>
 
-      <!-- Share -->
+
       <div
-        v-if="showActions === 3"
+        v-if="showActions == 3"
         class="flex flex-wrap justify-content-center"
       >
         <UserProfileComponent
@@ -130,7 +124,6 @@ const authorData = ref({
     "https://sm.ign.com/t/ign_pk/cover/a/avatar-gen/avatar-generations_rpge.600.jpg",
 });
 
-// Editor
 const editor = new Editor({
   extensions: [
     StarterKit,
@@ -141,7 +134,6 @@ const editor = new Editor({
   content: postData.value.message,
 });
 
-// Computed
 const attachmentSrc = computed(() => postData.value.attachments?.[0] ?? "");
 const menuItems = computed(() => [
   {
@@ -174,13 +166,11 @@ const icons = ref([
   { name: "pi-star" },
 ]);
 
-// SplitButton for posting
 const postSplitButton = [
   { label: "News" },
   { label: "Add Question", command: toggleQuestion },
 ];
 
-// Methods
 function toggleQuestion() {
   postData.value.questionData
     ? (postData.value.questionData = undefined)
@@ -192,11 +182,10 @@ function addLocalQuestion() {
 }
 
 function handleIconClick(index: number) {
-  showActions.value = showActions.value === index ? undefined : index;
+  showActions.value = showActions.value == index ? undefined : index;
 }
 
 function handleEmoji(event: any) {
-  // Example: Add emoji reaction
   console.log(event);
 }
 

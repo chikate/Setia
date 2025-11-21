@@ -1,23 +1,20 @@
 <template>
-  <div class="flex">
-    <div class="flex flex-column align-items-start">
-      <InputText placeholder="Add task" @keydown.enter="handleAddTask" />
-      <DataTable v-for="value in projects" :value="value.tasks">
-        <Column field="title" header="Title" />
-        <Column field="code" header="Code" />
-        <Column field="assignee" header="Assaignee" />
-      </DataTable>
+  <div class="kanban flex gap-1 p-1 ">
+    <div v-for="col in columns" :key="col.key" class="kanban-column p-3 bg-gray-700 border-round shadow-md w-2"
+      @dragover.prevent @drop="onDrop(col.key)">
+      <h2 class="font-bold text-lg mb-3">{{ col.label }}</h2>
+      <div v-for="task in getTasks(col.key)" :key="task.id"
+        class="kanban-card p-3 mb-3 rounded-lg shadow-sm bg-white cursor-pointer" draggable
+        @dragstart="onDragStart(task)">
+        <div class="font-semibold">{{ task.name }}</div>
+        <div class="text-sm text-gray-600">{{ task.description }}</div>
+        <div class="flex mt-2">
+          <img v-for="(a, i) in task.assigns || []" :key="i" :src="a" class="w-6 h-6 rounded-full border" />
+        </div>
+      </div>
     </div>
-
-    <div class="flex flex-column align-items-start">
-      <EditorContent :editor class="editor custom-shadow-1" />
-    </div>
-
-    <div class="flex flex-column align-items-start">
-      1
-      <div class="flex flex-row">t</div>
-      2
-    </div>
+    <EditorContent :editor="editor" class="editor custom-shadow-1" @keydown.enter="handleAddTask" />
+    <InputText placeholder="Add task" @keydown.enter="handleAddTask" class="w-full" />
   </div>
 </template>
 
@@ -25,83 +22,64 @@
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
-import { ToastMessageOptions } from "primevue/toast";
 import { useToast } from "primevue/usetoast";
+import InputText from "primevue/inputtext";
 
-defineOptions({
-  name: "Tasks",
-  icon: "✅",
-});
-
-const content = ref();
-const editor = new Editor({
-  extensions: [
-    StarterKit,
-    TextAlign.configure({
-      types: ["heading", "paragraph"],
-    }),
-  ],
-  content: content.value,
-});
+defineOptions({ name: "Tasks", icon: "✅" });
 
 const toast = useToast();
+const editor = new Editor({ extensions: [StarterKit, TextAlign.configure({ types: ["heading", "paragraph"] })] });
+const columns = [
+  { key: "todo", label: "To Do" },
+  { key: "inprogress", label: "In Progress" },
+  { key: "testing", label: "For Testing" },
+  { key: "functional", label: "Functional" },
+  { key: "prod", label: "In Production" },
+  { key: "done", label: "Done" }
+];
 
-export interface IProject {
-  id?: string;
-  name?: string;
-  description?: string;
-  tasks: ITask[];
-}
-export interface ITask {
-  id?: string;
-  name: string;
-  description?: string;
-  assigns?: string[];
-  status?: number;
-}
+interface ITask { id?: string; name: string; description?: string; assigns?: string[]; status?: number }
+interface IProject { id?: string; name?: string; description?: string; tasks: ITask[] }
+const projects = ref<IProject[]>([{ name: "asd", tasks: [] }]);
+let draggedTask = ref<ITask | null>(null);
 
-const projects = ref<IProject[]>([{ name: "asd", tasks: [{ title: "1" }] }]);
-const projectIndexInFocus = ref<number>();
-const taskIdInFocus = ref();
+const onDragStart = (task: ITask) => draggedTask.value = task;
+const onDrop = (colKey: string) => { if (draggedTask.value) { draggedTask.value.status = columns.findIndex(c => c.key === colKey); draggedTask.value = null } }
+const getTasks = (colKey: string) => projects.value[0].tasks.filter(t => t.status === columns.findIndex(c => c.key === colKey));
 
-onBeforeMount(init);
-async function init() {}
-
-function handleAddTask(event: KeyboardEvent) {
-  const target = event.target as HTMLInputElement;
-  const inputValue = target.value.trim(); // trim to avoid whitespace-only values
-
-  const toastMessage: ToastMessageOptions = {
-    severity: "info",
-    summary: "Adding parameter",
-    detail: "", // ensure this is initialized
-  };
-
-  if (!inputValue) {
-    toastMessage.severity = "error";
-    toastMessage.detail = "Invalid task!";
-  } else {
-    projects.value[0].tasks.push({
-      name: "inputValue",
-      description: inputValue,
-      assigns: [
-        "https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png",
-      ],
-    });
-    toastMessage.severity = "success";
-    toastMessage.detail = "Task added successfully!";
-  }
-
-  toast.add(toastMessage);
+const handleAddTask = (e: KeyboardEvent) => {
+  const target = e.target as HTMLInputElement;
+  const val = target.value.trim();
+  if (!val) { toast.add({ severity: "error", summary: "Invalid task!" }); return }
+  projects.value[0].tasks.push({ id: crypto.randomUUID(), name: val, description: val, status: 0, assigns: ["https://primefaces.org/cdn/primevue/images/avatar/asiyajavayant.png"] });
+  toast.add({ severity: "success", summary: "Task added!" });
   target.value = "";
 }
 </script>
 
 <style scoped>
+.kanban {
+  width: 100%
+}
+
+.kanban-column {
+  min-height: 70vh
+}
+
+.kanban-card {
+  transition: .2s
+}
+
+.kanban-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .15)
+}
+
 .editor {
   border-radius: 5px;
   aspect-ratio: 1/1.414;
   padding: 1rem;
   cursor: text;
+  background: white
 }
 </style>

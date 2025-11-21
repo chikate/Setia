@@ -1,11 +1,11 @@
-using Main.Data.Context;
-using Main.Data.DTOs;
-using Main.Data.Models;
+using Data.Context;
+using Data.DTOs;
+using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace Main.Features.CRUDs;
+namespace Features.CRUDs;
 
 public interface ICRUDService<TModel> where TModel : BaseModel<Guid>
 {

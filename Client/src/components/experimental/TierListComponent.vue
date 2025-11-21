@@ -69,7 +69,6 @@
             'border-radius': 0,
           }"
         />
-        <!-- :class="{ 'bg-primary': tierRow.tier != undefined }" -->
         <div
           :id="'droptarget-' + tierRowIndex"
           class="droptarget flex-wrap"
@@ -151,11 +150,11 @@ const draggedElement = ref<HTMLElement | null>(null);
 
 function handleDrag(event: DragEvent, type: "start" | "end") {
   if (event.target instanceof HTMLImageElement)
-    if (type === "start") {
+    if (type == "start") {
       draggedElement.value = event.target;
       event.target.classList.add("opacity-05");
       event.dataTransfer?.setData("text/plain", event.target.src);
-    } else if (type === "end") event.target.classList.remove("opacity-05");
+    } else if (type == "end") event.target.classList.remove("opacity-05");
 }
 
 function drop(ev: DragEvent) {

@@ -37,11 +37,13 @@ npm install --legacy-peer-deps
 Generate TypeScript Fetch clients directly from the OpenAPI schema:
 
 ```bash
-openapi-generator-cli generate -g typescript-fetch -i https://localhost:5000/openapi/v1.json -o C:\Users\Dragos\Desktop\Setia\Client\src\composables
+openapi-generator-cli generate -g typescript-fetch -i https://localhost:5000/openapi/v1.json -o src/composables
 ```
 
 If you experience SSL validation issues while generating APIs, set the following PowerShell environment variable:
 
 ```bash
 $env:JAVA_TOOL_OPTIONS="-Dcom.sun.net.ssl.checkRevocation=false -Djavax.net.ssl.trustStoreType=Windows-ROOT"
+
+set JAVA_OPTS=-Djdk.tls.client.protocols=TLSv1.2 -Djavax.net.ssl.trustAll=true
 ```

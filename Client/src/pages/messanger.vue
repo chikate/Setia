@@ -1,56 +1,23 @@
 <template>
-  <div class="flex flex-row">
-    <!-- <DataTable
-      id="comunitiesList"
-      :value="[{ name: 'asdasd' }]"
-      :show-headers="false"
-    >
-      <Column field="avatar">
-        <Avatar
-          image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-        />
-      </Column>
-    </DataTable>
-    <DataTable id="inbox" :value="[{ name: 'asdasd' }]" :show-headers="false">
-      <Column field="avatar">
-        <Avatar
-          image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-        />
-      </Column>
-      <Column field="name" />
-    </DataTable> -->
-
-    <div id="directMessage" class="flex flex-column-reverse overflow-auto">
-      <div class="flex flex-row">
-        <Textarea rows="1" class="" v-model="message" />
-        <div class="flex flex-row">
-          <Button
-            icon="pi pi-send"
-            label="SEND"
-            @click="messages.push({ sender: 'me', message })"
-          />
-        </div>
-      </div>
-      <div id="messages" class="flex flex-column overflow-auto">
-        <div id="message" v-for="message in messages" :key="message.id">
-          <Avatar />
-          <div>{{ message.author }}</div>
-          <label>{{ message.message }}</label>
-        </div>
-      </div>
+  <div class="messenger-page h-[calc(100vh-4rem)] flex gap-4 p-4">
+    <div class="w-1/4 min-w-[250px]">
+        <FriendsList @select="selectFriend" />
+    </div>
+    <div class="flex-1">
+        <ChatWindow :user="selectedFriend" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: "Messanger",
-  icon: "💬",
-});
+import { ref } from 'vue';
+import FriendsList from '@/components/FriendsList.vue';
+import ChatWindow from '@/components/ChatWindow.vue';
+import type { UserModel } from '@/composables/models';
 
-const messages = ref([]);
-const message = ref();
+const selectedFriend = ref<UserModel | undefined>(undefined);
 
-onBeforeMount(init);
-async function init() {}
+const selectFriend = (friend: UserModel) => {
+    selectedFriend.value = friend;
+};
 </script>

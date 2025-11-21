@@ -38,10 +38,7 @@ onBeforeMount(async () => {
 
     <div class="flex flex flex-column text-center align-items-start">
       <a class="font-bold sm:">{{ profileUserData.username }}</a>
-      <!-- <a class="opacity-50">
-        Joined in
-        {{ new Date(profileUserData.executionDate ?? '').toUTCString().replaceAll(' GMT', '') }}
-      </a> -->
+
     </div>
   </div>
 </template>

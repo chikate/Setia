@@ -1,7 +1,9 @@
 import * as signalR from "@microsoft/signalr";
 
 export const signalRConnection = new signalR.HubConnectionBuilder()
-  .withUrl("/events")
+  .withUrl("/events", {
+    accessTokenFactory: () => getCookie("access_token") || "",
+  })
   .withAutomaticReconnect()
   .build();
 

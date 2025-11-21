@@ -1,19 +1,21 @@
-﻿using Main.Data.Models;
-using Main.Modules.Audit;
-using Main.Modules.Auth;
+﻿using Data.Models;
+using Modules.Audit;
+using Modules.Auth;
 using Microsoft.EntityFrameworkCore;
 
-namespace Main.Data.Context;
+namespace Data.Context;
 
 public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfiguration config*/) : DbContext(options)
 {
     public required DbSet<AuditModel> Audit { get; set; }
+    public required DbSet<UserModel> Users { get; set; }
     public required DbSet<GroupModel> Groups { get; set; }
+    public required DbSet<LinkModel> Links { get; set; }
     public required DbSet<NotificationModel> Notifications { get; set; }
+    public required DbSet<ParameterModel> Parameters { get; set; }
     public required DbSet<PostModel> Posts { get; set; }
     public required DbSet<QuestionModel> Questions { get; set; }
-    public required DbSet<UserModel> Users { get; set; }
-    public required DbSet<LinkModel> Links { get; set; }
+    public required DbSet<MessageModel> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +23,7 @@ public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfi
 
         modelBuilder.Entity<LinkModel>().HasIndex(l => new { l.SourceType, l.SourceId });
         modelBuilder.Entity<LinkModel>().HasIndex(l => new { l.TargetType, l.TargetId });
+        modelBuilder.Entity<NotificationModel>().HasIndex(n => new { n.To, n.SeenDate });
 
         //#region Default Users
         //new List<UserModel> {

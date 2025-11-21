@@ -1,21 +1,23 @@
-using Main.Data.Context;
-using Main.Features.CRUDs;
-using Main.Modules.Audit;
-using Main.Modules.Auth;
-using Main.Modules.Drive;
-using Main.Services;
+using Data.Context;
+using Features.CRUDs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Modules.Audit;
+using Modules.Auth;
+using Modules.Drive;
+using Services;
 using System.Text;
+#if RELEASE
+using System.Reflection;
+#endif
 
 IConfiguration config = new ConfigurationManager()
-.AddJsonFile("appsettings.json")
-.AddEnvironmentVariables()
-.AddUserSecrets<Program>()
-//.Get<UserSettings>()
-.Build();
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .AddUserSecrets<Program>()
+    //.Get<UserSettings>()
+    .Build();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions { WebRootPath = config["StoragePath"], Args = args });
 
@@ -24,11 +26,11 @@ builder.Configuration.AddConfiguration(config);
 // DB
 builder.Services.AddDbContext<BaseContext>(options =>
 {
-    switch (config["DBTech"])
+    switch (config["DB:Tech"])
     {
         //case "MsSQL": options.UseSqlServer(config["DBConnectionStrings"]); break;
-        case "PgSQL": options.UseNpgsql(config["DBConnectionStrings"]); break;
-        default: throw new NotSupportedException($"Unsupported database technology: {config["DBTech"]}");
+        case "PgSQL": options.UseNpgsql($"Server=SERVER;Database={config["DB:Database"]};User ID={config["DB:User"]};Password={config["DB:Password"]};"); break;
+        default: throw new NotSupportedException($"Unsupported database technology: {config["DB:Tech"]}");
     }
 });
 // Features
@@ -41,48 +43,22 @@ builder.Services.AddScoped<ICRUDService<UserModel>, CRUDService<UserModel>>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = config["HOST_Server"],
-            ValidAudience = config["HOST_Client"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
-        });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateLifetime = true,
+    ValidateIssuerSigningKey = true,
+    ValidIssuer = config["Origin"],
+    ValidAudience = config["Audience"],
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["CryptKey"]!))
+});
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddSignalR();
 
-builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document, context, cancellationToken) =>
-{
-    document.Components ??= new();
-    document.Components.SecuritySchemes["Bearer"] = new()
-    {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-    };
-    document.SecurityRequirements.Add(new()
-    {
-        [new()
-        {
-            Reference = new()
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        }
-    ] = Array.Empty<string>()
-    });
-    return Task.CompletedTask;
-})
-);
+builder.Services.AddOpenApi();
 
 #if RELEASE
 builder.Services.AddSpaStaticFiles(cfg => cfg.RootPath = "dist");
@@ -129,7 +105,7 @@ app.UseSpa(spa => spa.Options.SourcePath = "dist");
 #endif
 
 #if DEBUG
-app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer(config["HOST_Client"]!));
+app.UseSpa(spa => spa.UseProxyToSpaDevelopmentServer(config["Audience"]!));
 #endif
 
 await app.RunAsync();
