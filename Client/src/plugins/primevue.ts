@@ -17,11 +17,10 @@ export function setupPrimeVue(app: App) {
         },
     });
 
-    app.use(ToastService, { life: 3000 });
+    app.use(ToastService);
 
     app.directive("tooltip", Tooltip);
     app.directive("badge", BadgeDirective);
 
-    // Provide dark mode state globally if needed, though it's a composable
     app.provide("darkMode", darkMode);
 }

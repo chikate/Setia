@@ -11,8 +11,8 @@ export const apiRequest = (
       bodyData instanceof FormData
         ? ""
         : method == "GET"
-          ? "text/plain"
-          : "application/json",
+        ? "text/plain"
+        : "application/json",
   }
 ) =>
   fetch(`/api/${actionPath}${queryParams(bodyData)}`, {
@@ -30,8 +30,8 @@ export const apiRequest = (
     const content = contentType?.includes("application/json")
       ? await response.json()
       : contentType?.includes("text/plain")
-        ? await response.text()
-        : await response.blob();
+      ? await response.text()
+      : await response.blob();
 
     app.config.globalProperties.$toast?.add({
       summary: "Server",
@@ -39,11 +39,11 @@ export const apiRequest = (
       severity: response.ok
         ? "success"
         : response.status >= 400 && response.status < 600
-          ? "error"
-          : "info",
+        ? "error"
+        : "info",
       life: 3000,
     });
-    console.log(content);
+
     return content;
   });
 
@@ -84,8 +84,8 @@ export function setupGlobalFetchInterceptor(appInstance: App) {
     const severity = response.ok
       ? "success"
       : response.status >= 400 && response.status < 600
-        ? "error"
-        : "info";
+      ? "error"
+      : "info";
 
     if (message && appInstance.config.globalProperties.$toast) {
       appInstance.config.globalProperties.$toast.add({

@@ -3,7 +3,6 @@
     :id="$options.__name"
     class="flex flex-column gap-2 border-round overflow-hidden align-items-center"
   >
-
     <div v-if="postData.attachments">
       <FileViewer
         class="border-round overflow-hidden"
@@ -44,19 +43,13 @@
       <Menu ref="menuRef" popup :model="menuItems" />
     </div>
 
-
     <EditorContent v-if="editing" class="editor w-full" :editor="editor" />
-
 
     <QuestionComponent
       v-if="postData.questionId && postData.questionData"
       v-model:question-data="postData.questionData"
       answerMode
     />
-
-
-
-
 
     <div v-if="postData.message" class="flex flex-column w-full">
       <div
@@ -73,18 +66,11 @@
         />
       </div>
 
-
-      <EmojiPicker
-        v-if="showActions == 0 || showActions == 1"
-        native
-        @select="handleEmoji"
-      />
-
+      <EmojiPicker v-if="showActions == 0 || showActions == 1" native />
 
       <div v-if="showActions == 2" class="h-8">
         <PostComponent :postData="{ entityId: postData.id }" />
       </div>
-
 
       <div
         v-if="showActions == 3"
@@ -183,10 +169,6 @@ function addLocalQuestion() {
 
 function handleIconClick(index: number) {
   showActions.value = showActions.value == index ? undefined : index;
-}
-
-function handleEmoji(event: any) {
-  console.log(event);
 }
 
 function stringToColor(str: string) {

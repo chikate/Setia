@@ -77,13 +77,7 @@
       :headerClass="col.type == 'boolean' ? 'column-text-center' : ''"
       :frozen="i == 0"
     >
-      <template #body="{ data, field }">
-        <!-- <i
-            v-if="typeof data[field] == 'boolean'"
-            :class="`pi ${data[field] ? 'pi-verified' : 'pi-circle'}`"
-          />
-          <div v-else>{{ data[field]?.toString() }}</div> -->
-      </template>
+      <template #body="{ data, field }"> </template>
       <template #filter="{ filterModel, filterCallback }">
         <InputText
           v-model="filterModel.value"
@@ -202,39 +196,8 @@ const selectedColumns = ref([]);
 
 onBeforeMount(async () => {
   try {
-    console.log("CRUDT", props.service);
-
     const [_, api, controller, action] = props.service.basePath.split("/");
-
-    // apiRequest()
-    // const apiClassName = `${capitalizeString(resource)}Api`;
-    // const verb = Object.keys(props.service[1])[0]; // get/post/put/delete
-    // const apiMethodName =
-    //   props.service[1][verb]?.operationId ??
-    //   `${basePath}${resource}${action}${capitalizeString(verb)}`;
-
-    // console.log("CRUDT Class:", apiClassName);
-    // console.log("CRUDT Method:", apiMethodName);
-
-    // // ✅ Correct import path — assuming you have src/composables/api/UserApi.ts
-    // const apiModule = await import(`@/composables/api/${apiClassName}.ts`);
-    // const ApiClass = apiModule[apiClassName];
-
-    // if (!ApiClass) throw new Error(`API class not found: ${apiClassName}`);
-
-    // const apiInstance = new ApiClass();
-    // const method = apiInstance[apiMethodName];
-
-    // if (typeof method !== "function")
-    //   throw new Error(`API method not found: ${apiMethodName}`);
-
-    // const response = await method.call(apiInstance);
-    // console.log("API Response:", response);
-
-    // value.value = response ?? [];
-  } catch (error) {
-    console.error("Dynamic API call failed:", error);
-  }
+  } catch (error) {}
 });
 
 const formattedServiceName = computed(
@@ -246,25 +209,7 @@ const formattedServiceName = computed(
       .toLowerCase()
 );
 
-const exposedData = computed(
-  () => []
-  // Object.keys(props.service.defaultValues)
-  //   .filter(
-  //     (param) =>
-  //       !["password", "id", "executiondate"].includes(param.toLowerCase())
-  //   )
-  //   .map((key) => ({
-  //     field: key,
-  //     header:
-  //       key.charAt(0).toUpperCase() +
-  //       key
-  //         .slice(1)
-  //         .replace(/([A-Z])/g, " $1")
-  //         .toLowerCase()
-  //         .replace(" data", ""),
-  //     type: typeof props.service.defaultValues[key],
-  //   }))
-);
+const exposedData = computed(() => []);
 
 function handleSplitButtonClick() {
   if (readonly.value) return;

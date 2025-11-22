@@ -36,11 +36,6 @@ async function init() {
   }
 
   services.value = Object.values(grouped);
-
-  console.log(
-    "Detected services:",
-    services.value.map((s) => s.name)
-  );
 }
 
 defineOptions({

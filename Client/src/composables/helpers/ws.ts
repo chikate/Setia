@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { getCookie } from "./helpers";
 
 export const signalRConnection = new signalR.HubConnectionBuilder()
   .withUrl("/events", {
@@ -6,5 +7,3 @@ export const signalRConnection = new signalR.HubConnectionBuilder()
   })
   .withAutomaticReconnect()
   .build();
-
-signalRConnection.start().then(console.log).catch(console.error);

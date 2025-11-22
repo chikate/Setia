@@ -48,7 +48,6 @@ const parameters = ref([]);
 const selectedParam = ref();
 const contentEditor = ref<HTMLElement>();
 
-// Autocomplete Data
 const suggestions = [
   "apple",
   "banana",
@@ -63,13 +62,12 @@ const activeSuggestion = ref(0);
 const showSuggestions = ref(false);
 const caretPosition = ref({ top: 0, left: 0 });
 
-// Function to handle text input and update line count
 async function onInput() {
   const content = contentEditor.value?.innerText;
 
   lineCount.value = content?.split(/\n\n|\n/).length ?? 1;
 
-  const triggerMatch = content?.match(/@(\w*)$/); // Matches "@word" at the end
+  const triggerMatch = content?.match(/@(\w*)$/);
   if (triggerMatch) {
     const query = triggerMatch[1];
     filteredSuggestions.value = suggestions.filter((suggestion) =>
@@ -83,7 +81,6 @@ async function onInput() {
   }
 }
 
-// Function to get the caret position for suggestion dropdown
 const updateCaretPosition = () => {
   const range = window.getSelection()?.getRangeAt(0);
   const rect = range?.getBoundingClientRect();
@@ -95,7 +92,6 @@ const updateCaretPosition = () => {
   }
 };
 
-// Function to handle arrow keys and enter for selecting suggestions
 const handleKeydown = (event: KeyboardEvent) => {
   if (showSuggestions.value) {
     if (event.key == "ArrowDown") {
@@ -116,17 +112,12 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 
-// Function to insert selected suggestion
 const selectSuggestion = (suggestion: string) => {
-  // const content = contentEditor.value?.innerText
-  // const newContent = content?.replace(/ @\w*$/, suggestion)
-  // contentEditor.value.innerText = newContent
   showSuggestions.value = false;
 
-  // Set caret position to end of new text
   nextTick(() => {
     const range = document.createRange();
-    // range.selectNodeContents(contentEditor.value)
+
     range.collapse(false);
     const selection = window.getSelection();
     selection?.removeAllRanges();

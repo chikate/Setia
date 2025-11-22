@@ -86,7 +86,6 @@ onMounted(() => {
   cam.keysUpward.push(69);
   cam.keysDownward.push(81);
 
-  // Components
   new BABYLON.DirectionalLight(
     "l",
     new BABYLON.Vector3(-1, -2, -1),
@@ -113,14 +112,11 @@ onMounted(() => {
         vd.indices = Array.from(obj.indices);
         vd.applyToMesh(currentMesh);
         modelName.value = f.name;
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) {}
     };
     reader.readAsText(f);
   });
 
-  // Selection
   scene.onPointerObservable.add((info) => {
     if (info.type == BABYLON.PointerEventTypes.POINTERPICK) {
       const m = info.pickInfo.pickedMesh;

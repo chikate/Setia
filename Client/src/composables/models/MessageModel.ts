@@ -80,6 +80,41 @@ export interface MessageModel {
    * @type {Array<string>}
    * @memberof MessageModel
    */
+  /**
+   *
+   * @type {string}
+   * @memberof MessageModel
+   */
+  groupId?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageModel
+   */
+  replyToId?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof MessageModel
+   */
+  reactions?: string | null;
+  /**
+   *
+   * @type {Array<any>}
+   * @memberof MessageModel
+   */
+  history?: Array<any> | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof MessageModel
+   */
+  isEdited?: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof MessageModel
+   */
   tags?: Array<string> | null;
 }
 

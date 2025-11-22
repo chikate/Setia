@@ -44,6 +44,12 @@ export interface GroupModel {
      * @type {string}
      * @memberof GroupModel
      */
+    icon?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupModel
+     */
     id?: string;
     /**
      * 
@@ -88,7 +94,7 @@ export function GroupModelFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         return json;
     }
     return {
-        
+
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'] == null ? undefined : json['id'],
@@ -109,7 +115,7 @@ export function GroupModelToJSONTyped(value?: GroupModel | null, ignoreDiscrimin
     }
 
     return {
-        
+
         'name': value['name'],
         'description': value['description'],
         'id': value['id'],

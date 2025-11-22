@@ -12,3 +12,5 @@ export * from './PostModel';
 export * from './QuestionModel';
 export * from './QuestionModelSelection';
 export * from './UserModel';
+export * from './MessageModel';
+export * from './MessageHistoryModel';
