@@ -17,6 +17,7 @@ public partial class BaseContext(DbContextOptions<BaseContext> options/*, IConfi
     public required DbSet<QuestionModel> Questions { get; set; }
     public required DbSet<MessageModel> Messages { get; set; }
     public required DbSet<MessageHistoryModel> MessageHistory { get; set; }
+    public required DbSet<TrackModel> Tracks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

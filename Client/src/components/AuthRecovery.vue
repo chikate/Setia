@@ -1,5 +1,10 @@
 <template>
-  <AuthForm v-model:input="input" @submit="authService.recoverAccount" />
+  <AuthForm
+    v-model:input="input"
+    :submitFunction="
+      () => new AuthApi().apiAuthRecoverAccountGet({ email: input.email })
+    "
+  />
 </template>
 
 <script setup lang="ts">

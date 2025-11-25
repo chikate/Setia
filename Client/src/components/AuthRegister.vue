@@ -6,5 +6,10 @@
 </template>
 
 <script setup lang="ts">
-const input = ref({ email: "" });
+const input = ref({
+  username: "",
+  email: "",
+  password: "",
+  repeatPassword: "",
+});
 </script>

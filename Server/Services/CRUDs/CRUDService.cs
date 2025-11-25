@@ -58,15 +58,20 @@ public class CRUDService<TModel>(BaseContext context) : ICRUDService<TModel> whe
     public async Task<List<TModel>> Delete(List<Guid> ids)
     {
         List<TModel> deletedEntities = new();
-        ids.ForEach(async id =>
+        var tasks = ids.Select(async id =>
         {
             TModel? deletedEntity = await context.Set<TModel>().FindAsync(id);
             if (deletedEntity != null)
             {
                 context.Entry(deletedEntity).State = EntityState.Deleted;
                 context.Remove(deletedEntity);
+                lock (deletedEntities)
+                {
+                    deletedEntities.Add(deletedEntity);
+                }
             }
         });
+        await Task.WhenAll(tasks);
         await context.SaveChangesAsync();
         return deletedEntities;
     }

@@ -8,27 +8,23 @@ Right click on **Main** project file > select **"Manage User Secrets"** and past
 
 ```json
 // dotnet user-secrets set "Email-Service-Account:Username" "email-username"
-{
-  "AdminAccount": {
-    "Username": "yourusername",
-    "Password": "yourpassword"
+  "DB": {
+    "Tech": "PgSQL",
+    "Database": "Setia",
+    "User": "postgres",
+    "Password": "password"
   },
-  "CryptKey": "uwXk6g6Kxr166TGji80ICeI0udlzm7hT", // 32 alphanumeric string like its shown, recomanded to change it for every instance
-  "DBConnectionStrings": "Server=localhost:5432;DataBase=Setia;User ID=postgres;Password=dragos;",
-  "DBTech": "PgSQL",
-  "HOST_Client": "http://localhost:3000",
-  "HOST_Server": "https://localhost:5000",
-  "SMTPSettings": {
-    "EnableSsl": true,
-    "Password": "yourpassword",
-    "Port": 587,
-    "SenderEmail": "your.email@example.com",
-    "SenderName": "Your Name",
-    "Server": "smtp.example.com",
-    "Username": "your.email@example.com"
+  "Email": {
+    "Username": "",
+    "Password": ""
   },
-  "StoragePath": "D:\\Dragos\\Downloads\\drive"
-}
+  "Audience": "http://localhost:3000",
+  "Origin": "http://localhost:5000",
+  "CryptKey": "LbV39BSCG0Wwusl31S8C079qcfUUu0Qo",
+  "SuperUser": {
+    "Username": "",
+    "Password": ""
+  },
 ```
 
 # Migrations
